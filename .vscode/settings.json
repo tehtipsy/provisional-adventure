@@ -2,7 +2,7 @@
   "files.associations": {
     "*.css": "tailwindcss"
   },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2
 }
