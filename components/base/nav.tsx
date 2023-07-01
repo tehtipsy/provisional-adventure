@@ -73,9 +73,9 @@ const Nav: React.FC = () => {
         >
           <ul className="font-medium flex flex-col mt-4 md:flex-row md:space-x-8 md:mt-0">
             {pageLinks.map(
-              (pageLink) =>
+              (pageLink, index) =>
                 (!pageLink.requireLogin || user) && (
-                  <li key={pageLink.href}>
+                  <li key={`pagelinks-${index}`}>
                     <Link
                       href={pageLink.href}
                       onClick={() => handleClick(pageLink)}
