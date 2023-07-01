@@ -107,7 +107,11 @@ const Game: React.FC = () => {
         ) : (
           <ul>
             {onlineUsers.map((username: string) => {
-              return <li key={username}>{username} is Online</li>;
+              return (
+                <li key={username}>
+                  {username} is Online{username === user ? " (you)" : ""}
+                </li>
+              );
             })}
           </ul>
         )}
