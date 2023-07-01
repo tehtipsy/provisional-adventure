@@ -1,16 +1,16 @@
-import { useRouter } from 'next/navigation'
+import { useCallback, useContext, useEffect, useState } from "react";
+
+import { useRouter } from "next/navigation";
 
 import BasePage from "@/components/base/basePage";
 
 import { GlobalContext } from "@/contexts/globalContext";
 
-import { useCallback, useContext, useEffect, useState } from "react";
-
 import * as Ably from "ably/promises";
 import { configureAbly } from "@ably-labs/react-hooks";
 
 const Game: React.FC = () => {
-  const router = useRouter()
+  const router = useRouter();
 
   const { user, setUser } = useContext(GlobalContext);
 
@@ -52,8 +52,10 @@ const Game: React.FC = () => {
   useEffect(() => {
     // The first requirement is to have a valid username
     // to be used as the Ably clientId
-    if (!user) { // redirect to User Form
-      router.push("/"); 
+    if (!user) {
+      // redirect to User Form
+      router.push("/");
+      return;
     }
     // If not already connected to ably, connect
     if (ably === null) {
