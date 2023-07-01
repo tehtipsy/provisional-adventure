@@ -1,5 +1,8 @@
 import Link from "next/link";
-import { useState } from "react";
+import { useContext, useState } from "react";
+
+import { GlobalContext } from "@/contexts/globalContext";
+
 
 type PageLink = {
   href: string;
@@ -19,6 +22,8 @@ const pageLinks: PageLink[] = [
 
 const Nav: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
+  const { user } = useContext(GlobalContext);
+
   return (
     <nav className="bg-white border-gray-200 border-b dark:bg-gray-900 dark:border-0">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -27,6 +32,7 @@ const Nav: React.FC = () => {
             App
           </span>
         </Link>
+        <div className="text-white">Logged in as: {user}</div>
         <button
           onClick={() => setOpen(!open)}
           type="button"
