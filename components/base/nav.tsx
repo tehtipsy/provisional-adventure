@@ -3,7 +3,6 @@ import { useContext, useState } from "react";
 
 import { GlobalContext } from "@/contexts/globalContext";
 
-
 type PageLink = {
   href: string;
   label: string;
@@ -22,7 +21,7 @@ const pageLinks: PageLink[] = [
 
 const Nav: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
-  const { user } = useContext(GlobalContext);
+  const { user, setUser } = useContext(GlobalContext);
 
   return (
     <nav className="bg-white border-gray-200 border-b dark:bg-gray-900 dark:border-0">
@@ -32,7 +31,6 @@ const Nav: React.FC = () => {
             App
           </span>
         </Link>
-        <div className="text-white">Logged in as: {user}</div>
         <button
           onClick={() => setOpen(!open)}
           type="button"
@@ -65,6 +63,20 @@ const Nav: React.FC = () => {
                 </Link>
               </li>
             ))}
+            {user ? (
+              <li>
+                <Link
+                  href="/"
+                  onClick={() => {
+                    setUser("");
+                    setOpen(false);
+                  }}
+                  className="block py-2 pl-3 pr-4 text-gray-900 border-t md:border-0 hover:text-blue-700 md:p-0 dark:text-white "
+                >
+                  Log out
+                </Link>
+              </li>
+            ) : null}
           </ul>
         </div>
       </div>
