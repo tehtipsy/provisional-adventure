@@ -1,18 +1,13 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-
 import { useRouter } from "next/navigation";
-
 import BasePage from "@/components/base/basePage";
-
 import { GlobalContext } from "@/contexts/globalContext";
-
 import * as Ably from "ably/promises";
-import { configureAbly } from "@ably-labs/react-hooks";
 
 const Game: React.FC = () => {
   const router = useRouter();
 
-  const { user, setUser } = useContext(GlobalContext);
+  const { user } = useContext(GlobalContext);
 
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const [ably, setAbly] = useState<Ably.Types.RealtimePromise | null>(null);
@@ -55,11 +50,17 @@ const Game: React.FC = () => {
     if (!user) {
       // redirect to User Form
       router.push("/");
-      return;
+      return async () => {
+        await channel?.presence.leave();
+        channel?.presence.unsubscribe();
+        ably?.close();
+        setChannel(null);
+        setAbly(null);
+      };
     }
     // If not already connected to ably, connect
     if (ably === null) {
-      const ably: Ably.Types.RealtimePromise = configureAbly({
+      const ably = new Ably.Realtime.Promise({
         authUrl: "/api/authentication/token-auth",
         authMethod: "POST",
         clientId: user,
@@ -92,6 +93,8 @@ const Game: React.FC = () => {
       getExistingMembers();
 
       _channel.presence.enter();
+
+      return () => {};
     }
   }, [user, ably, channel, onlineUsers, handlePresenceMessage]);
 
