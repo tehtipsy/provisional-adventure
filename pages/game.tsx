@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import BasePage from "@/components/base/basePage";
 import { GlobalContext } from "@/contexts/globalContext";
 import * as Ably from "ably/promises";
+import Loading from "@/pages/loading";
 
 const Game: React.FC = () => {
   const router = useRouter();
@@ -101,11 +102,15 @@ const Game: React.FC = () => {
   return (
     <BasePage>
       <div className="text-2xl m-6 text-center">
-        <ul>
-          {onlineUsers.map((username: string) => {
-            return <li key={username}>{username} is Online</li>;
-          })}
-        </ul>
+        {onlineUsers.length === 0 ? (
+          <Loading />
+        ) : (
+          <ul>
+            {onlineUsers.map((username: string) => {
+              return <li key={username}>{username} is Online</li>;
+            })}
+          </ul>
+        )}
       </div>
     </BasePage>
   );
