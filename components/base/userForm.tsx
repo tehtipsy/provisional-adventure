@@ -1,7 +1,7 @@
 import { GlobalContext } from "@/contexts/globalContext";
 import { useContext, useState } from "react";
 
-export const MyUserComponent = () => {
+export const UserForm = () => {
   const { user, setUser } = useContext(GlobalContext);
   const [currentUser, setCurrentUser] = useState("");
 
