@@ -6,22 +6,42 @@ import { GlobalContext } from "@/contexts/globalContext";
 type PageLink = {
   href: string;
   label: string;
+  onClick?: () => void;
+  requireLogin?: boolean;
 };
-
-const pageLinks: PageLink[] = [
-  {
-    href: "/",
-    label: "Home",
-  },
-  {
-    href: "/boilerplate",
-    label: "Ably boilerplate",
-  },
-];
 
 const Nav: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
   const { user, setUser } = useContext(GlobalContext);
+
+  const pageLinks: PageLink[] = [
+    {
+      href: "/",
+      label: "Home",
+    },
+    {
+      href: "/game",
+      label: "Game room",
+      requireLogin: true,
+    },
+    {
+      href: "/boilerplate",
+      label: "Ably boilerplate",
+    },
+    {
+      href: "/",
+      label: "Log out",
+      requireLogin: true,
+      onClick: () => setUser(""),
+    },
+  ];
+
+  const handleClick = (pageLink: PageLink) => {
+    if (pageLink.onClick) {
+      pageLink.onClick();
+    }
+    setOpen(false);
+  };
 
   return (
     <nav className="bg-white border-gray-200 border-b dark:bg-gray-900 dark:border-0">
@@ -52,31 +72,20 @@ const Nav: React.FC = () => {
           id="navbar-default"
         >
           <ul className="font-medium flex flex-col mt-4 md:flex-row md:space-x-8 md:mt-0">
-            {pageLinks.map((pageLink) => (
-              <li key={pageLink.href}>
-                <Link
-                  href={pageLink.href}
-                  onClick={() => setOpen(false)}
-                  className="block py-2 pl-3 pr-4 text-gray-900 border-t md:border-0 hover:text-blue-700 md:p-0 dark:text-white "
-                >
-                  {pageLink.label}
-                </Link>
-              </li>
-            ))}
-            {user ? (
-              <li>
-                <Link
-                  href="/"
-                  onClick={() => {
-                    setUser("");
-                    setOpen(false);
-                  }}
-                  className="block py-2 pl-3 pr-4 text-gray-900 border-t md:border-0 hover:text-blue-700 md:p-0 dark:text-white "
-                >
-                  Log out
-                </Link>
-              </li>
-            ) : null}
+            {pageLinks.map(
+              (pageLink) =>
+                (!pageLink.requireLogin || user) && (
+                  <li key={pageLink.href}>
+                    <Link
+                      href={pageLink.href}
+                      onClick={() => handleClick(pageLink)}
+                      className="block py-2 pl-3 pr-4 text-gray-900 border-t md:border-0 hover:text-blue-700 md:p-0 dark:text-white "
+                    >
+                      {pageLink.label}
+                    </Link>
+                  </li>
+                )
+            )}
           </ul>
         </div>
       </div>
