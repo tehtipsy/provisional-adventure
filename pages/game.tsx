@@ -1,13 +1,21 @@
+import Modal from "react-modal";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import BasePage from "@/components/base/basePage";
 import { GlobalContext } from "@/contexts/globalContext";
 import * as Ably from "ably/promises";
+import Loading from "@/pages/loading";
+import PokeButton from "@/components/ui/pokeButton";
+import { PokeNotification } from "@/components/pokeNotification";
 
 const Game: React.FC = () => {
   const router = useRouter();
 
   const { user } = useContext(GlobalContext);
+
+  const [pokeSender, setPokeSender] = useState<string | null>(null);
+  const [pokeNotification, setPokeNotification] = useState<string | null>();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const [ably, setAbly] = useState<Ably.Types.RealtimePromise | null>(null);
@@ -86,6 +94,20 @@ const Game: React.FC = () => {
       // _channel.presence.subscribe(['present', 'enter', 'leave'], handlePresenceMessage)
       _channel.presence.subscribe(["enter", "leave"], handlePresenceMessage);
 
+      // Subscribe to poke event
+      _channel.subscribe("poke", (message) => {
+        const { sender, receiver, timestamp } = message.data;
+        if (receiver === user) {
+          // display message to the user
+          setPokeSender(sender);
+          console.log(`You received a poke from ${sender}`);
+          setPokeNotification(
+            `${timestamp} - You received a poke from ${sender}`
+          );
+          setIsModalOpen(true);
+        }
+      });
+
       const getExistingMembers = async () => {
         const messages = await _channel.presence.get();
         messages.forEach(handlePresenceMessage);
@@ -98,15 +120,45 @@ const Game: React.FC = () => {
     }
   }, [user, ably, channel, onlineUsers, handlePresenceMessage]);
 
+  const sendPoke = (receiver: string) => {
+    channel?.publish("poke", {
+      sender: user,
+      receiver,
+      timestamp: new Date().toISOString(),
+    });
+  };
+
   return (
     <BasePage>
       <div className="text-2xl m-6 text-center">
-        <ul>
-          {onlineUsers.map((username: string) => {
-            return <li key={username}>{username} is Online</li>;
-          })}
-        </ul>
+        {onlineUsers.length === 0 ? (
+          <Loading />
+        ) : (
+          <ul>
+            {onlineUsers.map((username: string) => {
+              return (
+                <li key={username}>
+                  {username} is Online
+                  {username === user ? (
+                    " (you)"
+                  ) : (
+                    <PokeButton sendPoke={sendPoke} username={username} />
+                  )}{" "}
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
+      <Modal
+        className="h-1/6 w-1/2 flex justify-center items-center fixed inset-20 bg-gray-600 bg-opacity-30"
+        overlayClassName="fixed top-0 left-0 right-0 bottom-0 bg-gray-600 bg-opacity-30"
+        isOpen={isModalOpen}
+        onRequestClose={() => setIsModalOpen(false)}
+      >
+        {pokeSender && <PokeNotification sender={pokeSender} />}
+      </Modal>
+      <div>{pokeNotification && <div>{pokeNotification}</div>}</div>
     </BasePage>
   );
 };
