@@ -5,6 +5,7 @@ import BasePage from "@/components/base/basePage";
 import { GlobalContext } from "@/contexts/globalContext";
 import * as Ably from "ably/promises";
 import Loading from "@/pages/loading";
+import PokeButton from "@/components/ui/pokeButton";
 import Button from "@/components/ui/button";
 import { PokeNotification } from "@/components/pokeNotification";
 
@@ -142,7 +143,8 @@ const Game: React.FC = () => {
                   {username === user ? (
                     " (you)"
                   ) : (
-                    <Button onClick={() => sendPoke(username)}>Poke</Button>
+                    <PokeButton sendPoke={sendPoke} username={username} />
+                    // <Button onClick={() => sendPoke(username)}>Poke</Button>
                   )}{" "}
                 </li>
               );
