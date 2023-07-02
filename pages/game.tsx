@@ -6,7 +6,6 @@ import { GlobalContext } from "@/contexts/globalContext";
 import * as Ably from "ably/promises";
 import Loading from "@/pages/loading";
 import PokeButton from "@/components/ui/pokeButton";
-import Button from "@/components/ui/button";
 import { PokeNotification } from "@/components/pokeNotification";
 
 const Game: React.FC = () => {
@@ -144,7 +143,6 @@ const Game: React.FC = () => {
                     " (you)"
                   ) : (
                     <PokeButton sendPoke={sendPoke} username={username} />
-                    // <Button onClick={() => sendPoke(username)}>Poke</Button>
                   )}{" "}
                 </li>
               );
@@ -153,7 +151,8 @@ const Game: React.FC = () => {
         )}
       </div>
       <Modal
-        className="h-1/2 w-1/2 flex justify-center items-center fixed inset-20"
+        className="h-1/6 w-1/2 flex justify-center items-center fixed inset-20 bg-gray-600 bg-opacity-30"
+        overlayClassName="fixed top-0 left-0 right-0 bottom-0 bg-gray-600 bg-opacity-30"
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
       >
