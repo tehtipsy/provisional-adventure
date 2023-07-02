@@ -6,7 +6,6 @@ import { GlobalContext } from "@/contexts/globalContext";
 import * as Ably from "ably/promises";
 import Loading from "@/pages/loading";
 import Button from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { PokeNotification } from "@/components/pokeNotification";
 
 const Game: React.FC = () => {
