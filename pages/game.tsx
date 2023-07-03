@@ -151,7 +151,7 @@ const Game: React.FC = () => {
         )}
       </div>
       <Modal
-        className="h-1/6 w-1/2 flex justify-center items-center fixed inset-20 bg-gray-600 bg-opacity-30"
+        className="h-0 w-1/2 flex justify-center items-center fixed inset-20"
         overlayClassName="fixed top-0 left-0 right-0 bottom-0 bg-gray-600 bg-opacity-30"
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
