@@ -6,6 +6,7 @@ import { GlobalContext } from "@/contexts/globalContext";
 import * as Ably from "ably/promises";
 import Loading from "@/pages/loading";
 import PokeButton from "@/components/ui/pokeButton";
+import EndTurnButton from "@/components/ui/endTurnButton";
 import { PokeNotification } from "@/components/pokeNotification";
 
 const Game: React.FC = () => {
@@ -128,6 +129,24 @@ const Game: React.FC = () => {
     });
   };
 
+  const endTurn = async (user: string) => {
+    const data = {
+      username: user,
+      timestamp: new Date().toISOString(),
+    };
+
+    const response = await fetch("/api/db/turn-action", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    const result = await response.json();
+    console.log(result);
+  };
+
   return (
     <BasePage>
       <div className="text-2xl m-6 text-center">
@@ -149,6 +168,9 @@ const Game: React.FC = () => {
             })}
           </ul>
         )}
+      </div>
+      <div className="flex justify-center">
+        <EndTurnButton endTurn={endTurn} username={user} />
       </div>
       <Modal
         className="h-0 w-1/2 flex justify-center items-center fixed inset-20"
