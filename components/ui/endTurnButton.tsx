@@ -7,19 +7,22 @@ type EndTurnButtonProps = {
 };
 
 export default function EndTurnButton({ endTurn, username }: EndTurnButtonProps) {
-  const [buttonText, setButtonText] = useState("End Turn");
+  const [isClicked, setIsClicked] = useState(false);
 
   const handleClick = () => {
     endTurn(username);
-    setButtonText("Not Your Turn");
+    setIsClicked(true);
   };
 
   return (
     <Button
-      className="bg-red-500 hover:bg-red-700"
+      className={`bg-red-500 hover:bg-red-700 ${
+        isClicked ? "opacity-50 cursor-not-allowed" : ""
+      }`}
+      disabled={isClicked}
       onClick={handleClick}
     >
-      {buttonText}
+      End Turn
     </Button>
   );
 }

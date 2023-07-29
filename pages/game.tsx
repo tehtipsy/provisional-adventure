@@ -131,6 +131,7 @@ const Game: React.FC = () => {
 
   const endTurn = async (user: string) => {
     const data = {
+      name: "endTurn",
       username: user,
       timestamp: new Date().toISOString(),
     };
