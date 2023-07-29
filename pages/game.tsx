@@ -3,6 +3,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import BasePage from "@/components/base/basePage";
 import { GlobalContext } from "@/contexts/globalContext";
+import { TurnContext, TurnContextProvider } from "@/contexts/turnContext";
 import * as Ably from "ably/promises";
 import Loading from "@/pages/loading";
 import PokeButton from "@/components/ui/pokeButton";
@@ -13,6 +14,8 @@ const Game: React.FC = () => {
   const router = useRouter();
 
   const { user } = useContext(GlobalContext);
+  const { currentPlayer } = useContext(TurnContext);
+  console.log("currentPlayer:", currentPlayer);
 
   const [pokeSender, setPokeSender] = useState<string | null>(null);
   const [pokeNotification, setPokeNotification] = useState<string | null>();
@@ -121,6 +124,19 @@ const Game: React.FC = () => {
     }
   }, [user, ably, channel, onlineUsers, handlePresenceMessage]);
 
+  useEffect(() => {
+    const updateDatabase = async () => {
+      await fetch("/api/db/turn", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ players: onlineUsers }),
+      });
+    };
+    updateDatabase();
+  }, [onlineUsers]);
+
   const sendPoke = (receiver: string) => {
     channel?.publish("poke", {
       sender: user,
@@ -171,7 +187,11 @@ const Game: React.FC = () => {
         )}
       </div>
       <div className="flex justify-center">
-        <EndTurnButton endTurn={endTurn} username={user} />
+        {user === currentPlayer ? (
+          <EndTurnButton endTurn={endTurn} username={user} />
+        ) : (
+          ""
+        )}
       </div>
       <Modal
         className="h-0 w-1/2 flex justify-center items-center fixed inset-20"

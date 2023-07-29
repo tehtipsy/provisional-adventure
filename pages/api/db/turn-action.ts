@@ -1,9 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import * as dotenv from "dotenv";
 
 dotenv.config();
+
+interface Turn {
+  _id: ObjectId;
+  players: string[];
+  currentPlayer: string;
+}
 
 export default async function handler( // actionHandler
   req: NextApiRequest,
@@ -24,14 +30,47 @@ export default async function handler( // actionHandler
   const mongo = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING);
 
   await mongo.connect();
-  `^^^ Move to { connectToDatabase } from '@/utils/mongodb' ^^^`
+  `^^^ Move to { connectToDatabase } from '@/utils/mongodb' ^^^`;
 
   const data = req.body; // add validation
+  const { name, username, timestamp } = data;
 
-  const action = await mongo
-    .db("test") // move DB to .env
-    .collection("actions") // move Collection to .env
-    .insertOne(data);
+  if (name === "endTurn") {
+    // get current game state from database
+    const game = (await mongo
+      .db("test")
+      .collection("turn")
+      .findOne({
+        _id: new ObjectId("64c535bb18f09cf42315a969"),
+      })) as Turn | null;
+    
+    if (game) {
+      const { players, currentPlayer } = game;
 
-  return res.status(200).json(action);
+      // find index of current player
+      const currentPlayerIndex = players.indexOf(currentPlayer);
+
+      // determine next player
+      const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
+      const nextPlayer = players[nextPlayerIndex];
+
+      // update currentPlayer field in database
+      await mongo
+        .db("test")
+        .collection("turn")
+        .updateOne(
+          { _id: new ObjectId("64c535bb18f09cf42315a969") },
+          { $set: { currentPlayer: nextPlayer } }
+      );
+
+      res.json({ success: true });
+    } else {
+      const action = await mongo
+        .db("test") // move DB to .env
+        .collection("actions")
+        .insertOne(data);
+
+      return res.status(200).json(action);
+    }
+  }
 }
