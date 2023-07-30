@@ -3,7 +3,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import BasePage from "@/components/base/basePage";
 import { GlobalContext } from "@/contexts/globalContext";
-import { TurnContext, TurnContextProvider } from "@/contexts/turnContext";
+import { TurnContext } from "@/contexts/turnContext";
 import * as Ably from "ably/promises";
 import Loading from "@/pages/loading";
 import PokeButton from "@/components/ui/pokeButton";
@@ -14,7 +14,7 @@ const Game: React.FC = () => {
   const router = useRouter();
 
   const { user } = useContext(GlobalContext);
-  const { currentPlayer } = useContext(TurnContext);
+  const { currentPlayer, setCurrentPlayer } = useContext(TurnContext);
   console.log("currentPlayer:", currentPlayer);
 
   const [pokeSender, setPokeSender] = useState<string | null>(null);
@@ -111,6 +111,9 @@ const Game: React.FC = () => {
           setIsModalOpen(true);
         }
       });
+      _channel.subscribe("currentPlayer", (message) => {
+        setCurrentPlayer(message.data);
+      });
 
       const getExistingMembers = async () => {
         const messages = await _channel.presence.get();
@@ -137,6 +140,10 @@ const Game: React.FC = () => {
     updateDatabase();
   }, [onlineUsers]);
 
+  useEffect(() => {
+    console.log("client context currentPlayer:", currentPlayer);
+  }, [currentPlayer]);
+
   const sendPoke = (receiver: string) => {
     channel?.publish("poke", {
       sender: user,
@@ -162,6 +169,9 @@ const Game: React.FC = () => {
 
     const result = await response.json();
     console.log(result);
+    if (result.success) {
+      channel?.publish("currentPlayer", result.currentPlayer);
+    }
   };
 
   return (

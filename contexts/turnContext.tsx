@@ -24,11 +24,10 @@ export const TurnContextProvider = (props: TurnContextProviderProps) => {
       const response = await fetch("/api/db/turn");
       const data = await response.json();
       setCurrentPlayer(data.currentPlayer);
-      console.log(typeof(data.currentPlayer));
-
+      console.log(data.currentPlayer);
     };
     fetchCurrentPlayer();
-  }, []);
+  }, [currentPlayer]);
 
   const value = { currentPlayer, setCurrentPlayer };
 

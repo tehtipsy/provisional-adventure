@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
+import { TurnContext } from "@/contexts/turnContext";
+
 import { MongoClient, ObjectId } from "mongodb";
 import * as dotenv from "dotenv";
 
@@ -63,7 +65,7 @@ export default async function handler( // actionHandler
           { $set: { currentPlayer: nextPlayer } }
       );
 
-      res.json({ success: true });
+      res.json({ success: true, currentPlayer: nextPlayer });
     } else {
       const action = await mongo
         .db("test") // move DB to .env
