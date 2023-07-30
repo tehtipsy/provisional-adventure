@@ -15,7 +15,6 @@ const Game: React.FC = () => {
 
   const { user } = useContext(GlobalContext);
   const { currentPlayer, setCurrentPlayer } = useContext(TurnContext);
-  console.log("currentPlayer:", currentPlayer);
 
   const [pokeSender, setPokeSender] = useState<string | null>(null);
   const [pokeNotification, setPokeNotification] = useState<string | null>();
@@ -113,6 +112,7 @@ const Game: React.FC = () => {
       });
       _channel.subscribe("currentPlayer", (message) => {
         setCurrentPlayer(message.data);
+        console.log("client context currentPlayer:", currentPlayer);
       });
 
       const getExistingMembers = async () => {
@@ -125,7 +125,14 @@ const Game: React.FC = () => {
 
       return () => {};
     }
-  }, [user, ably, channel, onlineUsers, handlePresenceMessage]);
+  }, [
+    user,
+    ably,
+    channel,
+    onlineUsers,
+    handlePresenceMessage,
+    setCurrentPlayer,
+  ]);
 
   useEffect(() => {
     const updateDatabase = async () => {
@@ -139,10 +146,6 @@ const Game: React.FC = () => {
     };
     updateDatabase();
   }, [onlineUsers]);
-
-  useEffect(() => {
-    console.log("client context currentPlayer:", currentPlayer);
-  }, [currentPlayer]);
 
   const sendPoke = (receiver: string) => {
     channel?.publish("poke", {

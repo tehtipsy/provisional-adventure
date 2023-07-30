@@ -1,14 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { TurnContext } from "@/contexts/turnContext";
-
-import { MongoClient, ObjectId } from "mongodb";
+import { connectToDatabase } from "@/utils/mongodb";
 import * as dotenv from "dotenv";
 
 dotenv.config();
 
 interface Turn {
-  _id: ObjectId;
   players: string[];
   currentPlayer: string;
 }
@@ -19,33 +16,17 @@ export default async function handler( // actionHandler
 ) {
   console.log("fetched /api/db/turn-action");
 
-  if (!process.env.MONGO_DB_CONNECTION_STRING) {
-    return res
-      .status(500)
-      .setHeader("content-type", "application/json")
-      .json({
-        errorMessage: `Missing environment MONGO_DB_CONNECTION_STRING variable.
-                If you're running locally, please ensure you have a ./.env file with a value for MONGO_DB_CONNECTION_STRING.`,
-      });
-  }
+  const { client, db } = await connectToDatabase();
 
-  const mongo = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING);
-
-  await mongo.connect();
-  `^^^ Move to { connectToDatabase } from '@/utils/mongodb' ^^^`;
+  if (!db) return;
 
   const data = req.body; // add validation
   const { name, username, timestamp } = data;
 
   if (name === "endTurn") {
     // get current game state from database
-    const game = (await mongo
-      .db("test")
-      .collection("turn")
-      .findOne({
-        _id: new ObjectId("64c535bb18f09cf42315a969"),
-      })) as Turn | null;
-    
+    const game = (await db.collection("turn").findOne({})) as Turn | null;
+
     if (game) {
       const { players, currentPlayer } = game;
 
@@ -56,21 +37,17 @@ export default async function handler( // actionHandler
       const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
       const nextPlayer = players[nextPlayerIndex];
 
-      // update currentPlayer field in database
-      await mongo
-        .db("test")
+      await db
         .collection("turn")
-        .updateOne(
-          { _id: new ObjectId("64c535bb18f09cf42315a969") },
-          { $set: { currentPlayer: nextPlayer } }
-      );
+        .updateOne({}, { $set: { currentPlayer: nextPlayer } });
+
+      await client.close();
 
       res.json({ success: true, currentPlayer: nextPlayer });
     } else {
-      const action = await mongo
-        .db("test") // move DB to .env
-        .collection("actions")
-        .insertOne(data);
+      const action = await db.collection("actions").insertOne(data);
+
+      await client.close();
 
       return res.status(200).json(action);
     }
