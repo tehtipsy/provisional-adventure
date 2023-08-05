@@ -19,7 +19,10 @@ export default async function handler( // CharacterSheetHandler
     const characterSheet = await db.collection("character-sheets").findOne({name: name});
 
     await client.close();
-
+    
+    if (characterSheet === null ) {
+      return res.status(200).json({ message: "User does not have a character sheet" });
+    }
     return res.status(200).json({ characterSheet: characterSheet });
   } else if (req.method === "POST") {
     const data = req.body;

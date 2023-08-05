@@ -1,29 +1,20 @@
-import Modal from "react-modal";
 import { useCallback, useContext, useEffect, useState } from "react";
+
 import { useRouter } from "next/navigation";
-import BasePage from "@/components/base/basePage";
+import * as Ably from "ably/promises";
+
 import { GlobalContext } from "@/contexts/globalContext";
 import { TurnContext } from "@/contexts/turnContext";
-import * as Ably from "ably/promises";
+
+import BasePage from "@/components/base/basePage";
+import Modal from "react-modal";
+import { PokeNotification } from "@/components/pokeNotification";
 import Loading from "@/pages/loading";
 import PokeButton from "@/components/ui/pokeButton";
 import EndTurnButton from "@/components/ui/endTurnButton";
-import { PokeNotification } from "@/components/pokeNotification";
 
-interface Prowess {
-  unmodifiedValue: number;
-  // add other properties as needed
-}
-
-interface Attributes {
-  prowess: Prowess;
-  // add other properties as needed
-}
-
-interface Character {
-  name: string;
-  attributes: Attributes;
-  // add other properties as needed
+interface CharacterSheet {
+  characterSheet: any;
 }
 
 const Game: React.FC = () => {
@@ -31,7 +22,7 @@ const Game: React.FC = () => {
 
   const { user } = useContext(GlobalContext);
   const { currentPlayer, setCurrentPlayer } = useContext(TurnContext);
-  const [character, setCharacter] = useState<Character | null>(null);
+  const [character, setCharacter] = useState<CharacterSheet | null>(null);
 
   const [pokeSender, setPokeSender] = useState<string | null>(null);
   const [pokeNotification, setPokeNotification] = useState<string | null>();
@@ -212,6 +203,10 @@ const Game: React.FC = () => {
       },
     });
     const characterData = await response.json();
+    if (characterData.message) {
+      console.log(characterData.message)
+      return null
+    }
     return characterData;
   }
 
@@ -253,7 +248,18 @@ const Game: React.FC = () => {
         {pokeSender && <PokeNotification sender={pokeSender} />}
       </Modal>
       <div>
-        {character && character.name}
+        {character && character.characterSheet.name && ( // move to CharacterSheet Component
+          <div>
+            <p>Name: {character.characterSheet.name}</p>
+            <ul>
+              {Object.keys(character.characterSheet.attributes).map((attribute) => (
+                <li key={attribute}>
+                  {attribute}: {character.characterSheet.attributes[attribute].unmodifiedValue}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
       <div>{pokeNotification && <div>{pokeNotification}</div>}</div>
     </BasePage>
