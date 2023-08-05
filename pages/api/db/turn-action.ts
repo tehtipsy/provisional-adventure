@@ -14,7 +14,7 @@ export default async function handler( // actionHandler
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log("fetched /api/db/turn-action");
+  console.log("fetching /api/db/turn-action");
 
   const { client, db } = await connectToDatabase();
 

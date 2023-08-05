@@ -163,12 +163,16 @@ const Game: React.FC = () => {
     };
     updateDatabase();
 
-    async function fetchData() {
+  }, [onlineUsers]);
+
+  useEffect(() => {
+    const fetchData = async () => {
       const characterData = await myCharacterSheet(user);
       setCharacter(characterData);
+      console.log(characterData);
     }
     fetchData();
-  }, [onlineUsers]);
+  },[]); // add actions as a dependency to re-fetch the character sheet when effected
 
   const sendPoke = (receiver: string) => {
     channel?.publish("poke", {
@@ -249,7 +253,7 @@ const Game: React.FC = () => {
         {pokeSender && <PokeNotification sender={pokeSender} />}
       </Modal>
       <div>
-        {character && character.attributes && character.attributes.prowess && character.attributes.prowess.unmodifiedValue}
+        {character && character.name}
       </div>
       <div>{pokeNotification && <div>{pokeNotification}</div>}</div>
     </BasePage>

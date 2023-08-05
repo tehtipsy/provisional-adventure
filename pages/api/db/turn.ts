@@ -10,7 +10,7 @@ export default async function handler( // turnDataHandler
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log("fetched /api/db/turn");
+  console.log("fetching /api/db/turn");
 
   const { client, db } = await connectToDatabase();
 
