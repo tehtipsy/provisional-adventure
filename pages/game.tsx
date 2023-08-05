@@ -10,11 +10,28 @@ import PokeButton from "@/components/ui/pokeButton";
 import EndTurnButton from "@/components/ui/endTurnButton";
 import { PokeNotification } from "@/components/pokeNotification";
 
+interface Prowess {
+  unmodifiedValue: number;
+  // add other properties as needed
+}
+
+interface Attributes {
+  prowess: Prowess;
+  // add other properties as needed
+}
+
+interface Character {
+  name: string;
+  attributes: Attributes;
+  // add other properties as needed
+}
+
 const Game: React.FC = () => {
   const router = useRouter();
 
   const { user } = useContext(GlobalContext);
   const { currentPlayer, setCurrentPlayer } = useContext(TurnContext);
+  const [character, setCharacter] = useState<Character | null>(null);
 
   const [pokeSender, setPokeSender] = useState<string | null>(null);
   const [pokeNotification, setPokeNotification] = useState<string | null>();
@@ -145,6 +162,12 @@ const Game: React.FC = () => {
       });
     };
     updateDatabase();
+
+    async function fetchData() {
+      const characterData = await myCharacterSheet(user);
+      setCharacter(characterData);
+    }
+    fetchData();
   }, [onlineUsers]);
 
   const sendPoke = (receiver: string) => {
@@ -176,6 +199,17 @@ const Game: React.FC = () => {
       channel?.publish("currentPlayer", result.currentPlayer);
     }
   };
+
+  const myCharacterSheet = async (user: string) => {
+    const response = await fetch(`/api/db/character?name=${user}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const characterData = await response.json();
+    return characterData;
+  }
 
   return (
     <BasePage>
@@ -214,6 +248,9 @@ const Game: React.FC = () => {
       >
         {pokeSender && <PokeNotification sender={pokeSender} />}
       </Modal>
+      <div>
+        {character && character.attributes && character.attributes.prowess && character.attributes.prowess.unmodifiedValue}
+      </div>
       <div>{pokeNotification && <div>{pokeNotification}</div>}</div>
     </BasePage>
   );
