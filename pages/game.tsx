@@ -19,8 +19,8 @@ const Game: React.FC = () => {
 
   const { user } = useContext(GlobalContext);
   const { currentPlayer, setCurrentPlayer } = useContext(TurnContext);
-  
-  const [shouldRefetch, setShouldRefetch] = useState(false);
+
+  const [shouldRefetch, setShouldRefetch] = useState(false); // replace with characterData and updatedCharacterData
   const [pokeSender, setPokeSender] = useState<string | null>(null);
   const [pokeNotification, setPokeNotification] = useState<string | null>();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -184,7 +184,6 @@ const Game: React.FC = () => {
       });
     };
     updateDatabase();
-
   }, [onlineUsers]);
 
   const sendPoke = (receiver: string) => {
@@ -217,8 +216,6 @@ const Game: React.FC = () => {
     }
   };
 
-  
-
   return (
     <BasePage>
       <div className="text-2xl m-6 text-center">
@@ -248,6 +245,8 @@ const Game: React.FC = () => {
           ""
         )}
       </div>
+      {/* change 'user={user} refetch={shouldRefetch}' to
+      characterData={characterData} | {updatedCharacterData} */}
       <CharacterSheet user={user} refetch={shouldRefetch} />
       <Modal
         className="h-0 w-1/2 flex justify-center items-center fixed inset-20"

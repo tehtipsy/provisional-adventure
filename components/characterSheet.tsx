@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 
+// move to Game component
 type CharacterSheetProps = {
   user: string;
   refetch: boolean;
-}
+};
 
+// move to Game component
 interface CharacterSheetInterface {
   characterSheet: any;
 }
@@ -12,8 +14,9 @@ interface CharacterSheetInterface {
 export const CharacterSheet = ({ user, refetch }: CharacterSheetProps) => {
   const [character, setCharacter] = useState<CharacterSheetInterface | null>(
     null
-  );
+  ); // move to Game component
 
+  // move to Game component
   useEffect(() => {
     const fetchData = async () => {
       const characterData = await myCharacterSheet(user);
@@ -21,9 +24,10 @@ export const CharacterSheet = ({ user, refetch }: CharacterSheetProps) => {
       console.log(characterData);
     };
     fetchData();
-  }, [refetch]);
+  }, [refetch]); // change to characterData
 
   const myCharacterSheet = async (user: string) => {
+    // move to Game component
     const response = await fetch(`/api/db/character?name=${user}`, {
       method: "GET",
       headers: {
