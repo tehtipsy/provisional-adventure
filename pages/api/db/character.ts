@@ -26,12 +26,30 @@ export default async function handler( // CharacterSheetHandler
     return res.status(200).json({ characterSheet: characterSheet });
   } else if (req.method === "POST") {
     const data = req.body;
-    const { name, actionEffect } = data // actionEffect from actionResolver
+    const { sender, receiver } = data; // from poke event
 
-    // await db.collection("character-sheets").updateOne({}, { $set: { players } });
+    const updatedCharacterData = await db
+      .collection("character-sheets")
+      .findOneAndUpdate(
+        { name: receiver },
+        { $inc: { actionPoints: 1 } },
+        { returnDocument: "after" }
+      );
+
+    const updatedSenderCharacterData = await db
+      .collection("character-sheets")
+      .findOneAndUpdate(
+        { name: sender },
+        { $inc: { actionPoints: -1 } },
+        { returnDocument: "after" }
+      );
 
     await client.close();
 
-    return res.status(200).json({ message: "Character Sheet Updated" });
+    // Send updated character data to client
+    return res.status(200).json({
+      updatedCharacterData: updatedCharacterData,
+      updatedSenderCharacterData: updatedSenderCharacterData
+    });
   }
 }

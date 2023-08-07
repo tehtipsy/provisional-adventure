@@ -103,8 +103,32 @@ const Game: React.FC = () => {
       _channel.presence.subscribe(["enter", "leave"], handlePresenceMessage);
 
       // Subscribe to poke event
-      _channel.subscribe("poke", (message) => {
+      _channel.subscribe("poke", async (message) => {
         const { sender, receiver, timestamp } = message.data;
+
+        if (sender === user) {
+          // post change to reciver character sheet
+          const updateDatabase = async () => {
+            const response = await fetch("/api/db/character", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ receiver: receiver, sender: sender }),
+            });
+            const updatedCharacterData = await response.json();
+            return updatedCharacterData;
+          };
+          const updatedCharacterData = await updateDatabase();
+          console.log(updatedCharacterData);
+          setShouldRefetch((prev) => !prev);
+          // Send a message to the receiver to notify them that the update is complete
+          _channel.publish("update-complete", {
+            receiver: receiver,
+            updatedCharacterData: updatedCharacterData,
+          });
+        }
+
         if (receiver === user) {
           // display message to the user
           setPokeSender(sender);
@@ -113,10 +137,18 @@ const Game: React.FC = () => {
             `${timestamp} - You received a poke from ${sender}`
           );
           setIsModalOpen(true);
-          // trigger a re-fetch of character data
-          setShouldRefetch((prev) => !prev);
         }
       });
+
+      // Subscribe to Character Sheet "update-complete" Change event
+      _channel.subscribe("update-complete", (message) => {
+        if (message.data.receiver === user) {
+          // update character sheet if changed
+          setShouldRefetch((prev) => !prev); // refractor CharacterSheet to take updatedCharacterData from messege
+        }
+      });
+
+      // Subscribe to Turn "currentPlayer" Change event
       _channel.subscribe("currentPlayer", (message) => {
         setCurrentPlayer(message.data);
         console.log("client context currentPlayer:", currentPlayer);
@@ -184,6 +216,8 @@ const Game: React.FC = () => {
       channel?.publish("currentPlayer", result.currentPlayer);
     }
   };
+
+  
 
   return (
     <BasePage>
