@@ -9,7 +9,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log("/api/db/test");
+  console.log("fetched /api/db/test");
 
   if (!process.env.MONGO_DB_CONNECTION_STRING) {
     return res
