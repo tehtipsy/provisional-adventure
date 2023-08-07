@@ -12,18 +12,15 @@ import { PokeNotification } from "@/components/pokeNotification";
 import Loading from "@/pages/loading";
 import PokeButton from "@/components/ui/pokeButton";
 import EndTurnButton from "@/components/ui/endTurnButton";
-
-interface CharacterSheet {
-  characterSheet: any;
-}
+import { CharacterSheet } from "@/components/characterSheet";
 
 const Game: React.FC = () => {
   const router = useRouter();
 
   const { user } = useContext(GlobalContext);
   const { currentPlayer, setCurrentPlayer } = useContext(TurnContext);
-  const [character, setCharacter] = useState<CharacterSheet | null>(null);
-
+  
+  const [shouldRefetch, setShouldRefetch] = useState(false);
   const [pokeSender, setPokeSender] = useState<string | null>(null);
   const [pokeNotification, setPokeNotification] = useState<string | null>();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -116,6 +113,8 @@ const Game: React.FC = () => {
             `${timestamp} - You received a poke from ${sender}`
           );
           setIsModalOpen(true);
+          // trigger a re-fetch of character data
+          setShouldRefetch((prev) => !prev);
         }
       });
       _channel.subscribe("currentPlayer", (message) => {
@@ -156,15 +155,6 @@ const Game: React.FC = () => {
 
   }, [onlineUsers]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const characterData = await myCharacterSheet(user);
-      setCharacter(characterData);
-      console.log(characterData);
-    }
-    fetchData();
-  },[]); // add actions as a dependency to re-fetch the character sheet when effected
-
   const sendPoke = (receiver: string) => {
     channel?.publish("poke", {
       sender: user,
@@ -195,21 +185,6 @@ const Game: React.FC = () => {
     }
   };
 
-  const myCharacterSheet = async (user: string) => {
-    const response = await fetch(`/api/db/character?name=${user}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const characterData = await response.json();
-    if (characterData.message) {
-      console.log(characterData.message)
-      return null
-    }
-    return characterData;
-  }
-
   return (
     <BasePage>
       <div className="text-2xl m-6 text-center">
@@ -223,9 +198,9 @@ const Game: React.FC = () => {
                   {username} is Online
                   {username === user ? (
                     " (you)"
-                  ) : (
+                  ) : user === currentPlayer ? (
                     <PokeButton sendPoke={sendPoke} username={username} />
-                  )}{" "}
+                  ) : null}
                 </li>
               );
             })}
@@ -239,6 +214,7 @@ const Game: React.FC = () => {
           ""
         )}
       </div>
+      <CharacterSheet user={user} refetch={shouldRefetch} />
       <Modal
         className="h-0 w-1/2 flex justify-center items-center fixed inset-20"
         overlayClassName="fixed top-0 left-0 right-0 bottom-0 bg-gray-600 bg-opacity-30"
@@ -247,20 +223,6 @@ const Game: React.FC = () => {
       >
         {pokeSender && <PokeNotification sender={pokeSender} />}
       </Modal>
-      <div>
-        {character && character.characterSheet.name && ( // move to CharacterSheet Component
-          <div>
-            <p>Name: {character.characterSheet.name}</p>
-            <ul>
-              {Object.keys(character.characterSheet.attributes).map((attribute) => (
-                <li key={attribute}>
-                  {attribute}: {character.characterSheet.attributes[attribute].unmodifiedValue}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
       <div>{pokeNotification && <div>{pokeNotification}</div>}</div>
     </BasePage>
   );
