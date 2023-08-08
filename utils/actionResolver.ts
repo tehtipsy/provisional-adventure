@@ -13,7 +13,8 @@ export async function actionResolver(
   action: string,
   weapon: string,
   damageType: string,
-  tier: number
+  tier: number,
+  bodyPart: string
 ) {
   // Define the weapons array - fetch once on game start from db
   const weaponsConfig = [
@@ -38,6 +39,7 @@ export async function actionResolver(
   // Define the wounds array - fetch once on game start from db
   const wounds = [
     {
+      bodyPart: "Torso",
       damageType: "Bludgeoning",
       tier1: ["-1 Con"],
       tier2: ["-1 Con", "1 Shock"],
@@ -51,7 +53,8 @@ export async function actionResolver(
     receiverUpdate: {},
     senderUpdate: {},
   };
-
+  // switch (action) {
+  //   case "Take":
   // if (action === "Take") {}
   // if (action === "Hide") {}
   // if (action === "Move") {}
@@ -59,8 +62,10 @@ export async function actionResolver(
   // if (action === "Grapple") {}
   // if (action === "Bolster") {}
   // if (action === "Intimidate") {}
-  // if (action === "reaction") {check Dodge, Block or Resist}
-
+  // if (action === "reaction") {
+  // check Dodge, Block or Resist
+  //  }
+  // }
   if (action === "attack") {
     // check melee or ranged
     // Find the weapon in the weapons array

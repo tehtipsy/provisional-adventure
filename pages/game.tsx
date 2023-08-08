@@ -114,7 +114,7 @@ const Game: React.FC = () => {
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({ receiver: receiver, sender: sender }), // add action="attack", weapon, attackType, damageType
+              body: JSON.stringify({ receiver: receiver, sender: sender }), // add action="attack", weapon, attackType, damageType, bodyPart
             });
             const updatedCharacterData = await response.json();
             return updatedCharacterData;
