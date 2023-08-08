@@ -114,11 +114,12 @@ const Game: React.FC = () => {
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({ receiver: receiver, sender: sender }),
+              body: JSON.stringify({ receiver: receiver, sender: sender }), // add action="attack", weapon, attackType, damageType
             });
             const updatedCharacterData = await response.json();
             return updatedCharacterData;
           };
+          
           const updatedCharacterData = await updateDatabase();
           console.log(updatedCharacterData);
           setShouldRefetch((prev) => !prev);
@@ -217,7 +218,7 @@ const Game: React.FC = () => {
   };
 
   return (
-    <BasePage>
+    <BasePage>      
       <div className="text-2xl m-6 text-center">
         {onlineUsers.length === 0 ? (
           <Loading />

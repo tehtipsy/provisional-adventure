@@ -26,13 +26,22 @@ export default async function handler( // CharacterSheetHandler
     return res.status(200).json({ characterSheet: characterSheet });
   } else if (req.method === "POST") {
     const data = req.body;
-    const { sender, receiver } = data; // from poke event
+    const { action, weapon, damageType, tier, sender, receiver } = data; // from poke event
+
+    const update = await actionResolver(
+      sender,
+      receiver,
+      action,
+      weapon,
+      damageType,
+      tier
+    );
 
     const updatedCharacterData = await db
       .collection("character-sheets")
       .findOneAndUpdate(
         { name: receiver },
-        { $inc: { actionPoints: 1 } },
+        { $inc: update.receiverUpdate },
         { returnDocument: "after" }
       );
 
@@ -40,7 +49,7 @@ export default async function handler( // CharacterSheetHandler
       .collection("character-sheets")
       .findOneAndUpdate(
         { name: sender },
-        { $inc: { actionPoints: -1 } },
+        { $inc: update.senderUpdate },
         { returnDocument: "after" }
       );
 
