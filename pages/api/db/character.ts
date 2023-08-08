@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { connectToDatabase } from "@/utils/mongodb";
+import { actionResolver } from "@/utils/actionResolver";
 
 import * as dotenv from "dotenv";
 

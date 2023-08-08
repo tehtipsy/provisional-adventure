@@ -7,7 +7,7 @@ interface UpdateInterface {
   };
 }
 
-async function actionResolver(
+export async function actionResolver(
   sender: string,
   receiver: string,
   action: string,
@@ -62,7 +62,7 @@ async function actionResolver(
   // if (action === "reaction") {check Dodge, Block or Resist}
 
   if (action === "attack") {
-      // check melee or ranged
+    // check melee or ranged
     // Find the weapon in the weapons array
     const weaponObj = weaponsConfig.find((w) => w.item === weapon);
 
