@@ -18,6 +18,7 @@ export async function actionResolver(
 ) {
   // Define the weapons array - fetch once on game start from db
   const weaponsConfig = [
+    { item: "Fist", damageRating: 1, damageType: "Bludgeoning" },
     { item: "Daggers", damageRating: 2, damageType: "piercing" },
     {
       item: "Short swords",
@@ -37,14 +38,43 @@ export async function actionResolver(
   ];
 
   // Define the wounds array - fetch once on game start from db
-  const wounds = [
+  const attacksConfig = [
     {
       bodyPart: "Torso",
       damageType: "Bludgeoning",
-      tier1: ["-1 Con"],
-      tier2: ["-1 Con", "1 Shock"],
-      tier3: ["-1 Con", "1 Shock", "Collapsed Lung"],
-      tier4: ["-2 Con", "1 Shock", "Shattered Spine"],
+      tierOneEffects: { "attributes.constitution": -1 },
+      tierTwoEffects: [
+        { "statusEffects.constitution": -1 },
+        { "statusEffects.shock": 1 },
+      ],
+      tierThreeEffects: [
+        { "attributes.constitution": -1 },
+        { "statusEffects.shock": 1 },
+        { "statusEffects.collapsedLung": 1 },
+      ],
+      tierFourEffects: [
+        { "attributes.constitution": -2 },
+        { "statusEffects.shock": 1 },
+        { "statusEffects.collapsedLung": 1 },
+      ],
+    },
+    {
+      bodyPart: "Torso",
+      damageType: "slashing",
+      tierOneEffects: { "statusEffects.bleed": 1 },
+      tierTwoEffects: [
+        { "attributes.constitution": -1 },
+        { "statusEffects.bleed": 1 },
+      ],
+      tierThreeEffects: [
+        { "attributes.constitution": -2 },
+        { "statusEffects.gutspill": 1 },
+      ],
+      tierFourEffects: [
+        { "attributes.constitution": -3 },
+        { "statusEffects.gutspill": 1 },
+        { "statusEffects.internalBleeding": 1 },
+      ],
     },
   ];
 
@@ -53,56 +83,56 @@ export async function actionResolver(
     receiverUpdate: {},
     senderUpdate: {},
   };
-  // switch (action) {
-  //   case "Take":
-  // if (action === "Take") {}
-  // if (action === "Hide") {}
-  // if (action === "Move") {}
-  // if (action === "Mount") {}
-  // if (action === "Grapple") {}
-  // if (action === "Bolster") {}
-  // if (action === "Intimidate") {}
-  // if (action === "reaction") {
-  // check Dodge, Block or Resist
-  //  }
-  // }
-  if (action === "attack") {
-    // check melee or ranged
-    // Find the weapon in the weapons array
-    const weaponObj = weaponsConfig.find((w) => w.item === weapon);
 
-    if (weaponObj) {
-      // Set the update object based on the weapon's damage rating
-      update.receiverUpdate["actionPoints"] = -weaponObj.damageRating;
-      update.senderUpdate["actionPoints"] = -1;
-    }
-  } else if (action === "wound") {
-    // Find the wound in the wounds array
-    const woundObj = wounds.find((w) => w.damageType === damageType);
-
-    if (woundObj) {
-      // Set the update object based on the wound's tier
-      switch (tier) {
-        case 1:
-          update.receiverUpdate["attributes.constitution.t1"] = -1;
-          break;
-        case 2:
-          update.receiverUpdate["attributes.constitution.t2"] = -1;
-          update.receiverUpdate["statusEffects.Shock"] = 1;
-          break;
-        case 3:
-          update.receiverUpdate["attributes.constitution.t3"] = -1;
-          update.receiverUpdate["statusEffects.Shock"] = 1;
-          update.receiverUpdate["statusEffects.Collapsed Lung"] = 1;
-          break;
-        case 4:
-          update.receiverUpdate["attributes.constitution.t4"] = -2;
-          update.receiverUpdate["statusEffects.Shock"] = 1;
-          update.receiverUpdate["statusEffects.Shattered Spine"] = 1;
-          break;
+  switch (action) {
+    case "take":
+      break;
+    case "hide":
+      break;
+    case "move":
+      break;
+    case "mount":
+      break;
+    case "grapple":
+      break;
+    case "bolster":
+      break;
+    case "intimidate":
+      break;
+    case "reaction":
+      //    check Dodge, Block or Resist
+      break;
+    case "attack":
+      // Find the weapon in the weapons array
+      const weaponObj = weaponsConfig.find((weaponConfig) => weaponConfig.item === weapon);
+      
+      if (weaponObj) {
+        //    check melee or ranged
+        // Set the update object based on the weapon's damage rating
+        update.receiverUpdate["actionPoints"] = -weaponObj.damageRating;
+        update.senderUpdate["actionPoints"] = -1;
       }
-    }
+      // Find the attack in the attackConfig array
+      const attackObj = attacksConfig.find((attackConfig) => attackConfig.damageType === damageType);
+
+      if (attackObj) {
+        // Set the update object based on the weapon's damageRating
+        switch (weaponObj?.damageType) {
+          case "slashing":
+            // update.receiverUpdate = attackObj.tierOneEffects;
+            break;
+          case "Bludgeoning":
+            break;
+          case "Piercing":
+            update.receiverUpdate["statusEffects.Collapsed Lung"] = 1;
+            break;
+          case "Elemental":
+            break;
+        }
+      }
+      break;
   }
 
+  console.log(update);
   return update;
 }
