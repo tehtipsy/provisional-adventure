@@ -14,13 +14,21 @@ import PokeButton from "@/components/ui/pokeButton";
 import EndTurnButton from "@/components/ui/endTurnButton";
 import { CharacterSheet } from "@/components/characterSheet";
 
+interface CharacterSheetInterface {
+  characterSheet: any;
+}
+
 const Game: React.FC = () => {
   const router = useRouter();
 
   const { user } = useContext(GlobalContext);
   const { currentPlayer, setCurrentPlayer } = useContext(TurnContext);
-
+  
+  const [character, setCharacter] = useState<CharacterSheetInterface | null>(
+    null
+  );
   const [shouldRefetch, setShouldRefetch] = useState(false); // replace with characterData and updatedCharacterData
+  
   const [pokeSender, setPokeSender] = useState<string | null>(null);
   const [pokeNotification, setPokeNotification] = useState<string | null>();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -107,6 +115,18 @@ const Game: React.FC = () => {
         const { sender, receiver, timestamp } = message.data;
 
         if (sender === user) {
+          // get tier from diceRoll
+          // make prowess useState work instead of this garbage
+          const characterData = await fetchMyCharacterSheet(user);
+          const attackWeapon = characterData.characterSheet.equipment
+          // use weapon to determine damageRating
+          // let user choose damageType
+          console.log("first equipment", attackWeapon);
+          const attackProwess =
+            characterData.characterSheet.attributes.prowess.unmodifiedValue;
+          console.log("attackProwess value", attackProwess);
+          const tier = rollDice(attackProwess);
+          console.log("tier", tier);
           // post change to reciver character sheet
           const updateDatabase = async () => {
             const response = await fetch("/api/db/character", {
@@ -114,12 +134,17 @@ const Game: React.FC = () => {
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({ receiver: receiver, sender: sender }), // add action="attack", weapon, attackType, damageType, bodyPart
+              body: JSON.stringify({
+                receiver: receiver,
+                sender: sender,
+                action: "attack",
+                tier: tier,
+              }), // add damageType, bodyPart
             });
             const updatedCharacterData = await response.json();
             return updatedCharacterData;
           };
-          
+
           const updatedCharacterData = await updateDatabase();
           console.log(updatedCharacterData);
           setShouldRefetch((prev) => !prev);
@@ -145,7 +170,7 @@ const Game: React.FC = () => {
       _channel.subscribe("update-complete", (message) => {
         if (message.data.receiver === user) {
           // update character sheet if changed
-          setShouldRefetch((prev) => !prev); // refractor CharacterSheet to take updatedCharacterData from messege
+          setShouldRefetch((prev) => !prev);
         }
       });
 
@@ -187,6 +212,38 @@ const Game: React.FC = () => {
     updateDatabase();
   }, [onlineUsers]);
 
+  const fetchData = async () => {
+    const characterData = await fetchMyCharacterSheet(user);
+    setCharacter(characterData);
+    console.log(characterData);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [shouldRefetch]);
+
+  const fetchMyCharacterSheet = async (user: string) => {
+    const response = await fetch(`/api/db/character?name=${user}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const characterData = await response.json();
+
+    if (characterData.message) {
+      console.log(characterData.message);
+      return null;
+    }
+    if (characterData) {
+      console.log(
+        "prowess in Character Sheet",
+        characterData.characterSheet.attributes.prowess.unmodifiedValue
+      );
+    }
+    return characterData;
+  };
+
   const sendPoke = (receiver: string) => {
     channel?.publish("poke", {
       sender: user,
@@ -217,8 +274,19 @@ const Game: React.FC = () => {
     }
   };
 
+  function rollDice(numDice: number) {
+    let count = 0;
+    for (let i = 0; i < numDice; i++) {
+      const roll = Math.floor(Math.random() * 6) + 1;
+      if (roll === 5 || roll === 6) {
+        count++;
+      }
+    }
+    return count;
+  }
+
   return (
-    <BasePage>      
+    <BasePage>
       <div className="text-2xl m-6 text-center">
         {onlineUsers.length === 0 ? (
           <Loading />
@@ -248,7 +316,7 @@ const Game: React.FC = () => {
       </div>
       {/* change 'user={user} refetch={shouldRefetch}' to
       characterData={characterData} | {updatedCharacterData} */}
-      <CharacterSheet user={user} refetch={shouldRefetch} />
+      <CharacterSheet character={character} />
       <Modal
         className="h-0 w-1/2 flex justify-center items-center fixed inset-20"
         overlayClassName="fixed top-0 left-0 right-0 bottom-0 bg-gray-600 bg-opacity-30"

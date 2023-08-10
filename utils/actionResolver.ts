@@ -1,10 +1,6 @@
 interface UpdateInterface {
-  receiverUpdate: {
-    [key: string]: number;
-  };
-  senderUpdate: {
-    [key: string]: number;
-  };
+  receiverUpdate: any;
+  senderUpdate: any;
 }
 
 export async function actionResolver(
@@ -16,6 +12,12 @@ export async function actionResolver(
   tier: number,
   bodyPart: string
 ) {
+  console.log(sender, receiver, action); // tempConfig
+  weapon = "Short swords"; // tempConfig // weapons only in client side to choose damage type?
+  // tier = 4; // tempConfig // = weapon.damageRating + prowess, set on attacker client side
+  bodyPart = "Torso"; // tempConfig
+  damageType = "slashing"; // tempConfig
+
   // Define the weapons array - fetch once on game start from db
   const weaponsConfig = [
     { item: "Fist", damageRating: 1, damageType: "Bludgeoning" },
@@ -23,7 +25,7 @@ export async function actionResolver(
     {
       item: "Short swords",
       damageRating: 2,
-      damageType: ["slashing", "piercing"],
+      damageType: "slashing",
     },
     {
       item: "Long swords",
@@ -42,18 +44,18 @@ export async function actionResolver(
     {
       bodyPart: "Torso",
       damageType: "Bludgeoning",
-      tierOneEffects: { "attributes.constitution": -1 },
+      tierOneEffects: [{ "attributes.constitution.unmodifiedValue": -1 }],
       tierTwoEffects: [
-        { "statusEffects.constitution": -1 },
+        { "statusEffects.constitution.unmodifiedValue": -1 },
         { "statusEffects.shock": 1 },
       ],
       tierThreeEffects: [
-        { "attributes.constitution": -1 },
+        { "attributes.constitution.unmodifiedValue": -1 },
         { "statusEffects.shock": 1 },
         { "statusEffects.collapsedLung": 1 },
       ],
       tierFourEffects: [
-        { "attributes.constitution": -2 },
+        { "attributes.constitution.unmodifiedValue": -2 },
         { "statusEffects.shock": 1 },
         { "statusEffects.collapsedLung": 1 },
       ],
@@ -61,17 +63,17 @@ export async function actionResolver(
     {
       bodyPart: "Torso",
       damageType: "slashing",
-      tierOneEffects: { "statusEffects.bleed": 1 },
+      tierOneEffects: [{ "statusEffects.bleed": 1 }],
       tierTwoEffects: [
-        { "attributes.constitution": -1 },
+        { "attributes.constitution.unmodifiedValue": -1 },
         { "statusEffects.bleed": 1 },
       ],
       tierThreeEffects: [
-        { "attributes.constitution": -2 },
+        { "attributes.constitution.unmodifiedValue": -2 },
         { "statusEffects.gutspill": 1 },
       ],
       tierFourEffects: [
-        { "attributes.constitution": -3 },
+        { "attributes.constitution.unmodifiedValue": -3 },
         { "statusEffects.gutspill": 1 },
         { "statusEffects.internalBleeding": 1 },
       ],
@@ -104,27 +106,76 @@ export async function actionResolver(
       break;
     case "attack":
       // Find the weapon in the weapons array
-      const weaponObj = weaponsConfig.find((weaponConfig) => weaponConfig.item === weapon);
-      
+      const weaponObj = weaponsConfig.find(
+        (weaponConfig) => weaponConfig.item === weapon
+      );
+      console.log(weaponObj);
+
       if (weaponObj) {
+        console.log(weaponObj);
         //    check melee or ranged
         // Set the update object based on the weapon's damage rating
-        update.receiverUpdate["actionPoints"] = -weaponObj.damageRating;
-        update.senderUpdate["actionPoints"] = -1;
+        update.senderUpdate["actionPoints"] = -1; // set action cost somewhere
       }
       // Find the attack in the attackConfig array
-      const attackObj = attacksConfig.find((attackConfig) => attackConfig.damageType === damageType);
+      const attackObj = attacksConfig.find(
+        (attackConfig) => attackConfig.damageType === damageType
+      );
+      console.log(attackObj);
 
       if (attackObj) {
+        console.log("attackObj", attackObj);
+        // const receiverUpdate = Object.assign({}, ...attackObj.tierFourEffects);
+        // console.log("receiverUpdate", receiverUpdate);
+        // update.receiverUpdate = receiverUpdate;
         // Set the update object based on the weapon's damageRating
+        let receiverUpdate;
+
         switch (weaponObj?.damageType) {
           case "slashing":
-            // update.receiverUpdate = attackObj.tierOneEffects;
+            // set tier by dice roll
+            switch (tier) {
+              case 1:
+                // tierOneEffects
+                receiverUpdate = Object.assign(
+                  {},
+                  ...attackObj.tierOneEffects
+                );
+                console.log("receiverUpdate", receiverUpdate);
+                update.receiverUpdate = receiverUpdate;
+                break;
+              case 2:
+                // tierTwoEffects
+                receiverUpdate = Object.assign(
+                  {},
+                  ...attackObj.tierTwoEffects
+                );
+                console.log("receiverUpdate", receiverUpdate);
+                update.receiverUpdate = receiverUpdate;
+                break;
+              case 3:
+                // tierThreeEffects
+                receiverUpdate = Object.assign(
+                  {},
+                  ...attackObj.tierThreeEffects
+                );
+                console.log("receiverUpdate", receiverUpdate);
+                update.receiverUpdate = receiverUpdate;
+                break;
+              case 4:
+                // tierFourEffects
+                receiverUpdate = Object.assign(
+                  {},
+                  ...attackObj.tierFourEffects
+                );
+                console.log("receiverUpdate", receiverUpdate);
+                update.receiverUpdate = receiverUpdate;
+                break;
+            }
             break;
           case "Bludgeoning":
             break;
           case "Piercing":
-            update.receiverUpdate["statusEffects.Collapsed Lung"] = 1;
             break;
           case "Elemental":
             break;
@@ -133,6 +184,6 @@ export async function actionResolver(
       break;
   }
 
-  console.log(update);
+  console.log("update", update);
   return update;
 }

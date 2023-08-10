@@ -1,46 +1,8 @@
-import { useEffect, useState } from "react";
-
-// move to Game component
 type CharacterSheetProps = {
-  user: string;
-  refetch: boolean;
+  character: any;
 };
 
-// move to Game component
-interface CharacterSheetInterface {
-  characterSheet: any;
-}
-
-export const CharacterSheet = ({ user, refetch }: CharacterSheetProps) => {
-  const [character, setCharacter] = useState<CharacterSheetInterface | null>(
-    null
-  ); // move to Game component
-
-  // move to Game component
-  useEffect(() => {
-    const fetchData = async () => {
-      const characterData = await myCharacterSheet(user);
-      setCharacter(characterData);
-      console.log(characterData);
-    };
-    fetchData();
-  }, [refetch]); // change to characterData
-
-  const myCharacterSheet = async (user: string) => {
-    // move to Game component
-    const response = await fetch(`/api/db/character?name=${user}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const characterData = await response.json();
-    if (characterData.message) {
-      console.log(characterData.message);
-      return null;
-    }
-    return characterData;
-  };
+export const CharacterSheet = ({ character }: CharacterSheetProps) => {
 
   return (
     <div className="text-2xl m-6 text-center">
@@ -75,6 +37,20 @@ export const CharacterSheet = ({ user, refetch }: CharacterSheetProps) => {
                   {character.characterSheet.equipment[equipment].quantity}
                   {" * "}
                   {equipment}
+                </li>
+              )
+            )}
+          </ul>
+          <br />
+          <p>Effects:</p>
+          <br />
+          <ul>
+            {Object.keys(character.characterSheet.statusEffects).map(
+              (effect) => (
+                <li key={effect}>
+                  {character.characterSheet.statusEffects[effect]}
+                  {" * "}
+                  {effect}
                 </li>
               )
             )}
