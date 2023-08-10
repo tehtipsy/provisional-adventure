@@ -112,20 +112,27 @@ const Game: React.FC = () => {
 
       // Subscribe to poke event
       _channel.subscribe("poke", async (message) => {
-        const { sender, receiver, timestamp } = message.data;
+        const {
+          damageRating,
+          damageType,
+          bodyPart,
+          action,
+          sender,
+          receiver,
+          timestamp,
+        } = message.data;
 
         if (sender === user) {
-          // get tier from diceRoll
           // make prowess useState work instead of this garbage
           const characterData = await fetchMyCharacterSheet(user);
-          const attackWeapon = characterData.characterSheet.equipment
-          // use weapon to determine damageRating
-          // let user choose damageType
-          console.log("first equipment", attackWeapon);
-          const attackProwess =
+          // let user choose damageType if possible
+          const attackProwess = // sum prowess with modifiers
             characterData.characterSheet.attributes.prowess.unmodifiedValue;
           console.log("attackProwess value", attackProwess);
-          const tier = rollDice(attackProwess);
+          // get tier from diceRoll
+          const numDice = attackProwess + damageRating;
+          console.log("numDice", numDice);
+          const tier = rollDice(numDice);
           console.log("tier", tier);
           // post change to reciver character sheet
           const updateDatabase = async () => {
@@ -137,9 +144,11 @@ const Game: React.FC = () => {
               body: JSON.stringify({
                 receiver: receiver,
                 sender: sender,
-                action: "attack",
+                action: action,
                 tier: tier,
-              }), // add damageType, bodyPart
+                bodyPart: bodyPart,
+                damageType: damageType,
+              }),
             });
             const updatedCharacterData = await response.json();
             return updatedCharacterData;
@@ -235,20 +244,19 @@ const Game: React.FC = () => {
       console.log(characterData.message);
       return null;
     }
-    if (characterData) {
-      console.log(
-        "prowess in Character Sheet",
-        characterData.characterSheet.attributes.prowess.unmodifiedValue
-      );
-    }
     return characterData;
   };
 
   const sendPoke = (receiver: string) => {
+    const handsSlot = character?.characterSheet.equipment.hands
     channel?.publish("poke", {
       sender: user,
       receiver,
       timestamp: new Date().toISOString(),
+      action: "attack",
+      bodyPart: "Torso",
+      damageType: handsSlot.damageType[0], // add choice
+      damageRating: handsSlot.damageRating,
     });
   };
 
@@ -314,8 +322,6 @@ const Game: React.FC = () => {
           ""
         )}
       </div>
-      {/* change 'user={user} refetch={shouldRefetch}' to
-      characterData={characterData} | {updatedCharacterData} */}
       <CharacterSheet character={character} />
       <Modal
         className="h-0 w-1/2 flex justify-center items-center fixed inset-20"
