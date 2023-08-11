@@ -30,11 +30,15 @@ export const CharacterSheet = ({ character }: CharacterSheetProps) => {
           <br />
           <p>Hands Slot:</p>
           <br />
-          <p>
-            {character.characterSheet.equipment.hands.quantity}
-            {" * "}
-            {character.characterSheet.equipment.hands.name}
-          </p>
+          {character.characterSheet.equipment.hands ? (
+            <p>
+              {character.characterSheet.equipment.hands.quantity}
+              {" * "}
+              {character.characterSheet.equipment.hands.name}
+            </p>
+          ) : (
+            <p>Nothing in Hands</p>
+          )}
           <br />
           <p>Equipment:</p>
           <br />

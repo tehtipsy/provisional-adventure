@@ -253,9 +253,9 @@ const Game: React.FC = () => {
       sender: user,
       receiver,
       timestamp: new Date().toISOString(),
-      action: "attack",
-      bodyPart: "Torso",
-      damageType: handsSlot.damageType[0], // add choice
+      action: "attack", // set in UI
+      bodyPart: "Torso", // set in UI
+      damageType: handsSlot.damageType[0], // set in UI
       damageRating: handsSlot.damageRating,
     });
   };
