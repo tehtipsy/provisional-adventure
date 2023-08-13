@@ -27,7 +27,7 @@ export const TurnContextProvider = (props: TurnContextProviderProps) => {
       console.log(data.currentPlayer);
     };
     fetchCurrentPlayer();
-  }, [currentPlayer]);
+  }, []);
 
   const value = { currentPlayer, setCurrentPlayer };
 
