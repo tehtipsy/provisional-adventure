@@ -28,6 +28,8 @@ export const CharacterSheet = ({ character }: CharacterSheetProps) => {
             )}
           </ul>
           <br />
+          <p>Equipment:</p>
+          <br />
           <p>Hands Slot:</p>
           <br />
           {character.characterSheet.equipment.hands ? (
@@ -39,20 +41,7 @@ export const CharacterSheet = ({ character }: CharacterSheetProps) => {
           ) : (
             <p>Nothing in Hands</p>
           )}
-          <br />
-          <p>Equipment:</p>
-          <br />
-          <ul>
-            {Object.keys(character.characterSheet.equipment).map(
-              (equipment) => (
-                <li key={equipment}>
-                  {character.characterSheet.equipment[equipment].quantity}
-                  {" * "}
-                  {equipment}
-                </li>
-              )
-            )}
-          </ul>
+
           <br />
           <p>Effects:</p>
           <br />

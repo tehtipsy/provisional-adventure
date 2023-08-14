@@ -1,4 +1,13 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import {
+  JSXElementConstructor,
+  Key,
+  ReactElement,
+  ReactFragment,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 import { useRouter } from "next/navigation";
 import * as Ably from "ably/promises";
@@ -19,7 +28,7 @@ import Loading from "@/pages/loading";
 import PokeButton from "@/components/ui/pokeButton";
 import EndTurnButton from "@/components/ui/endTurnButton";
 import { CharacterSheet } from "@/components/characterSheet";
-import { AttackConfigNotification } from "@/components/attackConfigNotification";
+import AttackOptions from "@/components/attackOptions";
 
 interface CharacterSheetInterface {
   characterSheet: any;
@@ -34,12 +43,15 @@ const Game: React.FC = () => {
   const [character, setCharacter] = useState<CharacterSheetInterface | null>(
     null
   );
-  const [selectedAttack, setSelectedAttack] = useState<string | null>(null);
 
   const [pokeSender, setPokeSender] = useState<string | null>(null);
+  const [pokeReceiver, setPokeReceiver] = useState<string | null>(null);
+  const [showPartSelection, setShowPartSelection] = useState(false);
+  const [showAttackSelection, setShowAttackSelection] = useState(false);
+  const [selectedBodyPart, setSelectedBodyPart] = useState<string | null>(null);
+
   const [pokeNotification, setPokeNotification] = useState<string | null>();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isAttackModalOpen, setIsattackModalOpen] = useState(false);
 
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const [ably, setAbly] = useState<Ably.Types.RealtimePromise | null>(null);
@@ -186,9 +198,9 @@ const Game: React.FC = () => {
           updatedCharacterData
         );
         setCharacter({ characterSheet: updatedCharacterData });
-
-        // display message to the user
+        // set poke sender to display poke alert
         setPokeSender(sender);
+        // display message to the user in the DOM
         console.log(`You received a poke from ${sender}`);
         setPokeNotification(
           `${timestamp} - You received a poke from ${sender}`
@@ -199,8 +211,9 @@ const Game: React.FC = () => {
   }, [channel]);
 
   useEffect(() => {
-    console.log(onlineUsers); // Fix This, empty when someone logs in (between "enter" and "present" in setOnlineUsers)
-    updateTurnInDatabase();
+    if (onlineUsers.length > 0) {
+      updateTurnInDatabase();
+    }
   }, [onlineUsers]);
 
   useEffect(() => {
@@ -224,17 +237,13 @@ const Game: React.FC = () => {
     console.log(characterData);
   };
 
-  const sendPoke = (receiver: string) => {
-    // set weapon damageType in UI
+  const sendPoke = (receiver: string, attackDamageType: string) => {
+    console.log("Selected Body Part: ", selectedBodyPart);
     const characterSheet = character?.characterSheet;
     const handsSlot = characterSheet.equipment.hands;
 
     const weaponName = characterSheet.equipment.hands.name;
     const damageRating = handsSlot.damageRating;
-    const damageType = handsSlot.damageType[0]; // add choice
-    console.log("Selected Attack: ", selectedAttack);
-    console.log("Damage Types: ", handsSlot.damageType);
-    // const damageType = selectedAttack;
 
     const attackProwess = characterSheet.attributes.prowess.unmodifiedValue;
     // sum prowess with modifiers
@@ -251,9 +260,9 @@ const Game: React.FC = () => {
       timestamp: new Date().toISOString(),
       damageRating: damageRating,
       tier: tier,
+      bodyPart: selectedBodyPart, // FIX async
+      damageType: attackDamageType,
       action: "attack", // add choice
-      bodyPart: "Torso", // add choice
-      damageType: damageType, // add choice
     });
   };
 
@@ -279,8 +288,18 @@ const Game: React.FC = () => {
     }
   };
 
+  function handlePartSelection(bodyPart: string) {
+    setSelectedBodyPart(bodyPart);
+    setShowPartSelection(false);
+    setShowAttackSelection(true);
+  }
+
   function handleAttackSelection(attack: string) {
-    setSelectedAttack(attack);
+    if (pokeReceiver) {
+      sendPoke(pokeReceiver, attack); // move after rollDice manual switch
+      setShowAttackSelection(false);
+      setPokeReceiver(null);
+    }
   }
 
   return (
@@ -309,7 +328,31 @@ const Game: React.FC = () => {
                       {username === user ? (
                         " (you)"
                       ) : user === currentPlayer ? (
-                        <PokeButton sendPoke={sendPoke} username={username} />
+                        pokeReceiver !== username ? (
+                          <PokeButton
+                            onPoke={() => {
+                              setPokeReceiver(username);
+                              setShowPartSelection(true);
+                            }}
+                          />
+                        ) : showPartSelection ? (
+                          <AttackOptions
+                            options={["Head", "Torso", "Limbs"]}
+                            onOptionSelection={handlePartSelection}
+                          />
+                        ) : showAttackSelection ? (
+                          character &&
+                          character.characterSheet.equipment.hands
+                            .damageType && (
+                            <AttackOptions
+                              options={
+                                character.characterSheet.equipment.hands
+                                  .damageType
+                              }
+                              onOptionSelection={handleAttackSelection}
+                            />
+                          )
+                        ) : null
                       ) : null}
                     </li>
                     <br />
@@ -328,19 +371,6 @@ const Game: React.FC = () => {
         onRequestClose={() => setIsModalOpen(false)}
       >
         {pokeSender && <PokeNotification sender={pokeSender} />}
-      </Modal>
-      <Modal
-        className="h-0 w-1/2 flex justify-center items-center fixed inset-20"
-        overlayClassName="fixed top-0 left-0 right-0 bottom-0 bg-gray-600 bg-opacity-30"
-        isOpen={isAttackModalOpen}
-        onRequestClose={() => setIsattackModalOpen(false)}
-      >
-        {pokeSender === user &&
-          <AttackConfigNotification
-            damageOptions={character?.characterSheet.equipment.hands.dmageType}
-            onAttackSelection={handleAttackSelection}
-          />
-        }
       </Modal>
       <div>{pokeNotification && <div>{pokeNotification}</div>}</div>
     </BasePage>

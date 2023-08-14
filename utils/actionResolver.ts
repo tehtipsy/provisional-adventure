@@ -107,11 +107,10 @@ export async function actionResolver(
 
       if (attackObj) {
         // Set the update object based on the weapon's damageRating
-        let receiverUpdate;
+        let receiverUpdate; // FIX THIS
 
         switch (damageType) {
           case "slashing":
-            // set tier by dice roll
             switch (tier) {
               case 1:
                 // tierOneEffects
