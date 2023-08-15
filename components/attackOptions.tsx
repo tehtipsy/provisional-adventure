@@ -13,16 +13,18 @@ export default function AttackOptions({
   return (
     <>
       <ul>
-        {options.map((option) => (
-          <>
-            <li key={option}>
-              <Button onClick={() => onOptionSelection(option)}>
-                {option}
-              </Button>
-            </li>
-            <br />
-          </>
-        ))}
+        {options.map((option) => {
+          return (
+            <>
+              <li key={option}>
+                <Button onClick={() => onOptionSelection(option)}>
+                  {option}
+                </Button>
+              </li>
+              <br />
+            </>
+          );
+        })}
       </ul>
     </>
   );
