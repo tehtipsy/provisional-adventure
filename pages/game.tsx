@@ -340,7 +340,7 @@ const Game: React.FC = () => {
                           username === currentPlayer ? "animate-pulse" : ""
                         }
                       >
-                        {username}
+                        {username} why like this
                         {username === user ? (
                           " (you)"
                         ) : username === currentPlayer ? (
