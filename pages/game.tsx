@@ -335,38 +335,44 @@ const Game: React.FC = () => {
                 return (
                   <React.Fragment key={username}>
                     <li>
-                      {username} is Online
-                      {username === user ? (
-                        " (you)"
-                      ) : username === currentPlayer ? (
-                        " <= current player"
-                      ) : user === currentPlayer ? (
-                        pokeReceiver !== username ? (
-                          <PokeButton
-                            onPoke={() => {
-                              setPokeReceiver(username);
-                              setShowPartSelection(true);
-                            }}
-                          />
-                        ) : showPartSelection ? (
-                          <AttackOptions
-                            options={["Head", "Torso", "Limbs"]}
-                            onOptionSelection={handlePartSelection}
-                          />
-                        ) : showAttackSelection ? (
-                          character &&
-                          character.characterSheet.equipment.hands
-                            .damageType && (
-                            <AttackOptions
-                              options={
-                                character.characterSheet.equipment.hands
-                                  .damageType
-                              }
-                              onOptionSelection={handleAttackSelection}
+                      <div
+                        className={
+                          username === currentPlayer ? "animate-pulse" : ""
+                        }
+                      >
+                        {username}
+                        {username === user ? (
+                          " (you)"
+                        ) : username === currentPlayer ? (
+                          " (Now Playing)"
+                        ) : user === currentPlayer ? (
+                          pokeReceiver !== username ? (
+                            <PokeButton
+                              onPoke={() => {
+                                setPokeReceiver(username);
+                                setShowPartSelection(true);
+                              }}
                             />
-                          )
-                        ) : null
-                      ) : null}
+                          ) : showPartSelection ? (
+                            <AttackOptions
+                              options={["Head", "Torso", "Limbs"]}
+                              onOptionSelection={handlePartSelection}
+                            />
+                          ) : showAttackSelection ? (
+                            character &&
+                            character.characterSheet.equipment.hands
+                              .damageType && (
+                              <AttackOptions
+                                options={
+                                  character.characterSheet.equipment.hands
+                                    .damageType
+                                }
+                                onOptionSelection={handleAttackSelection}
+                              />
+                            )
+                          ) : null
+                        ) : null}
+                      </div>
                     </li>
                     <br />
                   </React.Fragment>
@@ -375,9 +381,9 @@ const Game: React.FC = () => {
             </ul>
           </>
         )}
-      </div>
       <div>{numDiceToRoll && <div>Number Of Dice To Roll: {numDiceToRoll}</div>}</div>
       <div>{successfulRolls && <div>Number Of Rolls 5 and above: {successfulRolls}</div>}</div>
+      </div>
       <CharacterSheet character={character} />
       <Modal
         className="h-0 w-1/2 flex justify-center items-center fixed inset-20"
