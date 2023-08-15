@@ -385,7 +385,7 @@ const Game: React.FC = () => {
           {numDiceToRoll && <div>Number Of Dice To Roll: {numDiceToRoll}</div>}
         </div>
         <div>
-          {successfulRolls !== undefined && (
+          {successfulRolls !== null && (
             <div>Number Of Rolls 5 and above: {successfulRolls}</div>
           )}
         </div>
