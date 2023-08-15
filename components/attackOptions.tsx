@@ -11,21 +11,19 @@ export default function AttackOptions({
   onOptionSelection,
 }: AttackOptionsProps) {
   return (
-    <>
-      <ul>
-        {options.map((option) => {
-          return (
-            <>
-              <li key={option}>
-                <Button onClick={() => onOptionSelection(option)}>
-                  {option}
-                </Button>
-              </li>
-              <br />
-            </>
-          );
-        })}
-      </ul>
-    </>
+    // <>
+    //   <ul>
+    //     {options.map((option) => (
+    //       <>
+    //         <li key={option}>
+    //           <Button onClick={() => onOptionSelection(option)}>
+    //             {option}
+    //           </Button>
+    //         </li>
+    //         <br />
+    //       </>
+    //     ))}
+    //   </ul>
+    // </>
   );
 }
