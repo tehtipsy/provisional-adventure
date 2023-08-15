@@ -381,8 +381,14 @@ const Game: React.FC = () => {
             </ul>
           </>
         )}
-      <div>{numDiceToRoll && <div>Number Of Dice To Roll: {numDiceToRoll}</div>}</div>
-      <div>{successfulRolls && <div>Number Of Rolls 5 and above: {successfulRolls}</div>}</div>
+        <div>
+          {numDiceToRoll && <div>Number Of Dice To Roll: {numDiceToRoll}</div>}
+        </div>
+        <div>
+          {successfulRolls !== undefined && (
+            <div>Number Of Rolls 5 and above: {successfulRolls}</div>
+          )}
+        </div>
       </div>
       <CharacterSheet character={character} />
       <Modal
