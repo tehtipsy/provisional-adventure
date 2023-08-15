@@ -50,6 +50,8 @@ const Game: React.FC = () => {
   const [showPartSelection, setShowPartSelection] = useState(false);
   const [showAttackSelection, setShowAttackSelection] = useState(false);
   const [selectedBodyPart, setSelectedBodyPart] = useState<string | null>(null);
+  const [numDiceToRoll, setNumDiceToRoll] = useState<string | null>(null);
+  const [successfulRolls, setSuccessfulRolls] = useState<number | null>(null);
 
   const [pokeNotification, setPokeNotification] = useState<string | null>();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -246,13 +248,21 @@ const Game: React.FC = () => {
     const weaponName = characterSheet.equipment.hands.name;
     const damageRating = handsSlot.damageRating;
 
-    const attackProwess = characterSheet.attributes.prowess.unmodifiedValue;
-    // sum prowess with modifiers
+    const attackProwess = 
+      characterSheet.attributes.prowess.unmodifiedValue 
+      + characterSheet.attributes.prowess.t1 
+      + characterSheet.attributes.prowess.t2 
+      + characterSheet.attributes.prowess.t3 
+      + characterSheet.attributes.prowess.t4 
+      + characterSheet.attributes.prowess.bonus;
+
     console.log("attackProwess value", attackProwess);
     // get tier from diceRoll
     const numDice = attackProwess + damageRating;
+    setNumDiceToRoll(numDice);
     console.log("numDice", numDice);
     const tier = rollDice(numDice);
+    setSuccessfulRolls(tier);
     console.log("tier", tier);
 
     channel?.publish("poke", {
@@ -328,6 +338,8 @@ const Game: React.FC = () => {
                       {username} is Online
                       {username === user ? (
                         " (you)"
+                      ) : username === currentPlayer ? (
+                        " <= current player"
                       ) : user === currentPlayer ? (
                         pokeReceiver !== username ? (
                           <PokeButton
@@ -364,6 +376,8 @@ const Game: React.FC = () => {
           </>
         )}
       </div>
+      <div>{numDiceToRoll && <div>Number Of Dice To Roll: {numDiceToRoll}</div>}</div>
+      <div>{successfulRolls && <div>Number Of Rolls 5 and above: {successfulRolls}</div>}</div>
       <CharacterSheet character={character} />
       <Modal
         className="h-0 w-1/2 flex justify-center items-center fixed inset-20"
