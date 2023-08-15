@@ -12,7 +12,7 @@ export default function AttackOptions({
 }: AttackOptionsProps) {
   return (
     <>
-      <ul id="options-list">
+      <ul>
         {options.map((option) => (
           <>
             <li key={option}>
