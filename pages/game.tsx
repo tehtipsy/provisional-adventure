@@ -29,6 +29,7 @@ import PokeButton from "@/components/ui/pokeButton";
 import EndTurnButton from "@/components/ui/endTurnButton";
 import { CharacterSheet } from "@/components/characterSheet";
 import AttackOptions from "@/components/attackOptions";
+import React from "react";
 
 interface CharacterSheetInterface {
   characterSheet: any;
@@ -322,8 +323,8 @@ const Game: React.FC = () => {
             <ul>
               {onlineUsers.map((username: string) => {
                 return (
-                  <>
-                    <li key={username}>
+                  <React.Fragment key={username}>
+                    <li>
                       {username} is Online
                       {username === user ? (
                         " (you)"
@@ -356,7 +357,7 @@ const Game: React.FC = () => {
                       ) : null}
                     </li>
                     <br />
-                  </>
+                  </React.Fragment>
                 );
               })}
             </ul>

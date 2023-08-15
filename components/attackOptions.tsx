@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Button from "@/components/ui/button";
+import React from "react";
 
 type AttackOptionsProps = {
   options: string[];
@@ -11,19 +12,19 @@ export default function AttackOptions({
   onOptionSelection,
 }: AttackOptionsProps) {
   return (
-    // <>
-    //   <ul>
-    //     {options.map((option) => (
-    //       <>
-    //         <li key={option}>
-    //           <Button onClick={() => onOptionSelection(option)}>
-    //             {option}
-    //           </Button>
-    //         </li>
-    //         <br />
-    //       </>
-    //     ))}
-    //   </ul>
-    // </>
+    <>
+      <ul>
+        {options.map((option) => (
+          <React.Fragment key={option}>
+            <li>
+              <Button onClick={() => onOptionSelection(option)}>
+                {option}
+              </Button>
+            </li>
+            <br />
+          </React.Fragment>
+        ))}
+      </ul>
+    </>
   );
 }
