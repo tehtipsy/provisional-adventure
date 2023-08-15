@@ -76,164 +76,164 @@ export async function actionResolver(
     senderUpdate: {},
   };
 
-  // switch (action) {
-  //   case "take":
-  //     break;
-  //   case "hide":
-  //     break;
-  //   case "move":
-  //     break;
-  //   case "mount":
-  //     break;
-  //   case "grapple":
-  //     break;
-  //   case "bolster":
-  //     break;
-  //   case "intimidate":
-  //     break;
-  //   case "reaction":
-  //     //    check Dodge, Block or Resist
-  //     break;
-  //   case "attack":
-  //     //    check melee or ranged
-  //     update.senderUpdate["actionPoints"] = -1;
-  //     // Find the attack in the attackConfig array
-  //     const attackObj = attacksConfig.find(
-  //       (attackConfig) =>
-  //         attackConfig.damageType === damageType &&
-  //         attackConfig.bodyPart === bodyPart
-  //     );
-  //     console.log(attackObj);
+  switch (action) {
+    case "take":
+      break;
+    case "hide":
+      break;
+    case "move":
+      break;
+    case "mount":
+      break;
+    case "grapple":
+      break;
+    case "bolster":
+      break;
+    case "intimidate":
+      break;
+    case "reaction":
+      //    check Dodge, Block or Resist
+      break;
+    case "attack":
+      //    check melee or ranged
+      update.senderUpdate["actionPoints"] = -1;
+      // Find the attack in the attackConfig array
+      const attackObj = attacksConfig.find(
+        (attackConfig) =>
+          attackConfig.damageType === damageType &&
+          attackConfig.bodyPart === bodyPart
+      );
+      console.log(attackObj);
 
-  //     if (attackObj) {
-  //       // Set the update object based on the weapon's damageRating
-  //       let receiverUpdate; // FIX THIS
+      if (attackObj) {
+        // Set the update object based on the weapon's damageRating
+        let receiverUpdate; // FIX THIS
 
-  //       switch (damageType) {
-  //         case "slashing":
-  //           switch (tier) {
-  //             case 1:
-  //               // tierOneEffects
-  //               receiverUpdate = Object.assign({}, ...attackObj.tierOneEffects);
-  //               update.receiverUpdate = receiverUpdate;
-  //               break;
-  //             case 2:
-  //               // tierTwoEffects
-  //               receiverUpdate = Object.assign({}, ...attackObj.tierTwoEffects);
-  //               update.receiverUpdate = receiverUpdate;
-  //               break;
-  //             case 3:
-  //               // tierThreeEffects
-  //               receiverUpdate = Object.assign(
-  //                 {},
-  //                 ...attackObj.tierThreeEffects
-  //               );
-  //               update.receiverUpdate = receiverUpdate;
-  //               break;
-  //             case 4:
-  //               // tierFourEffects
-  //               receiverUpdate = Object.assign(
-  //                 {},
-  //                 ...attackObj.tierFourEffects
-  //               );
-  //               update.receiverUpdate = receiverUpdate;
-  //               break;
-  //           }
-  //           break;
-  //         case "Bludgeoning":
-  //           switch (tier) {
-  //             case 1:
-  //               // tierOneEffects
-  //               receiverUpdate = Object.assign({}, ...attackObj.tierOneEffects);
-  //               update.receiverUpdate = receiverUpdate;
-  //               break;
-  //             case 2:
-  //               // tierTwoEffects
-  //               receiverUpdate = Object.assign({}, ...attackObj.tierTwoEffects);
-  //               update.receiverUpdate = receiverUpdate;
-  //               break;
-  //             case 3:
-  //               // tierThreeEffects
-  //               receiverUpdate = Object.assign(
-  //                 {},
-  //                 ...attackObj.tierThreeEffects
-  //               );
-  //               update.receiverUpdate = receiverUpdate;
-  //               break;
-  //             case 4:
-  //               // tierFourEffects
-  //               receiverUpdate = Object.assign(
-  //                 {},
-  //                 ...attackObj.tierFourEffects
-  //               );
-  //               update.receiverUpdate = receiverUpdate;
-  //               break;
-  //           }
-  //           break;
-  //         case "Piercing":
-  //           switch (tier) {
-  //             case 1:
-  //               // tierOneEffects
-  //               receiverUpdate = Object.assign({}, ...attackObj.tierOneEffects);
-  //               update.receiverUpdate = receiverUpdate;
-  //               break;
-  //             case 2:
-  //               // tierTwoEffects
-  //               receiverUpdate = Object.assign({}, ...attackObj.tierTwoEffects);
-  //               update.receiverUpdate = receiverUpdate;
-  //               break;
-  //             case 3:
-  //               // tierThreeEffects
-  //               receiverUpdate = Object.assign(
-  //                 {},
-  //                 ...attackObj.tierThreeEffects
-  //               );
-  //               update.receiverUpdate = receiverUpdate;
-  //               break;
-  //             case 4:
-  //               // tierFourEffects
-  //               receiverUpdate = Object.assign(
-  //                 {},
-  //                 ...attackObj.tierFourEffects
-  //               );
-  //               update.receiverUpdate = receiverUpdate;
-  //               break;
-  //           }
-  //           break;
-  //         case "Elemental":
-  //           switch (tier) {
-  //             case 1:
-  //               // tierOneEffects
-  //               receiverUpdate = Object.assign({}, ...attackObj.tierOneEffects);
-  //               update.receiverUpdate = receiverUpdate;
-  //               break;
-  //             case 2:
-  //               // tierTwoEffects
-  //               receiverUpdate = Object.assign({}, ...attackObj.tierTwoEffects);
-  //               update.receiverUpdate = receiverUpdate;
-  //               break;
-  //             case 3:
-  //               // tierThreeEffects
-  //               receiverUpdate = Object.assign(
-  //                 {},
-  //                 ...attackObj.tierThreeEffects
-  //               );
-  //               update.receiverUpdate = receiverUpdate;
-  //               break;
-  //             case 4:
-  //               // tierFourEffects
-  //               receiverUpdate = Object.assign(
-  //                 {},
-  //                 ...attackObj.tierFourEffects
-  //               );
-  //               update.receiverUpdate = receiverUpdate;
-  //               break;
-  //           }
-  //           break;
-  //       }
-  //     }
-  //     break;
-  // }
+        switch (damageType) {
+          case "slashing":
+            switch (tier) {
+              case 1:
+                // tierOneEffects
+                receiverUpdate = Object.assign({}, ...attackObj.tierOneEffects);
+                update.receiverUpdate = receiverUpdate;
+                break;
+              case 2:
+                // tierTwoEffects
+                receiverUpdate = Object.assign({}, ...attackObj.tierTwoEffects);
+                update.receiverUpdate = receiverUpdate;
+                break;
+              case 3:
+                // tierThreeEffects
+                receiverUpdate = Object.assign(
+                  {},
+                  ...attackObj.tierThreeEffects
+                );
+                update.receiverUpdate = receiverUpdate;
+                break;
+              case 4:
+                // tierFourEffects
+                receiverUpdate = Object.assign(
+                  {},
+                  ...attackObj.tierFourEffects
+                );
+                update.receiverUpdate = receiverUpdate;
+                break;
+            }
+            break;
+          case "Bludgeoning":
+            switch (tier) {
+              case 1:
+                // tierOneEffects
+                receiverUpdate = Object.assign({}, ...attackObj.tierOneEffects);
+                update.receiverUpdate = receiverUpdate;
+                break;
+              case 2:
+                // tierTwoEffects
+                receiverUpdate = Object.assign({}, ...attackObj.tierTwoEffects);
+                update.receiverUpdate = receiverUpdate;
+                break;
+              case 3:
+                // tierThreeEffects
+                receiverUpdate = Object.assign(
+                  {},
+                  ...attackObj.tierThreeEffects
+                );
+                update.receiverUpdate = receiverUpdate;
+                break;
+              case 4:
+                // tierFourEffects
+                receiverUpdate = Object.assign(
+                  {},
+                  ...attackObj.tierFourEffects
+                );
+                update.receiverUpdate = receiverUpdate;
+                break;
+            }
+            break;
+          case "Piercing":
+            switch (tier) {
+              case 1:
+                // tierOneEffects
+                receiverUpdate = Object.assign({}, ...attackObj.tierOneEffects);
+                update.receiverUpdate = receiverUpdate;
+                break;
+              case 2:
+                // tierTwoEffects
+                receiverUpdate = Object.assign({}, ...attackObj.tierTwoEffects);
+                update.receiverUpdate = receiverUpdate;
+                break;
+              case 3:
+                // tierThreeEffects
+                receiverUpdate = Object.assign(
+                  {},
+                  ...attackObj.tierThreeEffects
+                );
+                update.receiverUpdate = receiverUpdate;
+                break;
+              case 4:
+                // tierFourEffects
+                receiverUpdate = Object.assign(
+                  {},
+                  ...attackObj.tierFourEffects
+                );
+                update.receiverUpdate = receiverUpdate;
+                break;
+            }
+            break;
+          case "Elemental":
+            switch (tier) {
+              case 1:
+                // tierOneEffects
+                receiverUpdate = Object.assign({}, ...attackObj.tierOneEffects);
+                update.receiverUpdate = receiverUpdate;
+                break;
+              case 2:
+                // tierTwoEffects
+                receiverUpdate = Object.assign({}, ...attackObj.tierTwoEffects);
+                update.receiverUpdate = receiverUpdate;
+                break;
+              case 3:
+                // tierThreeEffects
+                receiverUpdate = Object.assign(
+                  {},
+                  ...attackObj.tierThreeEffects
+                );
+                update.receiverUpdate = receiverUpdate;
+                break;
+              case 4:
+                // tierFourEffects
+                receiverUpdate = Object.assign(
+                  {},
+                  ...attackObj.tierFourEffects
+                );
+                update.receiverUpdate = receiverUpdate;
+                break;
+            }
+            break;
+        }
+      }
+      break;
+  }
 
   console.log("update", update);
   return update;
