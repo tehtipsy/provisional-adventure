@@ -248,8 +248,14 @@ const Game: React.FC = () => {
     const weaponName = characterSheet.equipment.hands.name;
     const damageRating = handsSlot.damageRating;
 
-    const attackProwess = characterSheet.attributes.prowess.unmodifiedValue;
-    // sum prowess with modifiers
+    const attackProwess = 
+      characterSheet.attributes.prowess.unmodifiedValue 
+      + characterSheet.attributes.prowess.t1 
+      + characterSheet.attributes.prowess.t2 
+      + characterSheet.attributes.prowess.t3 
+      + characterSheet.attributes.prowess.t4 
+      + characterSheet.attributes.prowess.bonus;
+
     console.log("attackProwess value", attackProwess);
     // get tier from diceRoll
     const numDice = attackProwess + damageRating;
