@@ -316,7 +316,6 @@ const Game: React.FC = () => {
     if (choice !== "Manual") {
       // get tier from dice roll
       const tier = rollDice(numDice);
-      // const tier = 0; // shows all of the unwanted divs
       setSuccessfulRolls(tier);
       console.log("tier", tier);
       if (pokeReceiver) {
@@ -422,7 +421,7 @@ const Game: React.FC = () => {
           {numDiceToRoll && <div>Number Of Dice To Roll: {numDiceToRoll}</div>}
         </div>
         <div>
-          {numDiceToRoll && !successfulRolls && (
+          {numDiceToRoll && successfulRolls === null && (
             <div>
               Enter the Number Of Dice 5 or Above:
               <input
@@ -436,20 +435,22 @@ const Game: React.FC = () => {
           )}
         </div>
         <div>
-          {successfulRolls !== null && (
+          {successfulRolls !== null && successfulRolls !== undefined && (
             <div>Number Of Rolls 5 and above: {successfulRolls}</div>
           )}
         </div>
-        {numDiceToRoll && successfulRolls && (
-          <div>
-            <Button
-              className="bg-red-500 hover:bg-red-700"
-              onClick={handleClearRolls}
-            >
-              Clear Rolls
-            </Button>
-          </div>
-        )}
+        {numDiceToRoll &&
+          successfulRolls !== null &&
+          successfulRolls !== undefined && (
+            <div>
+              <Button
+                className="bg-red-500 hover:bg-red-700"
+                onClick={handleClearRolls}
+              >
+                Clear Rolls
+              </Button>
+            </div>
+          )}
       </div>
       <CharacterSheet character={character} />
       <Modal
