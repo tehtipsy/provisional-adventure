@@ -1,13 +1,5 @@
-import {
-  JSXElementConstructor,
-  Key,
-  ReactElement,
-  ReactFragment,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
 import * as Ably from "ably/promises";
@@ -29,7 +21,7 @@ import PokeButton from "@/components/ui/pokeButton";
 import EndTurnButton from "@/components/ui/endTurnButton";
 import { CharacterSheet } from "@/components/characterSheet";
 import AttackOptions from "@/components/attackOptions";
-import React from "react";
+import Button from "@/components/ui/button";
 
 interface CharacterSheetInterface {
   characterSheet: any;
@@ -49,8 +41,12 @@ const Game: React.FC = () => {
   const [pokeReceiver, setPokeReceiver] = useState<string | null>(null);
   const [showPartSelection, setShowPartSelection] = useState(false);
   const [showAttackSelection, setShowAttackSelection] = useState(false);
+  const [showAutoRollSelection, setShowAutoRollSelection] = useState(false);
   const [selectedBodyPart, setSelectedBodyPart] = useState<string | null>(null);
-  const [numDiceToRoll, setNumDiceToRoll] = useState<string | null>(null);
+  const [selectedDamageType, setSelectedDamageType] = useState<string | null>(
+    null
+  );
+  const [numDiceToRoll, setNumDiceToRoll] = useState<number | null>(null);
   const [successfulRolls, setSuccessfulRolls] = useState<number | null>(null);
 
   const [pokeNotification, setPokeNotification] = useState<string | null>();
@@ -240,39 +236,21 @@ const Game: React.FC = () => {
     console.log(characterData);
   };
 
-  const sendPoke = (receiver: string, attackDamageType: string) => {
-    console.log("Selected Body Part: ", selectedBodyPart);
+  const sendPoke = (receiver: string, tier: number) => {
+    console.log("Tier in sendPoke: ", tier);
+    console.log("Selected Body Part in sendPoke: ", selectedBodyPart);
+    console.log("Selected Damage Type in sendPoke: ", selectedDamageType);
+
     const characterSheet = character?.characterSheet;
-    const handsSlot = characterSheet.equipment.hands;
-
     const weaponName = characterSheet.equipment.hands.name;
-    const damageRating = handsSlot.damageRating;
-
-    const attackProwess = 
-      characterSheet.attributes.prowess.unmodifiedValue 
-      + characterSheet.attributes.prowess.t1 
-      + characterSheet.attributes.prowess.t2 
-      + characterSheet.attributes.prowess.t3 
-      + characterSheet.attributes.prowess.t4 
-      + characterSheet.attributes.prowess.bonus;
-
-    console.log("attackProwess value", attackProwess);
-    // get tier from diceRoll
-    const numDice = attackProwess + damageRating;
-    setNumDiceToRoll(numDice);
-    console.log("numDice", numDice);
-    const tier = rollDice(numDice);
-    setSuccessfulRolls(tier);
-    console.log("tier", tier);
 
     channel?.publish("poke", {
       sender: user,
       receiver,
       timestamp: new Date().toISOString(),
-      damageRating: damageRating,
       tier: tier,
       bodyPart: selectedBodyPart, // FIX async
-      damageType: attackDamageType,
+      damageType: selectedDamageType,
       action: "attack", // add choice
     });
   };
@@ -306,12 +284,64 @@ const Game: React.FC = () => {
   }
 
   function handleAttackSelection(attack: string) {
-    if (pokeReceiver) {
-      sendPoke(pokeReceiver, attack); // move after rollDice manual switch
-      setShowAttackSelection(false);
-      setPokeReceiver(null);
-    }
+    setSelectedDamageType(attack);
+    setShowAttackSelection(false);
+    setShowAutoRollSelection(true);
   }
+
+  const handleRollSelection = (choice: string) => {
+    handleDiceRolls(choice);
+    setShowAutoRollSelection(false);
+  };
+
+  const handleDiceRolls = (choice: string) => {
+    const characterSheet = character?.characterSheet;
+    const handsSlot = characterSheet.equipment.hands;
+
+    const damageRating = handsSlot.damageRating;
+
+    const attackProwess =
+      characterSheet.attributes.prowess.unmodifiedValue +
+      characterSheet.attributes.prowess.t1 +
+      characterSheet.attributes.prowess.t2 +
+      characterSheet.attributes.prowess.t3 +
+      characterSheet.attributes.prowess.t4 +
+      characterSheet.attributes.prowess.bonus;
+    console.log("attackProwess value", attackProwess);
+
+    const numDice = attackProwess + damageRating;
+    setNumDiceToRoll(numDice);
+    console.log("numDice", numDice);
+
+    if (choice !== "Manual") {
+      // get tier from dice roll
+      const tier = rollDice(numDice);
+      setSuccessfulRolls(tier);
+      console.log("tier", tier);
+      if (pokeReceiver) {
+        // add checks for other selections?
+        sendPoke(pokeReceiver, tier);
+        setPokeReceiver(null);
+        // handleClearRolls(); // commented out to show the user
+      }
+    }
+  };
+
+  const handleClearRolls = () => {
+    setSuccessfulRolls(null);
+    setNumDiceToRoll(null);
+  };
+
+  const handleDiceInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const tier = parseInt(event.target.value, 10);
+    console.log("Dice Above 5 Input: ", tier);
+    setSuccessfulRolls(tier);
+    if (pokeReceiver) {
+      sendPoke(pokeReceiver, tier);
+      setPokeReceiver(null);
+      handleClearRolls();
+    }
+  };
 
   return (
     <BasePage>
@@ -344,13 +374,14 @@ const Game: React.FC = () => {
                         {username === user ? (
                           " (you)"
                         ) : username === currentPlayer ? (
-                          " (Now Playing)"
+                          " (now playing)"
                         ) : user === currentPlayer ? (
                           pokeReceiver !== username ? (
                             <PokeButton
                               onPoke={() => {
                                 setPokeReceiver(username);
                                 setShowPartSelection(true);
+                                handleClearRolls();
                               }}
                             />
                           ) : showPartSelection ? (
@@ -370,6 +401,11 @@ const Game: React.FC = () => {
                                 onOptionSelection={handleAttackSelection}
                               />
                             )
+                          ) : showAutoRollSelection ? (
+                            <AttackOptions
+                              options={["Auto", "Manual"]}
+                              onOptionSelection={handleRollSelection}
+                            />
                           ) : null
                         ) : null}
                       </div>
@@ -385,10 +421,36 @@ const Game: React.FC = () => {
           {numDiceToRoll && <div>Number Of Dice To Roll: {numDiceToRoll}</div>}
         </div>
         <div>
-          {successfulRolls !== null && (
+          {numDiceToRoll && successfulRolls === null && (
+            <div>
+              Enter the Number Of Dice 5 or Above:
+              <input
+                placeholder="0"
+                type="number"
+                min={1}
+                max={6}
+                onChange={handleDiceInput}
+              />{" "}
+            </div>
+          )}
+        </div>
+        <div>
+          {successfulRolls !== null && successfulRolls !== undefined && (
             <div>Number Of Rolls 5 and above: {successfulRolls}</div>
           )}
         </div>
+        {numDiceToRoll &&
+          successfulRolls !== null &&
+          successfulRolls !== undefined && (
+            <div>
+              <Button
+                className="bg-red-500 hover:bg-red-700"
+                onClick={handleClearRolls}
+              >
+                Clear Rolls
+              </Button>
+            </div>
+          )}
       </div>
       <CharacterSheet character={character} />
       <Modal
