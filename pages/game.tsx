@@ -1,13 +1,5 @@
-import {
-  JSXElementConstructor,
-  Key,
-  ReactElement,
-  ReactFragment,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
 import * as Ably from "ably/promises";
@@ -29,7 +21,7 @@ import PokeButton from "@/components/ui/pokeButton";
 import EndTurnButton from "@/components/ui/endTurnButton";
 import { CharacterSheet } from "@/components/characterSheet";
 import AttackOptions from "@/components/attackOptions";
-import React from "react";
+import Button from "@/components/ui/button";
 
 interface CharacterSheetInterface {
   characterSheet: any;
@@ -50,7 +42,7 @@ const Game: React.FC = () => {
   const [showPartSelection, setShowPartSelection] = useState(false);
   const [showAttackSelection, setShowAttackSelection] = useState(false);
   const [selectedBodyPart, setSelectedBodyPart] = useState<string | null>(null);
-  const [numDiceToRoll, setNumDiceToRoll] = useState<string | null>(null);
+  const [numDiceToRoll, setNumDiceToRoll] = useState<number | null>(null);
   const [successfulRolls, setSuccessfulRolls] = useState<number | null>(null);
 
   const [pokeNotification, setPokeNotification] = useState<string | null>();
@@ -248,13 +240,13 @@ const Game: React.FC = () => {
     const weaponName = characterSheet.equipment.hands.name;
     const damageRating = handsSlot.damageRating;
 
-    const attackProwess = 
-      characterSheet.attributes.prowess.unmodifiedValue 
-      + characterSheet.attributes.prowess.t1 
-      + characterSheet.attributes.prowess.t2 
-      + characterSheet.attributes.prowess.t3 
-      + characterSheet.attributes.prowess.t4 
-      + characterSheet.attributes.prowess.bonus;
+    const attackProwess =
+      characterSheet.attributes.prowess.unmodifiedValue +
+      characterSheet.attributes.prowess.t1 +
+      characterSheet.attributes.prowess.t2 +
+      characterSheet.attributes.prowess.t3 +
+      characterSheet.attributes.prowess.t4 +
+      characterSheet.attributes.prowess.bonus;
 
     console.log("attackProwess value", attackProwess);
     // get tier from diceRoll
@@ -313,6 +305,11 @@ const Game: React.FC = () => {
     }
   }
 
+  const handleClearRolls = () => {
+    setSuccessfulRolls(null);
+    setNumDiceToRoll(null);
+  };
+
   return (
     <BasePage>
       <div className="text-2xl m-6 text-center">
@@ -344,7 +341,7 @@ const Game: React.FC = () => {
                         {username === user ? (
                           " (you)"
                         ) : username === currentPlayer ? (
-                          " (Now Playing)"
+                          " (now playing)"
                         ) : user === currentPlayer ? (
                           pokeReceiver !== username ? (
                             <PokeButton
@@ -389,6 +386,16 @@ const Game: React.FC = () => {
             <div>Number Of Rolls 5 and above: {successfulRolls}</div>
           )}
         </div>
+        {numDiceToRoll && successfulRolls && (
+          <div>
+            <Button
+              className="bg-red-500 hover:bg-red-700"
+              onClick={handleClearRolls}
+            >
+              Clear
+            </Button>
+          </div>
+        )}
       </div>
       <CharacterSheet character={character} />
       <Modal
