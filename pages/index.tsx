@@ -11,11 +11,18 @@ export default function Index() {
     <BasePage>
       <UserForm />
       {user ? (
-        <div className="flex m-6 justify-center">
-          <Link href="/game">
-            <Button>Enter the game room</Button>
-          </Link>
-        </div>
+        <>
+          <div className="flex m-6 justify-center">
+            <Link href="/game">
+              <Button>Enter the game room</Button>
+            </Link>
+          </div>
+          <div className="flex m-6 justify-center">
+            <Link href="/manageCharacter">
+              <Button>Manage Character Sheet</Button>
+            </Link>
+          </div>
+        </>
       ) : null}
     </BasePage>
   );
