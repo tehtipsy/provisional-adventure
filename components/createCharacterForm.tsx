@@ -2,14 +2,12 @@ import { FormEvent, useContext, useState } from "react";
 import { GlobalContext } from "@/contexts/globalContext";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
-import { useRouter } from "next/router";
 
 type CreateCharacterFormProps = {
   onFormSubmit: () => void;
 };
 
 export const CreateCharacterForm = ({ onFormSubmit }: CreateCharacterFormProps) => {
-  const router = useRouter();
 
   const { user } = useContext(GlobalContext);
   const [name, setName] = useState("");
@@ -98,7 +96,7 @@ export const CreateCharacterForm = ({ onFormSubmit }: CreateCharacterFormProps) 
 
   return (
     <>
-      <div className="text-2xl m-6 text-center">{user}'s New Character</div>
+      <div className="text-2xl m-6 text-center">{`${user}'s New Character`}</div>
       <form
         onSubmit={handleSubmit}
         className="w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded"

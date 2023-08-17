@@ -140,7 +140,7 @@ const Game: React.FC = () => {
 
       return () => {};
     }
-  }, [user, ably, channel, onlineUsers, handlePresenceMessage]);
+  }, [router, user, ably, channel, onlineUsers, handlePresenceMessage]);
 
   useEffect(() => {
     fetchCharacterData();

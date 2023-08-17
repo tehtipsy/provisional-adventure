@@ -42,7 +42,7 @@ const ManageCharacter: React.FC = () => {
     }
 
     fetchCharacterData();
-  }, [isSubmitted]);
+  }, [isSubmitted, router]);
 
   return isLoading ? (
     <>
