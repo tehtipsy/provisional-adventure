@@ -142,93 +142,96 @@ const Game: React.FC = () => {
     }
   }, [router, user, ably, channel, onlineUsers, handlePresenceMessage]);
 
+  const fetchCharacterData = useCallback(async () => {
+    const characterData = await fetchCharacterSheet(user);
+    setCharacter(characterData);
+    console.log(characterData);
+  }, [user]);
+
   useEffect(() => {
     fetchCharacterData();
-  }, []);
+  }, [fetchCharacterData]);
 
+  // Subscribe to Turn "currentPlayer" Change event
   useEffect(() => {
-    // custom events in "game" channel
-    // Subscribe to Turn "currentPlayer" Change event
-    channel?.subscribe("currentPlayer", (message) => {
-      setCurrentPlayer(message.data);
-    });
-
-    // Subscribe to "poke" event
-    channel?.subscribe("poke", async (message) => {
-      const {
-        tier,
-        damageType,
-        bodyPart,
-        action,
-        sender,
-        receiver,
-        timestamp,
-      } = message.data;
-
-      if (sender === user) {
-        const data = {
-          receiver: receiver,
-          sender: sender,
-          action: action,
-          tier: tier,
-          bodyPart: bodyPart,
-          damageType: damageType,
-        };
-
-        const updatedCharacterData = await updateCharacterSheet(data);
-        console.log(updatedCharacterData); // sender and reciver sheets
-        console.log(updatedCharacterData.updatedSenderCharacterData.value);
-        setCharacter({
-          characterSheet: updatedCharacterData.updatedSenderCharacterData.value,
-        });
-
-        // Send a message to the receiver
-        channel?.publish("update-complete", {
-          updatedCharacterData: updatedCharacterData.updatedCharacterData.value,
-          timestamp: timestamp,
-          sender: sender,
-          receiver: receiver,
-        });
-      }
-    });
-
-    // Subscribe to Character Sheet "update-complete" Change event
-    channel?.subscribe("update-complete", (message) => {
-      const { updatedCharacterData, timestamp, sender, receiver } =
-        message.data;
-      if (receiver === user) {
-        console.log(
-          "Updated Character Sheet Recived from attacker: ",
-          updatedCharacterData
-        );
-        setCharacter({ characterSheet: updatedCharacterData });
-        // set poke sender to display poke alert
-        setPokeSender(sender);
-        // display message to the user in the DOM
-        console.log(`You received a poke from ${sender}`);
-        setPokeNotification(
-          `${timestamp} - You received a poke from ${sender}`
-        );
-        setIsModalOpen(true);
-      }
-    });
-  }, [channel]);
-
-  useEffect(() => {
-    if (onlineUsers.length > 0) {
-      updateTurnInDatabase();
+    if (channel) {
+      channel.subscribe("currentPlayer", (message) => {
+        setCurrentPlayer(message.data);
+      });
     }
-  }, [onlineUsers]);
+  }, [channel, setCurrentPlayer]);
 
+  // Subscribe to "poke" event
   useEffect(() => {
-    if (pokeReceiver && successfulRolls) {
-      sendPoke(pokeReceiver, successfulRolls);
-      setPokeReceiver(null);
-      // handleClearRolls(); // commented out to show the user
-    }
-  }, [successfulRolls, pokeReceiver]);
+    if (channel && user) {
+      channel.subscribe("poke", async (message) => {
+        const {
+          tier,
+          damageType,
+          bodyPart,
+          action,
+          sender,
+          receiver,
+          timestamp,
+        } = message.data;
 
-  const updateTurnInDatabase = async () => {
+        if (sender === user) {
+          const data = {
+            receiver: receiver,
+            sender: sender,
+            action: action,
+            tier: tier,
+            bodyPart: bodyPart,
+            damageType: damageType,
+          };
+
+          const updatedCharacterData = await updateCharacterSheet(data);
+          console.log(updatedCharacterData); // sender and reciver sheets
+          console.log(updatedCharacterData.updatedSenderCharacterData.value);
+          setCharacter({
+            characterSheet:
+              updatedCharacterData.updatedSenderCharacterData.value,
+          });
+
+          // Send a message to the receiver
+          channel.publish("update-complete", {
+            updatedCharacterData:
+              updatedCharacterData.updatedCharacterData.value,
+            timestamp: timestamp,
+            sender: sender,
+            receiver: receiver,
+          });
+        }
+      });
+    }
+  }, [channel, user]);
+
+  // Subscribe to Character Sheet "update-complete" Change event
+  useEffect(() => {
+    if (channel && user) {
+      channel.subscribe("update-complete", (message) => {
+        const { updatedCharacterData, timestamp, sender, receiver } =
+          message.data;
+        if (receiver === user) {
+          console.log(
+            "Updated Character Sheet Recived from attacker: ",
+            updatedCharacterData
+          );
+          setCharacter({ characterSheet: updatedCharacterData });
+          // set poke sender to display poke alert
+          setPokeSender(sender);
+          // display message to the user in the DOM
+          console.log(`You received a poke from ${sender}`);
+          setPokeNotification(
+            `${timestamp} - You received a poke from ${sender}`
+          );
+          setIsModalOpen(true);
+        }
+      });
+    }
+  }, [channel, user]);
+
+  const updateTurnInDatabase = useCallback(async () => {
     // Post Online Users To turn MongoDB Doc
     await fetch("/api/db/turn", {
       method: "POST",
@@ -237,33 +240,43 @@ const Game: React.FC = () => {
       },
       body: JSON.stringify({ players: onlineUsers }),
     });
-  };
+  }, [onlineUsers]);
 
-  const fetchCharacterData = async () => {
-    const characterData = await fetchCharacterSheet(user);
-    setCharacter(characterData);
-    console.log(characterData);
-  };
+  useEffect(() => {
+    if (onlineUsers.length > 0) {
+      updateTurnInDatabase();
+    }
+  }, [onlineUsers, updateTurnInDatabase]);
 
-  const sendPoke = (receiver: string, tier: number) => {
-    console.log("Tier in sendPoke: ", tier);
-    console.log("Selected Body Part in sendPoke: ", selectedBodyPart);
-    console.log("Selected Damage Type in sendPoke: ", selectedDamageType);
+  const sendPoke = useCallback(
+    (receiver: string, tier: number) => {
+      console.log("Tier in sendPoke: ", tier);
+      console.log("Selected Body Part in sendPoke: ", selectedBodyPart);
+      console.log("Selected Damage Type in sendPoke: ", selectedDamageType);
 
-    const characterSheet = character?.characterSheet;
-    const weaponName = characterSheet.equipment.hands.name;
+      const characterSheet = character?.characterSheet;
+      const weaponName = characterSheet.equipment.hands.name;
 
-    channel?.publish("poke", {
-      receiver,
-      tier: tier,
-      action: "attack", // add choice
-      sender: user,
-      bodyPart: selectedBodyPart, // FIX async
-      damageType: selectedDamageType, // FIX async
-      weapon: weaponName,
-      timestamp: new Date().toISOString(),
-    });
-  }; // useEffect [selectedBodyPart, selectedDamageType, action, ???,] ???
+      channel?.publish("poke", {
+        action: "attack", // add choice
+        receiver,
+        tier: tier,
+        sender: user,
+        bodyPart: selectedBodyPart,
+        damageType: selectedDamageType,
+        weapon: weaponName,
+        timestamp: new Date().toISOString(),
+      });
+    },
+    [channel, user, selectedBodyPart, selectedDamageType, character] // , action]
+  );
+
+  useEffect(() => {
+    if (pokeReceiver && successfulRolls !== null) {
+      sendPoke(pokeReceiver, successfulRolls);
+      setPokeReceiver(null);
+    }
+  }, [successfulRolls, pokeReceiver, sendPoke]);
 
   const endTurn = async (user: string) => {
     const data = {
@@ -314,7 +327,7 @@ const Game: React.FC = () => {
     }
   }; // useEffect [character, ???] ???
 
-  // handleDiceRolls choice === "Auto" ?
+  // handleDiceRolls choice === "Auto":
   const handleDiceInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const tier = parseInt(event.target.value, 10);
     console.log("Dice Above 5 Input: ", tier);

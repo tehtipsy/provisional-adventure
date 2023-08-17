@@ -68,7 +68,7 @@ export async function actionResolver(
   tier: number,
   bodyPart: string
 ) {
-  console.log(sender, receiver, action, damageType, bodyPart);
+  console.log(sender, receiver, action, damageType, bodyPart, tier);
 
   // Construct the update object based on the action, damageType, and tier
   const update: UpdateInterface = {

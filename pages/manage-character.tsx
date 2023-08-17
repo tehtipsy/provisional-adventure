@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import BasePage from "@/components/base/basePage";
 import Loading from "@/components/ui/loading";
 import Button from "@/components/ui/button";
@@ -28,21 +28,20 @@ const ManageCharacter: React.FC = () => {
     setIsSubmitted((prevState) => !prevState);
   };
 
-  const fetchCharacterData = async () => {
+  const fetchCharacterData = useCallback(async () => {
     setIsLoading(true);
     const characterData = await fetchCharacterSheet(user);
     setCharacter(characterData);
     console.log(characterData);
     setIsLoading(false);
-  };
+  }, [user]); // include dependencies of fetchCharacterData here
 
   useEffect(() => {
     if (!user) {
       router.push("/");
     }
-
     fetchCharacterData();
-  }, [isSubmitted, router]);
+  }, [router, user, isSubmitted, fetchCharacterData]);
 
   return isLoading ? (
     <>
