@@ -335,13 +335,17 @@ const Game: React.FC = () => {
   const handleDiceInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const tier = parseInt(event.target.value, 10);
     console.log("Dice Above 5 Input: ", tier);
-    setSuccessfulRolls(tier);
-    if (pokeReceiver) {
-      sendPoke(pokeReceiver, tier);
-      setPokeReceiver(null);
-      handleClearRolls();
-    }
+    setTimeout(() => setSuccessfulRolls(tier), 1000);
   };
+  
+  useEffect(() => {
+    if (pokeReceiver && successfulRolls) {
+      sendPoke(pokeReceiver, successfulRolls);
+      setPokeReceiver(null);
+      // handleClearRolls(); // commented out to show the user
+    }
+  }, [successfulRolls, pokeReceiver]);
+
 
   return (
     <BasePage>
