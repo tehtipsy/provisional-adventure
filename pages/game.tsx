@@ -22,6 +22,7 @@ import EndTurnButton from "@/components/ui/endTurnButton";
 import { CharacterSheet } from "@/components/characterSheet";
 import AttackOptions from "@/components/attackOptions";
 import Button from "@/components/ui/button";
+import Input from "@/components/ui/input";
 
 interface CharacterSheetInterface {
   characterSheet: any;
@@ -423,11 +424,11 @@ const Game: React.FC = () => {
           {numDiceToRoll && successfulRolls === null && (
             <div>
               Enter the Number Of Dice 5 or Above:
-              <input
+              <Input
                 placeholder="0"
                 type="number"
                 min={1}
-                max={6}
+                max={99}
                 onChange={handleDiceInput}
               />{" "}
             </div>

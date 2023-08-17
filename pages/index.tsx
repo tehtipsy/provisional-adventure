@@ -18,7 +18,7 @@ export default function Index() {
             </Link>
           </div>
           <div className="flex m-6 justify-center">
-            <Link href="/manageCharacter">
+            <Link href="/manage-character">
               <Button>Manage Character Sheet</Button>
             </Link>
           </div>

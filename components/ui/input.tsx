@@ -1,5 +1,5 @@
 type InputProps = React.ComponentPropsWithoutRef<"input">;
-const Button: React.FC<InputProps> = (props) => {
+const Input: React.FC<InputProps> = (props) => {
   return (
     <input
       type="text"
@@ -11,4 +11,4 @@ const Button: React.FC<InputProps> = (props) => {
   );
 };
 
-export default Button;
+export default Input;

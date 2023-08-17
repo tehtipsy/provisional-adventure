@@ -1,7 +1,7 @@
 import { FormEvent, useContext, useState } from "react";
 import { GlobalContext } from "@/contexts/globalContext";
 import Button from "@/components/ui/button";
-import Input from "./ui/input";
+import Input from "@/components/ui/input";
 
 export const UserForm = () => {
   const { user, setUser } = useContext(GlobalContext);

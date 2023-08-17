@@ -26,9 +26,21 @@ export default async function handler( // CharacterSheetHandler
     }
     return res.status(200).json({ characterSheet: characterSheet });
   } else if (req.method === "POST") {
-    const data = req.body; // from poke event
+    const data = req.body;
+
+    if (req.body.newSheet) {
+      // switch with "newSheet" action?
+      const result = await db
+        .collection("character-sheets")
+        .insertOne(req.body.newSheet);
+
+      await client.close();
+
+      return res.status(200).json({ insertedId: result.insertedId });
+    }
+
     const { action, weapon, damageType, tier, bodyPart, sender, receiver } =
-      data;
+      data; // from poke event
 
     const update = await actionResolver(
       sender,
@@ -39,7 +51,7 @@ export default async function handler( // CharacterSheetHandler
       tier,
       bodyPart
     );
-    
+
     // https://www.mongodb.com/docs/manual/reference/method/db.collection.findOneAndUpdate/
     const updatedCharacterData = await db
       .collection("character-sheets")
