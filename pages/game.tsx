@@ -16,7 +16,7 @@ import rollDice from "@/utils/game/rollDice";
 import BasePage from "@/components/base/basePage";
 import Modal from "react-modal";
 import { PokeNotification } from "@/components/pokeNotification";
-import Loading from "@/pages/loading";
+import Loading from "@/components/ui/loading";
 import PokeButton from "@/components/ui/pokeButton";
 import EndTurnButton from "@/components/ui/endTurnButton";
 import { CharacterSheet } from "@/components/characterSheet";
@@ -347,7 +347,12 @@ const Game: React.FC = () => {
     <BasePage>
       <div className="text-2xl m-6 text-center">
         {onlineUsers.length === 0 ? (
-          <Loading />
+          <>
+            <Loading />
+            <Loading />
+            <Loading />
+            <Loading />
+          </>
         ) : (
           <>
             <>

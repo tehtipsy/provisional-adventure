@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
 import BasePage from "@/components/base/basePage";
+import Loading from "@/components/ui/loading";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import { GlobalContext } from "@/contexts/globalContext";
@@ -17,6 +18,7 @@ const ManageCharacter: React.FC = () => {
 
   const { user } = useContext(GlobalContext);
 
+  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [character, setCharacter] = useState<CharacterSheetInterface | null>(
     null
@@ -27,9 +29,11 @@ const ManageCharacter: React.FC = () => {
   };
 
   const fetchCharacterData = async () => {
+    setIsLoading(true);
     const characterData = await fetchCharacterSheet(user);
     setCharacter(characterData);
     console.log(characterData);
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -40,7 +44,18 @@ const ManageCharacter: React.FC = () => {
     fetchCharacterData();
   }, [isSubmitted]);
 
-  return character ? (
+  return isLoading ? (
+    <>
+      <BasePage>
+        <Loading />
+        <Loading />
+        <Loading />
+        <Loading />
+        <Loading />
+        <Loading />
+      </BasePage>
+    </>
+  ) : character ? (
     <BasePage>
       <CharacterSheet character={character} />
     </BasePage>
