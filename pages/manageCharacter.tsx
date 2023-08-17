@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
 import BasePage from "@/components/base/basePage";
 import { GlobalContext } from "@/contexts/globalContext";
-import { fetchMyCharacterSheet } from "@/utils/game/characterSheets";
+import { fetchCharacterSheet } from "@/utils/game/characterSheets";
 import { CharacterSheet } from "@/components/characterSheet";
 
 interface CharacterSheetInterface {
@@ -17,20 +17,20 @@ const ManageCharacter: React.FC = () => {
   const [character, setCharacter] = useState<CharacterSheetInterface | null>(
     null
   );
-  
+
   const fetchCharacterData = async () => {
-    const characterData = await fetchMyCharacterSheet(user);
+    const characterData = await fetchCharacterSheet(user);
     setCharacter(characterData);
     console.log(characterData);
   };
-  
+
   useEffect(() => {
     if (!user) {
       router.push("/");
     }
 
     fetchCharacterData();
-  },[])
+  }, []);
 
   return (
     <BasePage>

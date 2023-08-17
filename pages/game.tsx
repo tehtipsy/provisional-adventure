@@ -8,7 +8,7 @@ import { GlobalContext } from "@/contexts/globalContext";
 import { TurnContext } from "@/contexts/turnContext";
 
 import {
-  fetchMyCharacterSheet,
+  fetchCharacterSheet,
   updateCharacterSheet,
 } from "@/utils/game/characterSheets";
 import rollDice from "@/utils/game/rollDice";
@@ -142,6 +142,10 @@ const Game: React.FC = () => {
   }, [user, ably, channel, onlineUsers, handlePresenceMessage]);
 
   useEffect(() => {
+    fetchCharacterData();
+  }, []);
+
+  useEffect(() => {
     // custom events in "game" channel
     // Subscribe to Turn "currentPlayer" Change event
     channel?.subscribe("currentPlayer", (message) => {
@@ -216,8 +220,12 @@ const Game: React.FC = () => {
   }, [onlineUsers]);
 
   useEffect(() => {
-    fetchCharacterData();
-  }, []);
+    if (pokeReceiver && successfulRolls) {
+      sendPoke(pokeReceiver, successfulRolls);
+      setPokeReceiver(null);
+      // handleClearRolls(); // commented out to show the user
+    }
+  }, [successfulRolls, pokeReceiver]);
 
   const updateTurnInDatabase = async () => {
     // Post Online Users To turn MongoDB Doc
@@ -231,7 +239,7 @@ const Game: React.FC = () => {
   };
 
   const fetchCharacterData = async () => {
-    const characterData = await fetchMyCharacterSheet(user);
+    const characterData = await fetchCharacterSheet(user);
     setCharacter(characterData);
     console.log(characterData);
   };
@@ -245,15 +253,16 @@ const Game: React.FC = () => {
     const weaponName = characterSheet.equipment.hands.name;
 
     channel?.publish("poke", {
-      sender: user,
       receiver,
-      timestamp: new Date().toISOString(),
       tier: tier,
-      bodyPart: selectedBodyPart, // FIX async
-      damageType: selectedDamageType,
       action: "attack", // add choice
+      sender: user,
+      bodyPart: selectedBodyPart, // FIX async
+      damageType: selectedDamageType, // FIX async
+      weapon: weaponName,
+      timestamp: new Date().toISOString(),
     });
-  };
+  }; // useEffect [selectedBodyPart, selectedDamageType, action, ???,] ???
 
   const endTurn = async (user: string) => {
     const data = {
@@ -277,6 +286,40 @@ const Game: React.FC = () => {
     }
   };
 
+  const handleDiceRolls = (choice: string) => {
+    const characterSheet = character?.characterSheet;
+    const handsSlot = characterSheet.equipment.hands;
+
+    const damageRating = handsSlot.damageRating;
+
+    const characterProwess = characterSheet.attributes.prowess;
+    const attackProwess =
+      characterProwess.unmodifiedValue +
+      characterProwess.t1 +
+      characterProwess.t2 +
+      characterProwess.t3 +
+      characterProwess.t4 +
+      characterProwess.bonus;
+    console.log("attackProwess value: ", attackProwess);
+
+    const numDice = attackProwess + damageRating;
+    setNumDiceToRoll(numDice);
+    console.log("numDice: ", numDice);
+
+    if (choice !== "Manual") {
+      // get tier from dice roll
+      const tier = rollDice(numDice);
+      setSuccessfulRolls(tier);
+    }
+  }; // useEffect [character, ???] ???
+
+  // handleDiceRolls choice === "Auto" ?
+  const handleDiceInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const tier = parseInt(event.target.value, 10);
+    console.log("Dice Above 5 Input: ", tier);
+    setTimeout(() => setSuccessfulRolls(tier), 1000);
+  };
+
   function handlePartSelection(bodyPart: string) {
     setSelectedBodyPart(bodyPart);
     setShowPartSelection(false);
@@ -294,58 +337,10 @@ const Game: React.FC = () => {
     setShowAutoRollSelection(false);
   };
 
-  const handleDiceRolls = (choice: string) => {
-    const characterSheet = character?.characterSheet;
-    const handsSlot = characterSheet.equipment.hands;
-
-    const damageRating = handsSlot.damageRating;
-
-    const attackProwess =
-      characterSheet.attributes.prowess.unmodifiedValue +
-      characterSheet.attributes.prowess.t1 +
-      characterSheet.attributes.prowess.t2 +
-      characterSheet.attributes.prowess.t3 +
-      characterSheet.attributes.prowess.t4 +
-      characterSheet.attributes.prowess.bonus;
-    console.log("attackProwess value", attackProwess);
-
-    const numDice = attackProwess + damageRating;
-    setNumDiceToRoll(numDice);
-    console.log("numDice", numDice);
-
-    if (choice !== "Manual") {
-      // get tier from dice roll
-      const tier = rollDice(numDice);
-      setSuccessfulRolls(tier);
-      console.log("tier", tier);
-      if (pokeReceiver) {
-        // add checks for other selections?
-        sendPoke(pokeReceiver, tier);
-        setPokeReceiver(null);
-        // handleClearRolls(); // commented out to show the user
-      }
-    }
-  };
-
   const handleClearRolls = () => {
     setSuccessfulRolls(null);
     setNumDiceToRoll(null);
   };
-
-  const handleDiceInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const tier = parseInt(event.target.value, 10);
-    console.log("Dice Above 5 Input: ", tier);
-    setTimeout(() => setSuccessfulRolls(tier), 1000);
-  };
-  
-  useEffect(() => {
-    if (pokeReceiver && successfulRolls) {
-      sendPoke(pokeReceiver, successfulRolls);
-      setPokeReceiver(null);
-      // handleClearRolls(); // commented out to show the user
-    }
-  }, [successfulRolls, pokeReceiver]);
-
 
   return (
     <BasePage>
