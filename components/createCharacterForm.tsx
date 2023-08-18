@@ -29,29 +29,67 @@ export const CreateCharacterForm = ({ onFormSubmit }: CreateCharacterFormProps) 
       attributes: {
         prowess: {
           unmodifiedValue: parseInt(prowess),
+          t1: 0,
+          t2: 0,
+          t3: 0,
+          t4: 0,
+          bonus: 0,
         },
         finesse: {
           unmodifiedValue: parseInt(finesse),
+          t1: 0,
+          t2: 0,
+          t3: 0,
+          t4: 0,
+          bonus: 0,
         },
         constitution: {
           unmodifiedValue: parseInt(constitution),
+          t1: 0,
+          t2: 0,
+          t3: 0,
+          t4: 0,
+          bonus: 0,
         },
         focus: {
           unmodifiedValue: parseInt(focus),
+          t1: 0,
+          t2: 0,
+          t3: 0,
+          t4: 0,
+          bonus: 0,
         },
         willpower: {
           unmodifiedValue: parseInt(willpower),
+          t1: 0,
+          t2: 0,
+          t3: 0,
+          t4: 0,
+          bonus: 0,
         },
         motivation: {
           unmodifiedValue: parseInt(motivation),
+          t1: 0,
+          t2: 0,
+          t3: 0,
+          t4: 0,
+          bonus: 0,
         },
       },
       actionPoints: 0,
       equipment: {
         hands: {
+          quantity: 1,
+          damageRating: 1,
+          damageType: ["Bludgeoning", "Slapping"],
+          name: "Fist",
           //     // choose from items array
         },
         belt: {
+          quantity: 1,
+          damageRating: 2,
+          damageType: ["Piercing", "Slashing"],
+          name: "Short Sword",
           //     // choose from items array
         },
         quiver: {
