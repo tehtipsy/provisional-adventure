@@ -7,6 +7,7 @@ import * as Ably from "ably/promises";
 import { GlobalContext } from "@/contexts/globalContext";
 import { TurnContext } from "@/contexts/turnContext";
 
+import ManageCharacter from "@/pages/manage-character";
 import {
   fetchCharacterSheet,
   updateCharacterSheet,
@@ -14,15 +15,17 @@ import {
 import rollDice from "@/utils/game/rollDice";
 
 import BasePage from "@/components/base/basePage";
+
 import Modal from "react-modal";
 import { PokeNotification } from "@/components/pokeNotification";
-import Loading from "@/components/ui/loading";
+
 import PokeButton from "@/components/ui/pokeButton";
 import EndTurnButton from "@/components/ui/endTurnButton";
-import { CharacterSheet } from "@/components/characterSheet";
 import AttackOptions from "@/components/attackOptions";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
+
+import Loading from "@/components/ui/loading";
 
 interface CharacterSheetInterface {
   characterSheet: any;
@@ -258,7 +261,7 @@ const Game: React.FC = () => {
       const weaponName = characterSheet.equipment.hands.name;
 
       channel?.publish("poke", {
-        action: "attack", // add choice
+        action: "attack", // add choice !!!
         receiver,
         tier: tier,
         sender: user,
@@ -470,7 +473,7 @@ const Game: React.FC = () => {
             </div>
           )}
       </div>
-      <CharacterSheet character={character} />
+      <ManageCharacter isDisplayedInGame={true} />
       <Modal
         className="h-0 w-1/2 flex justify-center items-center fixed inset-20"
         overlayClassName="fixed top-0 left-0 right-0 bottom-0 bg-gray-600 bg-opacity-30"

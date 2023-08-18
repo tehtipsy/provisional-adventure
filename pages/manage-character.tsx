@@ -1,17 +1,19 @@
 import { useRouter } from "next/router";
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import BasePage from "@/components/base/basePage";
-import Loading from "@/components/ui/loading";
 import { GlobalContext } from "@/contexts/globalContext";
 import { CharacterSheet } from "@/components/characterSheet";
 import { fetchCharacterSheet } from "@/utils/game/characterSheets";
 import { CreateCharacterForm } from "@/components/createCharacterForm";
+import BasePage from "@/components/base/basePage";
+import Loading from "@/components/ui/loading";
 
 interface CharacterSheetInterface {
   characterSheet: any;
 }
 
-const ManageCharacter: React.FC = () => {
+const ManageCharacter: React.FC<{ isDisplayedInGame: boolean }> = (
+  isDisplayedInGame
+): JSX.Element => {
   const router = useRouter();
 
   const { user } = useContext(GlobalContext);
@@ -40,17 +42,35 @@ const ManageCharacter: React.FC = () => {
     fetchCharacterData();
   }, [router, user, fetchCharacterData]);
 
-  return isLoading ? (
-    <>
-      <BasePage>
+  return Object.keys(isDisplayedInGame).length === 1 ? (
+    isLoading ? (
+      <>
         <Loading />
         <Loading />
         <Loading />
         <Loading />
         <Loading />
         <Loading />
-      </BasePage>
-    </>
+      </>
+    ) : character ? (
+      <CharacterSheet character={character} />
+    ) : (
+      <CreateCharacterForm
+        onFormSubmit={handleFormSubmit}
+        fetchCharacterData={fetchCharacterData}
+      />
+    )
+  ) : isLoading ? (
+    <BasePage>
+      <>
+        <Loading />
+        <Loading />
+        <Loading />
+        <Loading />
+        <Loading />
+        <Loading />
+      </>
+    </BasePage>
   ) : character ? (
     <BasePage>
       <CharacterSheet character={character} />
