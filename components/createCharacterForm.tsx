@@ -5,10 +5,13 @@ import Input from "@/components/ui/input";
 
 type CreateCharacterFormProps = {
   onFormSubmit: () => void;
+  fetchCharacterData: () => void;
 };
 
-export const CreateCharacterForm = ({ onFormSubmit }: CreateCharacterFormProps) => {
-
+export const CreateCharacterForm = ({
+  onFormSubmit,
+  fetchCharacterData,
+}: CreateCharacterFormProps) => {
   const { user } = useContext(GlobalContext);
   const [name, setName] = useState("");
   const [prowess, setProwess] = useState("");
@@ -125,8 +128,16 @@ export const CreateCharacterForm = ({ onFormSubmit }: CreateCharacterFormProps) 
       },
       body: JSON.stringify({ newSheet: newSheet }),
     })
-      .then((response) => response.json())
-      .then((data) => console.log(data)) // return Character Sheet MongoDB doc _id and save to user, set in global context
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data); // return Character Sheet MongoDB doc _id and save to user, set in global context
+        fetchCharacterData(); // Refetch character data after successful form submission
+      })
       .catch((error) => console.error("Error: ", error));
 
     onFormSubmit();

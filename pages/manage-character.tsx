@@ -2,8 +2,6 @@ import { useRouter } from "next/router";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import BasePage from "@/components/base/basePage";
 import Loading from "@/components/ui/loading";
-import Button from "@/components/ui/button";
-import Input from "@/components/ui/input";
 import { GlobalContext } from "@/contexts/globalContext";
 import { CharacterSheet } from "@/components/characterSheet";
 import { fetchCharacterSheet } from "@/utils/game/characterSheets";
@@ -19,13 +17,12 @@ const ManageCharacter: React.FC = () => {
   const { user } = useContext(GlobalContext);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const [character, setCharacter] = useState<CharacterSheetInterface | null>(
     null
   );
 
   const handleFormSubmit = () => {
-    setIsSubmitted((prevState) => !prevState);
+    setIsLoading((prevState) => !prevState);
   };
 
   const fetchCharacterData = useCallback(async () => {
@@ -34,14 +31,14 @@ const ManageCharacter: React.FC = () => {
     setCharacter(characterData);
     console.log(characterData);
     setIsLoading(false);
-  }, [user]); // include dependencies of fetchCharacterData here
+  }, [user]);
 
   useEffect(() => {
     if (!user) {
       router.push("/");
     }
     fetchCharacterData();
-  }, [router, user, isSubmitted, fetchCharacterData]);
+  }, [router, user, fetchCharacterData]);
 
   return isLoading ? (
     <>
@@ -60,7 +57,10 @@ const ManageCharacter: React.FC = () => {
     </BasePage>
   ) : (
     <BasePage>
-      <CreateCharacterForm onFormSubmit={handleFormSubmit} />
+      <CreateCharacterForm
+        onFormSubmit={handleFormSubmit}
+        fetchCharacterData={fetchCharacterData}
+      />
     </BasePage>
   );
 };
