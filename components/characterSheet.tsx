@@ -10,7 +10,7 @@ export const CharacterSheet = ({ character }: CharacterSheetProps) => {
         <div>
           <h1>Action Points {character.characterSheet.actionPoints}</h1>
           <br />
-          <p>Character Name: {character.characterSheet.name}</p>
+          <p>Character Name: {character.characterSheet.characterName}</p>
           <br />
           <p>Attributes:</p>
           <br />

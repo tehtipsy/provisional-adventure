@@ -1,6 +1,6 @@
 // add character context here?
 
-export const fetchMyCharacterSheet = async (user: string) => {
+export const fetchCharacterSheet = async (user: string) => {
   const response = await fetch(`/api/db/character?name=${user}`, {
     method: "GET",
     headers: {
