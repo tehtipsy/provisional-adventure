@@ -1,19 +1,8 @@
+import { fetchAttackObject } from "@/utils/game/attacksConfig";
+
 interface UpdateInterface {
   receiverUpdate: any;
   senderUpdate: any;
-}
-type Effect = {
-  [key: string]: number;
-};
-
-type attackObjectProps = {
-  _id: string;
-  damageType: string;
-  bodyPart: string;
-  tierOneEffects: Effect[];
-  tierTwoEffects: Effect[];
-  tierThreeEffects: Effect[];
-  tierFourEffects: Effect[];
 }
 
 export async function actionResolver(
@@ -32,68 +21,43 @@ export async function actionResolver(
     receiverUpdate: {},
     senderUpdate: {},
   };
-
-  const fetchAttackObject = async (damageType: string, bodyPart: string) => {
-    const params = new URLSearchParams({
-      damageType: damageType,
-      bodyPart: bodyPart,
-    });
-    console.log(params);
-    const response = await fetch(`http://0.0.0.0:3000/api/db/wounds?${params}`);
-    const attackConfig = await response.json();
-    console.log("fetchAttackObject: ", attackConfig);
-    return attackConfig;
-  };
-
-  const chosenAttack: attackObjectProps  = await fetchAttackObject(damageType, bodyPart);
+  
+  const chosenAttack = await fetchAttackObject(damageType, bodyPart);
   console.log("chosenAttack: ", chosenAttack);
 
   if (action === "attack") {
-    //    check melee or ranged ???
     update.senderUpdate["actionPoints"] = -1;
     console.log(chosenAttack);
 
     if (chosenAttack) {
-      // Set the update object based the attack's tier
       if (tier === 1) {
-        const receiverUpdate = Object.assign(
-          {},
-          ...chosenAttack.tierOneEffects.map((effect) =>
-            JSON.parse(effect)
-          )
+        const receiverUpdate = JSON.parse(
+          chosenAttack.attackConfig.tierOneEffects
         );
-        console.log(receiverUpdate);
+        console.log("receiverUpdate: ", receiverUpdate);
 
         update.receiverUpdate = receiverUpdate;
       }
       if (tier === 2) {
-        const receiverUpdate = Object.assign(
-          {},
-          ...chosenAttack.tierTwoEffects.map((key) => JSON.parse(key))
+        const receiverUpdate = JSON.parse(
+          chosenAttack.attackConfig.tierTwoEffects
         );
-        console.log(receiverUpdate);
+        console.log("receiverUpdate: ", receiverUpdate);
 
         update.receiverUpdate = receiverUpdate;
       }
       if (tier === 3) {
-        const receiverUpdate = Object.assign(
-          {},
-          ...chosenAttack.tierThreeEffects.map((effect: string) =>
-            JSON.parse(effect)
-          )
+        const receiverUpdate = JSON.parse(
+          chosenAttack.attackConfig.tierThreeEffects
         );
-        console.log(receiverUpdate);
+        console.log("receiverUpdate: ", receiverUpdate);
         update.receiverUpdate = receiverUpdate;
       }
       if (tier === 4) {
-        const receiverUpdate = Object.assign(
-          {},
-          ...chosenAttack.tierFourEffects.map((effect: string) =>
-            JSON.parse(effect)
-          )
+        const receiverUpdate = JSON.parse(
+          chosenAttack.attackConfig.tierFourEffects
         );
-        console.log([JSON.stringify(receiverUpdate)]);
-        console.log(receiverUpdate);
+        console.log("receiverUpdate: ", receiverUpdate);
 
         update.receiverUpdate = receiverUpdate;
       }
