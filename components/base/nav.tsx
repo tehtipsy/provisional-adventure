@@ -25,8 +25,8 @@ const Nav: React.FC = () => {
       requireLogin: true,
     },
     {
-      href: "/boilerplate",
-      label: "Ably boilerplate",
+      href: "/manage-character",
+      label: "Manage character",
     },
     {
       href: "/",

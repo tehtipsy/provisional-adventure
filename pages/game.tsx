@@ -7,6 +7,7 @@ import * as Ably from "ably/promises";
 import { GlobalContext } from "@/contexts/globalContext";
 import { TurnContext } from "@/contexts/turnContext";
 
+import ManageCharacter from "@/pages/manage-character";
 import {
   fetchCharacterSheet,
   updateCharacterSheet,
@@ -14,19 +15,20 @@ import {
 import rollDice from "@/utils/game/rollDice";
 
 import BasePage from "@/components/base/basePage";
+
 import Modal from "react-modal";
 import { PokeNotification } from "@/components/pokeNotification";
-import Loading from "@/components/ui/loading";
-import PokeButton from "@/components/ui/pokeButton";
+
 import EndTurnButton from "@/components/ui/endTurnButton";
-import { CharacterSheet } from "@/components/characterSheet";
 import AttackOptions from "@/components/attackOptions";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
 
-interface CharacterSheetInterface {
+import Loading from "@/components/ui/loading";
+
+type CharacterSheetProps = {
   characterSheet: any;
-}
+};
 
 const Game: React.FC = () => {
   const router = useRouter();
@@ -34,9 +36,8 @@ const Game: React.FC = () => {
   const { user } = useContext(GlobalContext);
   const { currentPlayer, setCurrentPlayer } = useContext(TurnContext);
 
-  const [character, setCharacter] = useState<CharacterSheetInterface | null>(
-    null
-  );
+  const [character, setCharacter] = useState<CharacterSheetProps | null>(null);
+  const [refreshNeeded, setRefreshNeeded] = useState(false);
 
   const [pokeSender, setPokeSender] = useState<string | null>(null);
   const [pokeReceiver, setPokeReceiver] = useState<string | null>(null);
@@ -142,16 +143,6 @@ const Game: React.FC = () => {
     }
   }, [router, user, ably, channel, onlineUsers, handlePresenceMessage]);
 
-  const fetchCharacterData = useCallback(async () => {
-    const characterData = await fetchCharacterSheet(user);
-    setCharacter(characterData);
-    console.log(characterData);
-  }, [user]);
-
-  useEffect(() => {
-    fetchCharacterData();
-  }, [fetchCharacterData]);
-
   // Subscribe to Turn "currentPlayer" Change event
   useEffect(() => {
     if (channel) {
@@ -192,6 +183,7 @@ const Game: React.FC = () => {
             characterSheet:
               updatedCharacterData.updatedSenderCharacterData.value,
           });
+          setRefreshNeeded(true);
 
           // Send a message to the receiver
           channel.publish("update-complete", {
@@ -218,6 +210,7 @@ const Game: React.FC = () => {
             updatedCharacterData
           );
           setCharacter({ characterSheet: updatedCharacterData });
+          setRefreshNeeded(true);
           // set poke sender to display poke alert
           setPokeSender(sender);
           // display message to the user in the DOM
@@ -258,7 +251,7 @@ const Game: React.FC = () => {
       const weaponName = characterSheet.equipment.hands.name;
 
       channel?.publish("poke", {
-        action: "attack", // add choice
+        action: "attack", // add choice !!!
         receiver,
         tier: tier,
         sender: user,
@@ -327,7 +320,7 @@ const Game: React.FC = () => {
     }
   }; // useEffect [character, ???] ???
 
-  // handleDiceRolls choice === "Auto":
+  // handleDiceRolls (choice === "Auto"):
   const handleDiceInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const tier = parseInt(event.target.value, 10);
     console.log("Dice Above 5 Input: ", tier);
@@ -358,18 +351,21 @@ const Game: React.FC = () => {
 
   return (
     <BasePage>
-      <div className="text-2xl m-6 text-center">
+      <div className="text-center w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
+        <div className="text-center text-white text-xl leading-8 dark:text-gray-300">
+          <h1>Online Users</h1>
+        </div>
         {onlineUsers.length === 0 ? (
-          <>
+          <div className="text-center w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
             <Loading />
             <Loading />
             <Loading />
             <Loading />
-          </>
+          </div>
         ) : (
           <>
             <>
-              <div className="flex justify-center">
+              <div>
                 {user === currentPlayer ? (
                   <EndTurnButton endTurn={endTurn} username={user} />
                 ) : (
@@ -385,45 +381,57 @@ const Game: React.FC = () => {
                     <li>
                       <div
                         className={
-                          username === currentPlayer ? "animate-pulse" : ""
+                          username === currentPlayer
+                            ? "animate-pulse flex justify-center items-center"
+                            : "flex justify-center items-center"
                         }
                       >
                         {username}
                         {username === user ? (
-                          " (you)"
+                          <p className="px-6">{" (you)"}</p>
                         ) : username === currentPlayer ? (
-                          " (now playing)"
+                          <p className="px-6">{" (now playing)"}</p>
                         ) : user === currentPlayer ? (
-                          pokeReceiver !== username ? (
-                            <PokeButton
-                              onPoke={() => {
-                                setPokeReceiver(username);
-                                setShowPartSelection(true);
-                                handleClearRolls();
-                              }}
-                            />
+                          pokeReceiver !== username && character ? (
+                            <p className="px-6">
+                              <Button
+                                onClick={() => {
+                                  setPokeReceiver(username);
+                                  setShowPartSelection(true);
+                                  handleClearRolls();
+                                }}
+                              >
+                                Attack
+                              </Button>
+                            </p>
                           ) : showPartSelection ? (
-                            <AttackOptions
-                              options={["Head", "Torso", "Limbs"]}
-                              onOptionSelection={handlePartSelection}
-                            />
+                            <div className="bg-gray-800 m-6 p-6 rounded">
+                              <AttackOptions
+                                options={["Head", "Torso", "Limbs"]}
+                                onOptionSelection={handlePartSelection}
+                              />
+                            </div>
                           ) : showAttackSelection ? (
                             character &&
                             character.characterSheet.equipment.hands
                               .damageType && (
-                              <AttackOptions
-                                options={
-                                  character.characterSheet.equipment.hands
-                                    .damageType
-                                }
-                                onOptionSelection={handleAttackSelection}
-                              />
+                              <div className="bg-gray-800 m-6 p-6 rounded">
+                                <AttackOptions
+                                  options={
+                                    character.characterSheet.equipment.hands
+                                      .damageType
+                                  }
+                                  onOptionSelection={handleAttackSelection}
+                                />
+                              </div>
                             )
                           ) : showAutoRollSelection ? (
-                            <AttackOptions
-                              options={["Auto", "Manual"]}
-                              onOptionSelection={handleRollSelection}
-                            />
+                            <div className="bg-gray-800 m-6 p-6 rounded">
+                              <AttackOptions
+                                options={["Auto", "Manual"]}
+                                onOptionSelection={handleRollSelection}
+                              />
+                            </div>
                           ) : null
                         ) : null}
                       </div>
@@ -448,7 +456,7 @@ const Game: React.FC = () => {
                 min={1}
                 max={99}
                 onChange={handleDiceInput}
-              />{" "}
+              />
             </div>
           )}
         </div>
@@ -470,7 +478,12 @@ const Game: React.FC = () => {
             </div>
           )}
       </div>
-      <CharacterSheet character={character} />
+      <ManageCharacter
+        isRefreshNeeded={refreshNeeded}
+        setRefreshNeeded={setRefreshNeeded}
+        isDisplayedInGame={true}
+        setParentCharacter={setCharacter}
+      />
       <Modal
         className="h-0 w-1/2 flex justify-center items-center fixed inset-20"
         overlayClassName="fixed top-0 left-0 right-0 bottom-0 bg-gray-600 bg-opacity-30"
