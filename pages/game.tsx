@@ -26,9 +26,9 @@ import Input from "@/components/ui/input";
 
 import Loading from "@/components/ui/loading";
 
-interface CharacterSheetInterface {
+type CharacterSheetProps = {
   characterSheet: any;
-}
+};
 
 const Game: React.FC = () => {
   const router = useRouter();
@@ -36,9 +36,7 @@ const Game: React.FC = () => {
   const { user } = useContext(GlobalContext);
   const { currentPlayer, setCurrentPlayer } = useContext(TurnContext);
 
-  const [character, setCharacter] = useState<CharacterSheetInterface | null>(
-    null
-  );
+  const [character, setCharacter] = useState<CharacterSheetProps | null>(null);
   const [refreshNeeded, setRefreshNeeded] = useState(false);
 
   const [pokeSender, setPokeSender] = useState<string | null>(null);
@@ -144,17 +142,6 @@ const Game: React.FC = () => {
       return () => {};
     }
   }, [router, user, ably, channel, onlineUsers, handlePresenceMessage]);
-
-  const fetchCharacterData = useCallback(async () => {
-    const characterData = await fetchCharacterSheet(user);
-    setCharacter(characterData);
-    setRefreshNeeded(true);
-    console.log(characterData);
-  }, [user]);
-
-  useEffect(() => {
-    fetchCharacterData();
-  }, [fetchCharacterData]);
 
   // Subscribe to Turn "currentPlayer" Change event
   useEffect(() => {
@@ -495,6 +482,7 @@ const Game: React.FC = () => {
         isRefreshNeeded={refreshNeeded}
         setRefreshNeeded={setRefreshNeeded}
         isDisplayedInGame={true}
+        setParentCharacter={setCharacter}
       />
       <Modal
         className="h-0 w-1/2 flex justify-center items-center fixed inset-20"

@@ -16,10 +16,12 @@ const ManageCharacter: React.FC<{
   isDisplayedInGame: boolean;
   isRefreshNeeded: boolean;
   setRefreshNeeded: (value: boolean) => void;
+  setParentCharacter: (value: CharacterSheetProps | null) => void;
 }> = ({
   isDisplayedInGame,
   isRefreshNeeded,
   setRefreshNeeded,
+  setParentCharacter,
 }): JSX.Element => {
   const router = useRouter();
 
@@ -36,6 +38,7 @@ const ManageCharacter: React.FC<{
     setIsLoading(true);
     const characterData = await fetchCharacterSheet(user);
     setCharacter(characterData);
+    setParentCharacter(characterData);
     console.log(characterData);
     setIsLoading(false);
   }, [user]);
@@ -46,7 +49,7 @@ const ManageCharacter: React.FC<{
     }
     fetchCharacterData();
   }, [router, user, fetchCharacterData]);
-  
+
   useEffect(() => {
     if (isRefreshNeeded) {
       fetchCharacterData();

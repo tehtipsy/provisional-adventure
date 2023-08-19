@@ -8,13 +8,14 @@ type CharacterSheetProps = {
 export const CharacterSheet: React.FC<{
   character: CharacterSheetProps;
   isRefreshNeeded: boolean;
-  setRefreshNeeded: (value: boolean) => void; // add the setter function as a prop type
+  setRefreshNeeded: (value: boolean) => void;
 }> = ({ character, isRefreshNeeded, setRefreshNeeded }): JSX.Element => {
   useEffect(() => {
     if (isRefreshNeeded) {
       setRefreshNeeded(false);
     }
   }, [isRefreshNeeded, setRefreshNeeded]);
+
   return (
     <div className=" text-center w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
       <div className="text-center text-white text-xl leading-8 dark:text-gray-300">
@@ -28,21 +29,73 @@ export const CharacterSheet: React.FC<{
           <br />
           <p>Attributes:</p>
           <br />
-          <ul>
-            {Object.keys(character.characterSheet.attributes).map(
-              (attribute) => (
-                <li key={attribute}>
-                  <h1>{attribute}</h1>
-                  <p>
-                    {
-                      character.characterSheet.attributes[attribute]
-                        .unmodifiedValue
-                    }
-                  </p>
-                </li>
-              )
-            )}
-          </ul>
+          <div>
+            <ul className="flex justify-center">
+              {Object.keys(character.characterSheet.attributes).map(
+                (attribute) => (
+                  <div>
+                    <li className="shrink-0 px-4" key={attribute}>
+                      <h1>{attribute}</h1>
+                      <br />
+                      <div className="flex grid-cols-2">
+                        <h3 className="shrink-0 px-1">{"total: "}</h3>
+                        <h3 className="shrink-0 px-1">
+                          {character.characterSheet.attributes[attribute]
+                            .unmodifiedValue +
+                            character.characterSheet.attributes[attribute].t1 +
+                            character.characterSheet.attributes[attribute].t2 +
+                            character.characterSheet.attributes[attribute].t3 +
+                            character.characterSheet.attributes[attribute].t4 +
+                            character.characterSheet.attributes[attribute]
+                              .bonus}
+                        </h3>
+                      </div>
+                      <div className="flex grid-cols-2">
+                        <h3 className="shrink-0 px-1">{"base: "}</h3>
+                        <h3 className="shrink-0 px-1">
+                          {
+                            character.characterSheet.attributes[attribute]
+                              .unmodifiedValue
+                          }
+                        </h3>
+                      </div>
+                      <div className="flex grid-cols-2">
+                        <h3 className="shrink-0 px-1">{"tier 1: "}</h3>
+                        <h3 className="shrink-0 px-1">
+                          {character.characterSheet.attributes[attribute].t1}
+                        </h3>
+                      </div>
+                      <div className="flex grid-cols-2">
+                        <h3 className="shrink-0 px-1">{"tier 2: "}</h3>
+                        <h3 className="shrink-0 px-1">
+                          {character.characterSheet.attributes[attribute].t2}
+                        </h3>
+                      </div>
+                      <div className="flex grid-cols-2">
+                        <h3 className="shrink-0 px-1">{"tier 3: "}</h3>
+                        <h3 className="shrink-0 px-1">
+                          {character.characterSheet.attributes[attribute].t3}
+                        </h3>
+                      </div>
+                      <div className="flex grid-cols-2">
+                        <h3 className="shrink-0 px-1">{"tier 4: "}</h3>
+                        <h3 className="shrink-0 px-1">
+                          {character.characterSheet.attributes[attribute].t4}
+                        </h3>
+                      </div>
+                      <div className="flex grid-cols-2">
+                        <h3 className="shrink-0 px-1">{"bonus: "}</h3>
+                        <h3 className="shrink-0 px-1">
+                          {character.characterSheet.attributes[attribute].bonus}
+                        </h3>
+                      </div>
+                    </li>
+                    <br />
+                  </div>
+                )
+              )}
+            </ul>
+          </div>
           <br />
           <p>Hands Slot:</p>
           <br />
