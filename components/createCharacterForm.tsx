@@ -36,7 +36,7 @@ export const CreateCharacterForm = ({
     armor: [
       { name: "Helmet", block: 10, cost: 5 },
       { name: "Rusty Chest Piece", block: 5, cost: 5 },
-      { name: "Leather Pants", block: 8, cost: 3 },
+      { name: "Dirty Pants", block: 8, cost: 3 },
       { name: "Chain Mail Chest Plate", block: 10, cost: 10 },
     ],
     misc: [
