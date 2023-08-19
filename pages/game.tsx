@@ -362,6 +362,9 @@ const Game: React.FC = () => {
   return (
     <BasePage>
       <div className="text-center w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
+        <div className="text-center text-white text-xl leading-8 dark:text-gray-300">
+          <h1>Online Users</h1>
+        </div>
         {onlineUsers.length === 0 ? (
           <div className=" text-center w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
             <Loading />

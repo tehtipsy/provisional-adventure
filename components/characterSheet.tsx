@@ -6,6 +6,9 @@ export const CharacterSheet = ({ character }: CharacterSheetProps) => {
 
   return (
     <div className=" text-center w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
+      <div className="text-center text-white text-xl leading-8 dark:text-gray-300">
+        <h1>Character Sheet</h1>
+      </div>
       {character && character.characterSheet.name && (
         <div>
           <h1>Action Points {character.characterSheet.actionPoints}</h1>
