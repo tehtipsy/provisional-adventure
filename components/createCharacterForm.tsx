@@ -65,15 +65,28 @@ export const CreateCharacterForm = ({
   const [disabledStatus, setDisabledStatus] = useState(initialDisabledStatus);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
-  const handleClick = (e: FormEvent) => {
-    e.preventDefault();
-    const buttonValue = (e.target as HTMLSelectElement).value;
+const handleClick = (e: FormEvent) => {
+  e.preventDefault();
+  const buttonValue = (e.target as HTMLSelectElement).value;
+  // check if the buttonValue is already in the selectedItems array
+  if (selectedItems.includes(buttonValue)) {
+    // remove the buttonValue from the selectedItems array
+    setSelectedItems((prev) => prev.filter((item) => item !== buttonValue));
+    // set the disabledStatus property of the buttonValue to false
+    setDisabledStatus((prev: any) => ({
+      ...prev,
+      [buttonValue]: false,
+    }));
+  } else {
+    // add the buttonValue to the selectedItems array
     setSelectedItems((prev) => [...prev, buttonValue]);
+    // set the disabledStatus property of the buttonValue to true
     setDisabledStatus((prev: any) => ({
       ...prev,
       [buttonValue]: true,
     }));
-  };
+  }
+};
   useEffect(() => {
     console.log("selectedItems", selectedItems);
     console.log("disabledStatus", disabledStatus);
@@ -294,19 +307,22 @@ export const CreateCharacterForm = ({
               </p>
               <div className="text-center">
                 {items.weapons.map((item: { name: string; cost: number }) => (
-                  <>
+                  <div key={`div-button-${item.name}`}>
                     <Button
                       key={item.name}
-                      className="disabled:opacity-50"
+                      className={
+                        disabledStatus[item.name] === true
+                          ? " bg-purple-900 hover:bg-purple-800 md:active:bg-purple-700"
+                          : ""
+                      }
                       onClick={handleClick}
                       value={item.name}
-                      disabled={disabledStatus[item.name]}
                     >
                       {item.name} - Cost: {item.cost}
                     </Button>
                     <br />
                     <br />
-                  </>
+                  </div>
                 ))}
               </div>
             </div>
@@ -316,19 +332,22 @@ export const CreateCharacterForm = ({
               </p>
               <div className="text-center">
                 {items.armor.map((item: { name: string; cost: number }) => (
-                  <>
+                  <div key={`div-button-${item.name}`}>
                     <Button
                       key={item.name}
-                      className="disabled:opacity-50"
+                      className={
+                        disabledStatus[item.name] === true
+                          ? " bg-purple-900 hover:bg-purple-800 md:active:bg-purple-700"
+                          : ""
+                      }
                       onClick={handleClick}
                       value={item.name}
-                      disabled={disabledStatus[item.name]}
                     >
                       {item.name} - Cost: {item.cost}
                     </Button>
                     <br />
                     <br />
-                  </>
+                  </div>
                 ))}
               </div>
             </div>
@@ -338,19 +357,22 @@ export const CreateCharacterForm = ({
               </p>
               <div className="text-center">
                 {items.misc.map((item: { name: string; cost: number }) => (
-                  <>
+                  <div key={`div-button-${item.name}`}>
                     <Button
                       key={item.name}
-                      className="disabled:opacity-50"
+                      className={
+                        disabledStatus[item.name] === true
+                          ? " bg-purple-900 hover:bg-purple-800 md:active:bg-purple-700"
+                          : ""
+                      }
                       onClick={handleClick}
                       value={item.name}
-                      disabled={disabledStatus[item.name]}
                     >
                       {item.name} - Cost: {item.cost}
                     </Button>
                     <br />
                     <br />
-                  </>
+                  </div>
                 ))}
               </div>
             </div>
