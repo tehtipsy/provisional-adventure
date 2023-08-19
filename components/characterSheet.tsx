@@ -34,12 +34,12 @@ export const CharacterSheet: React.FC<{
               {Object.keys(character.characterSheet.attributes).map(
                 (attribute) => (
                   <div key={`div-${attribute}`}>
-                    <li className="shrink-0 px-4" key={attribute}>
+                    <li className="px-4" key={attribute}>
                       <h1>{attribute}</h1>
                       <br />
                       <div className="flex grid-cols-2">
-                        <h3 className="shrink-0 px-1">{"total: "}</h3>
-                        <h3 className="shrink-0 px-1">
+                        <h3 className="px-1">{"total: "}</h3>
+                        <h3 className="px-1">
                           {character.characterSheet.attributes[attribute]
                             .unmodifiedValue +
                             character.characterSheet.attributes[attribute].t1 +
@@ -51,8 +51,8 @@ export const CharacterSheet: React.FC<{
                         </h3>
                       </div>
                       <div className="flex grid-cols-2">
-                        <h3 className="shrink-0 px-1">{"base: "}</h3>
-                        <h3 className="shrink-0 px-1">
+                        <h3 className="px-1">{"base: "}</h3>
+                        <h3 className="px-1">
                           {
                             character.characterSheet.attributes[attribute]
                               .unmodifiedValue
@@ -60,32 +60,32 @@ export const CharacterSheet: React.FC<{
                         </h3>
                       </div>
                       <div className="flex grid-cols-2">
-                        <h3 className="shrink-0 px-1">{"tier 1: "}</h3>
-                        <h3 className="shrink-0 px-1">
+                        <h3 className="px-1">{"tier 1: "}</h3>
+                        <h3 className="px-1">
                           {character.characterSheet.attributes[attribute].t1}
                         </h3>
                       </div>
                       <div className="flex grid-cols-2">
-                        <h3 className="shrink-0 px-1">{"tier 2: "}</h3>
-                        <h3 className="shrink-0 px-1">
+                        <h3 className="px-1">{"tier 2: "}</h3>
+                        <h3 className="px-1">
                           {character.characterSheet.attributes[attribute].t2}
                         </h3>
                       </div>
                       <div className="flex grid-cols-2">
-                        <h3 className="shrink-0 px-1">{"tier 3: "}</h3>
-                        <h3 className="shrink-0 px-1">
+                        <h3 className="px-1">{"tier 3: "}</h3>
+                        <h3 className="px-1">
                           {character.characterSheet.attributes[attribute].t3}
                         </h3>
                       </div>
                       <div className="flex grid-cols-2">
-                        <h3 className="shrink-0 px-1">{"tier 4: "}</h3>
-                        <h3 className="shrink-0 px-1">
+                        <h3 className="px-1">{"tier 4: "}</h3>
+                        <h3 className="px-1">
                           {character.characterSheet.attributes[attribute].t4}
                         </h3>
                       </div>
                       <div className="flex grid-cols-2">
-                        <h3 className="shrink-0 px-1">{"bonus: "}</h3>
-                        <h3 className="shrink-0 px-1">
+                        <h3 className="px-1">{"bonus: "}</h3>
+                        <h3 className="px-1">
                           {character.characterSheet.attributes[attribute].bonus}
                         </h3>
                       </div>
