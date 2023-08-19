@@ -30,7 +30,7 @@ export const CharacterSheet: React.FC<{
           <p>Attributes:</p>
           <br />
           <div className="flex-row justify-center">
-            <ul className="flex-row justify-center">
+            <ul className="grid grid-cols-2 gap-1">
               {Object.keys(character.characterSheet.attributes).map(
                 (attribute) => (
                   <div key={`div-${attribute}`}>
