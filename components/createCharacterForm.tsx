@@ -138,6 +138,9 @@ export const CreateCharacterForm = ({
       },
       actionPoints: 0,
       equipment: {
+        selectedItems: {
+          ...selectedItems
+        },
         hands: {
           quantity: 2,
           damageRating: 1,

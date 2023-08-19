@@ -44,8 +44,6 @@ export const CharacterSheet: React.FC<{
             )}
           </ul>
           <br />
-          <p>Equipment:</p>
-          <br />
           <p>Hands Slot:</p>
           <br />
           {character.characterSheet.equipment.hands ? (
@@ -57,6 +55,25 @@ export const CharacterSheet: React.FC<{
           ) : (
             <p>Nothing in Hands</p>
           )}
+          <br />
+          <p>Selected Equipment:</p>
+          <br />
+          <ul>
+            {Object.keys(character.characterSheet.equipment.selectedItems).map(
+              (equipment) => (
+                <li key={equipment}>
+                  <p>
+                    {
+                      character.characterSheet.equipment.selectedItems[
+                        equipment
+                      ]
+                    }
+                  </p>
+                </li>
+              )
+            )}
+          </ul>
+          <br />
           <br />
           <p>Effects:</p>
           <br />
