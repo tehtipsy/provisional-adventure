@@ -7,21 +7,26 @@ import { CreateCharacterForm } from "@/components/createCharacterForm";
 import BasePage from "@/components/base/basePage";
 import Loading from "@/components/ui/loading";
 
-interface CharacterSheetInterface {
+type CharacterSheetProps = {
   characterSheet: any;
-}
+  character: any;
+};
 
-const ManageCharacter: React.FC<{ isDisplayedInGame: boolean }> = (
-  isDisplayedInGame
-): JSX.Element => {
+const ManageCharacter: React.FC<{
+  isDisplayedInGame: boolean;
+  isRefreshNeeded: boolean;
+  setRefreshNeeded: (value: boolean) => void;
+}> = ({
+  isDisplayedInGame,
+  isRefreshNeeded,
+  setRefreshNeeded,
+}): JSX.Element => {
   const router = useRouter();
 
   const { user } = useContext(GlobalContext);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [character, setCharacter] = useState<CharacterSheetInterface | null>(
-    null
-  );
+  const [character, setCharacter] = useState<CharacterSheetProps | null>(null);
 
   const handleFormSubmit = () => {
     setIsLoading((prevState) => !prevState);
@@ -41,8 +46,15 @@ const ManageCharacter: React.FC<{ isDisplayedInGame: boolean }> = (
     }
     fetchCharacterData();
   }, [router, user, fetchCharacterData]);
+  
+  useEffect(() => {
+    if (isRefreshNeeded) {
+      fetchCharacterData();
+      console.log(isRefreshNeeded);
+    }
+  }, [isRefreshNeeded, fetchCharacterData]);
 
-  return Object.keys(isDisplayedInGame).length === 1 ? (
+  return isDisplayedInGame ? (
     isLoading ? (
       <div className=" text-center w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
         <Loading />
@@ -53,7 +65,11 @@ const ManageCharacter: React.FC<{ isDisplayedInGame: boolean }> = (
         <Loading />
       </div>
     ) : character ? (
-      <CharacterSheet character={character} />
+      <CharacterSheet
+        isRefreshNeeded={isRefreshNeeded}
+        setRefreshNeeded={setRefreshNeeded}
+        character={character}
+      />
     ) : (
       <CreateCharacterForm
         onFormSubmit={handleFormSubmit}
@@ -73,7 +89,11 @@ const ManageCharacter: React.FC<{ isDisplayedInGame: boolean }> = (
     </BasePage>
   ) : character ? (
     <BasePage>
-      <CharacterSheet character={character} />
+      <CharacterSheet
+        isRefreshNeeded={isRefreshNeeded}
+        setRefreshNeeded={setRefreshNeeded}
+        character={character}
+      />
     </BasePage>
   ) : (
     <BasePage>

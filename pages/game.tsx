@@ -39,6 +39,7 @@ const Game: React.FC = () => {
   const [character, setCharacter] = useState<CharacterSheetInterface | null>(
     null
   );
+  const [refreshNeeded, setRefreshNeeded] = useState(false);
 
   const [pokeSender, setPokeSender] = useState<string | null>(null);
   const [pokeReceiver, setPokeReceiver] = useState<string | null>(null);
@@ -147,6 +148,7 @@ const Game: React.FC = () => {
   const fetchCharacterData = useCallback(async () => {
     const characterData = await fetchCharacterSheet(user);
     setCharacter(characterData);
+    setRefreshNeeded(true);
     console.log(characterData);
   }, [user]);
 
@@ -194,6 +196,7 @@ const Game: React.FC = () => {
             characterSheet:
               updatedCharacterData.updatedSenderCharacterData.value,
           });
+          setRefreshNeeded(true);
 
           // Send a message to the receiver
           channel.publish("update-complete", {
@@ -220,6 +223,7 @@ const Game: React.FC = () => {
             updatedCharacterData
           );
           setCharacter({ characterSheet: updatedCharacterData });
+          setRefreshNeeded(true);
           // set poke sender to display poke alert
           setPokeSender(sender);
           // display message to the user in the DOM
@@ -329,7 +333,7 @@ const Game: React.FC = () => {
     }
   }; // useEffect [character, ???] ???
 
-  // handleDiceRolls choice === "Auto":
+  // handleDiceRolls (choice === "Auto"):
   const handleDiceInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const tier = parseInt(event.target.value, 10);
     console.log("Dice Above 5 Input: ", tier);
@@ -365,7 +369,7 @@ const Game: React.FC = () => {
           <h1>Online Users</h1>
         </div>
         {onlineUsers.length === 0 ? (
-          <div className=" text-center w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
+          <div className="text-center w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
             <Loading />
             <Loading />
             <Loading />
@@ -487,7 +491,11 @@ const Game: React.FC = () => {
             </div>
           )}
       </div>
-      <ManageCharacter isDisplayedInGame={true} />
+      <ManageCharacter
+        isRefreshNeeded={refreshNeeded}
+        setRefreshNeeded={setRefreshNeeded}
+        isDisplayedInGame={true}
+      />
       <Modal
         className="h-0 w-1/2 flex justify-center items-center fixed inset-20"
         overlayClassName="fixed top-0 left-0 right-0 bottom-0 bg-gray-600 bg-opacity-30"

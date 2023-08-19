@@ -1,9 +1,20 @@
+import { useEffect } from "react";
+
 type CharacterSheetProps = {
+  characterSheet: any;
   character: any;
 };
 
-export const CharacterSheet = ({ character }: CharacterSheetProps) => {
-
+export const CharacterSheet: React.FC<{
+  character: CharacterSheetProps;
+  isRefreshNeeded: boolean;
+  setRefreshNeeded: (value: boolean) => void; // add the setter function as a prop type
+}> = ({ character, isRefreshNeeded, setRefreshNeeded }): JSX.Element => {
+  useEffect(() => {
+    if (isRefreshNeeded) {
+      setRefreshNeeded(false);
+    }
+  }, [isRefreshNeeded, setRefreshNeeded]);
   return (
     <div className=" text-center w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
       <div className="text-center text-white text-xl leading-8 dark:text-gray-300">
@@ -21,11 +32,13 @@ export const CharacterSheet = ({ character }: CharacterSheetProps) => {
             {Object.keys(character.characterSheet.attributes).map(
               (attribute) => (
                 <li key={attribute}>
-                  {attribute}
-                  {
-                    character.characterSheet.attributes[attribute]
-                      .unmodifiedValue
-                  }
+                  <h1>{attribute}</h1>
+                  <p>
+                    {
+                      character.characterSheet.attributes[attribute]
+                        .unmodifiedValue
+                    }
+                  </p>
                 </li>
               )
             )}
@@ -44,7 +57,6 @@ export const CharacterSheet = ({ character }: CharacterSheetProps) => {
           ) : (
             <p>Nothing in Hands</p>
           )}
-
           <br />
           <p>Effects:</p>
           <br />
@@ -63,4 +75,4 @@ export const CharacterSheet = ({ character }: CharacterSheetProps) => {
       )}
     </div>
   );
-};  
+};
