@@ -5,7 +5,7 @@ type CharacterSheetProps = {
 export const CharacterSheet = ({ character }: CharacterSheetProps) => {
 
   return (
-    <div className="text-2xl m-6 text-center">
+    <div className=" text-center w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
       {character && character.characterSheet.name && (
         <div>
           <h1>Action Points {character.characterSheet.actionPoints}</h1>
@@ -18,7 +18,7 @@ export const CharacterSheet = ({ character }: CharacterSheetProps) => {
             {Object.keys(character.characterSheet.attributes).map(
               (attribute) => (
                 <li key={attribute}>
-                  {attribute}{" "}
+                  {attribute}
                   {
                     character.characterSheet.attributes[attribute]
                       .unmodifiedValue

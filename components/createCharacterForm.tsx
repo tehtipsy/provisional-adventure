@@ -1,4 +1,9 @@
-import { FormEvent, useContext, useEffect, useState } from "react";
+import {
+  FormEvent,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { GlobalContext } from "@/contexts/globalContext";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
@@ -21,7 +26,7 @@ export const CreateCharacterForm = ({
   const [willpower, setWillpower] = useState("");
   const [motivation, setMotivation] = useState("");
 
-  const items = {
+  const items: Record<string, any> = {
     weapons: [
       { name: "Sword", damage: 10, weight: 10, cost: 10 },
       { name: "Knife", damage: 4, weight: 1, cost: 3 },
@@ -43,27 +48,42 @@ export const CreateCharacterForm = ({
       { name: "Battle Scar", damage: 4, cost: 0 },
     ],
   };
+  const initialDisabledStatus: Record<string, boolean> = {};
+  Object.keys(items).forEach((key) => {
+    const array = items[key];
+    const obj = array.reduce(
+      (obj: { [x: string]: boolean }, item: { name: string }) => {
+        obj[item.name] = false;
+        return obj;
+      },
+      {}
+    );
+    Object.assign(initialDisabledStatus, obj);
+  });
+  console.log("Initial Disabled Status set to: ", initialDisabledStatus);
 
-  const [selectedItems, setSelectedItems] = useState<string[]>([]); // your state for selected items
+  const [disabledStatus, setDisabledStatus] = useState(initialDisabledStatus);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   const handleClick = (e: FormEvent) => {
     e.preventDefault();
-    // update the selected items array with the value of the option
-    setSelectedItems((prev) => [
+    const buttonValue = (e.target as HTMLSelectElement).value;
+    setSelectedItems((prev) => [...prev, buttonValue]);
+    setDisabledStatus((prev: any) => ({
       ...prev,
-      (e.target as HTMLSelectElement).value,
-    ]);
+      [buttonValue]: true,
+    }));
   };
   useEffect(() => {
-    console.log(selectedItems);
-  }, [selectedItems]);
+    console.log("selectedItems", selectedItems);
+    console.log("disabledStatus", disabledStatus);
+  }, [selectedItems, disabledStatus]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    // Create the newSheet object
     const newSheet = {
-      user_id: {}, // {user.id}
+      user_id: {}, // user.id
       name: user,
       characterName: name,
       attributes: {
@@ -181,11 +201,11 @@ export const CreateCharacterForm = ({
 
   return (
     <>
-      <div className="text-2xl m-6 text-center">{`${user}'s New Character`}</div>
       <form
         onSubmit={handleSubmit}
         className="w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded"
       >
+        <div className="text-center text-white text-xl leading-8 dark:text-gray-300">{`${user}'s New Character`}</div>
         <div className="m-4 text-center">
           <div className="m-4 text-center">
             <Input
@@ -201,8 +221,8 @@ export const CreateCharacterForm = ({
               </p>
               <Input
                 type="number"
-                min="0"
-                max="6"
+                min={0}
+                max={12}
                 onChange={(e) => setProwess(e.target.value)}
               />
               <br />
@@ -212,8 +232,8 @@ export const CreateCharacterForm = ({
               </p>
               <Input
                 type="number"
-                min="0"
-                max="6"
+                min={0}
+                max={12}
                 onChange={(e) => setFinesse(e.target.value)}
               />
             </div>
@@ -223,8 +243,8 @@ export const CreateCharacterForm = ({
               </p>
               <Input
                 type="number"
-                min="0"
-                max="6"
+                min={0}
+                max={12}
                 onChange={(e) => setConstitution(e.target.value)}
               />
               <br />
@@ -234,8 +254,8 @@ export const CreateCharacterForm = ({
               </p>
               <Input
                 type="number"
-                min="0"
-                max="6"
+                min={0}
+                max={12}
                 onChange={(e) => setFocus(e.target.value)}
               />
             </div>
@@ -245,8 +265,8 @@ export const CreateCharacterForm = ({
               </p>
               <Input
                 type="number"
-                min="0"
-                max="6"
+                min={0}
+                max={12}
                 onChange={(e) => setWillpower(e.target.value)}
               />
               <br />
@@ -256,8 +276,8 @@ export const CreateCharacterForm = ({
               </p>
               <Input
                 type="number"
-                min="0"
-                max="6"
+                min={0}
+                max={12}
                 onChange={(e) => setMotivation(e.target.value)}
               />
             </div>
@@ -270,13 +290,14 @@ export const CreateCharacterForm = ({
                 Select Weapon
               </p>
               <div className="text-center">
-                {items.weapons.map((item) => (
+                {items.weapons.map((item: { name: string; cost: number }) => (
                   <>
                     <Button
+                      key={item.name}
+                      className="disabled:opacity-50"
                       onClick={handleClick}
-                      value={JSON.stringify({
-                        "weapon": item.name,
-                      })}
+                      value={item.name}
+                      disabled={disabledStatus[item.name]}
                     >
                       {item.name} - Cost: {item.cost}
                     </Button>
@@ -291,13 +312,14 @@ export const CreateCharacterForm = ({
                 Select Armor
               </p>
               <div className="text-center">
-                {items.armor.map((item) => (
+                {items.armor.map((item: { name: string; cost: number }) => (
                   <>
                     <Button
+                      key={item.name}
+                      className="disabled:opacity-50"
                       onClick={handleClick}
-                      value={JSON.stringify({
-                        "armor": item.name,
-                      })}
+                      value={item.name}
+                      disabled={disabledStatus[item.name]}
                     >
                       {item.name} - Cost: {item.cost}
                     </Button>
@@ -312,13 +334,14 @@ export const CreateCharacterForm = ({
                 Select Misc
               </p>
               <div className="text-center">
-                {items.misc.map((item) => (
+                {items.misc.map((item: { name: string; cost: number }) => (
                   <>
                     <Button
+                      key={item.name}
+                      className="disabled:opacity-50"
                       onClick={handleClick}
-                      value={JSON.stringify({
-                        "misc": item.name,
-                      })}
+                      value={item.name}
+                      disabled={disabledStatus[item.name]}
                     >
                       {item.name} - Cost: {item.cost}
                     </Button>

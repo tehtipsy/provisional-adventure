@@ -361,18 +361,18 @@ const Game: React.FC = () => {
 
   return (
     <BasePage>
-      <div className="text-2xl m-6 text-center">
+      <div className="text-center w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
         {onlineUsers.length === 0 ? (
-          <>
+          <div className=" text-center w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
             <Loading />
             <Loading />
             <Loading />
             <Loading />
-          </>
+          </div>
         ) : (
           <>
             <>
-              <div className="flex justify-center">
+              <div>
                 {user === currentPlayer ? (
                   <EndTurnButton endTurn={endTurn} username={user} />
                 ) : (
@@ -451,7 +451,7 @@ const Game: React.FC = () => {
                 min={1}
                 max={99}
                 onChange={handleDiceInput}
-              />{" "}
+              />
             </div>
           )}
         </div>

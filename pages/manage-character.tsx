@@ -44,14 +44,14 @@ const ManageCharacter: React.FC<{ isDisplayedInGame: boolean }> = (
 
   return Object.keys(isDisplayedInGame).length === 1 ? (
     isLoading ? (
-      <>
+      <div className=" text-center w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
         <Loading />
         <Loading />
         <Loading />
         <Loading />
         <Loading />
         <Loading />
-      </>
+      </div>
     ) : character ? (
       <CharacterSheet character={character} />
     ) : (
@@ -62,14 +62,14 @@ const ManageCharacter: React.FC<{ isDisplayedInGame: boolean }> = (
     )
   ) : isLoading ? (
     <BasePage>
-      <>
+      <div className=" text-center w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
         <Loading />
         <Loading />
         <Loading />
         <Loading />
         <Loading />
         <Loading />
-      </>
+      </div>
     </BasePage>
   ) : character ? (
     <BasePage>
