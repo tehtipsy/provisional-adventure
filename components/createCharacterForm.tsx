@@ -48,7 +48,7 @@ export const CreateCharacterForm = ({
       { name: "Battle Scar", damage: 4, cost: 0 },
     ],
   };
-  const initialDisabledStatus: Record<string, boolean> = {};
+  const initialSelectedStatus: Record<string, boolean> = {};
   Object.keys(items).forEach((key) => {
     const array = items[key];
     const obj = array.reduce(
@@ -58,29 +58,24 @@ export const CreateCharacterForm = ({
       },
       {}
     );
-    Object.assign(initialDisabledStatus, obj);
+    Object.assign(initialSelectedStatus, obj);
   });
-  console.log("Initial Disabled Status set to: ", initialDisabledStatus);
+  console.log("Initial Selected Status set to: ", initialSelectedStatus);
 
-  const [disabledStatus, setDisabledStatus] = useState(initialDisabledStatus);
+  const [selectedStatus, setDisabledStatus] = useState(initialSelectedStatus);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
 const handleClick = (e: FormEvent) => {
   e.preventDefault();
   const buttonValue = (e.target as HTMLSelectElement).value;
-  // check if the buttonValue is already in the selectedItems array
   if (selectedItems.includes(buttonValue)) {
-    // remove the buttonValue from the selectedItems array
     setSelectedItems((prev) => prev.filter((item) => item !== buttonValue));
-    // set the disabledStatus property of the buttonValue to false
     setDisabledStatus((prev: any) => ({
       ...prev,
       [buttonValue]: false,
     }));
   } else {
-    // add the buttonValue to the selectedItems array
     setSelectedItems((prev) => [...prev, buttonValue]);
-    // set the disabledStatus property of the buttonValue to true
     setDisabledStatus((prev: any) => ({
       ...prev,
       [buttonValue]: true,
@@ -88,9 +83,9 @@ const handleClick = (e: FormEvent) => {
   }
 };
   useEffect(() => {
-    console.log("selectedItems", selectedItems);
-    console.log("disabledStatus", disabledStatus);
-  }, [selectedItems, disabledStatus]);
+    console.log("Selected Items: ", selectedItems);
+    console.log("Selected Status: ", selectedStatus);
+  }, [selectedItems, selectedStatus]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -311,7 +306,7 @@ const handleClick = (e: FormEvent) => {
                     <Button
                       key={item.name}
                       className={
-                        disabledStatus[item.name] === true
+                        selectedStatus[item.name] === true
                           ? " bg-purple-900 hover:bg-purple-800 md:active:bg-purple-700"
                           : ""
                       }
@@ -336,7 +331,7 @@ const handleClick = (e: FormEvent) => {
                     <Button
                       key={item.name}
                       className={
-                        disabledStatus[item.name] === true
+                        selectedStatus[item.name] === true
                           ? " bg-purple-900 hover:bg-purple-800 md:active:bg-purple-700"
                           : ""
                       }
@@ -361,7 +356,7 @@ const handleClick = (e: FormEvent) => {
                     <Button
                       key={item.name}
                       className={
-                        disabledStatus[item.name] === true
+                        selectedStatus[item.name] === true
                           ? " bg-purple-900 hover:bg-purple-800 md:active:bg-purple-700"
                           : ""
                       }
