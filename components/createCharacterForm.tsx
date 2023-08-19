@@ -31,17 +31,17 @@ export const CreateCharacterForm = ({
       { name: "Sword", damage: 10, weight: 10, cost: 10 },
       { name: "Knife", damage: 4, weight: 1, cost: 3 },
       { name: "Bow", damage: 7, weight: 7, cost: 7 },
-      { name: "Crossbow", damage: 12, weight: 10, cost: 12 },
+      { name: "Cross Bow", damage: 12, weight: 10, cost: 12 },
     ],
     armor: [
       { name: "Helmet", block: 10, cost: 5 },
-      { name: "Chest Piece", block: 5, cost: 5 },
-      { name: "Leather Pants", block: 8, cost: 3 },
-      { name: "Chainmail Chest Piece", block: 10, cost: 10 },
+      { name: "Rusty Chest Piece", block: 5, cost: 5 },
+      { name: "Dirty Pants", block: 8, cost: 3 },
+      { name: "Chain Mail Chest Plate", block: 10, cost: 10 },
     ],
     misc: [
       { name: "Shield", damage: 2, weight: 10, block: 10, cost: 3 },
-      { name: "Notebook", damage: 10, cost: 3 },
+      { name: "Note Book", damage: 10, cost: 3 },
       { name: "Gold Coin", damage: 5, cost: 3 },
       { name: "Healing Potion", damage: 8, cost: 3 },
       { name: "Arrow", damage: 4, cost: 3 },
@@ -295,7 +295,7 @@ const handleClick = (e: FormEvent) => {
           </div>
         </div>
         <div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
                 Select Weapon
