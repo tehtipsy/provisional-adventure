@@ -19,7 +19,6 @@ import BasePage from "@/components/base/basePage";
 import Modal from "react-modal";
 import { PokeNotification } from "@/components/pokeNotification";
 
-import PokeButton from "@/components/ui/pokeButton";
 import EndTurnButton from "@/components/ui/endTurnButton";
 import AttackOptions from "@/components/attackOptions";
 import Button from "@/components/ui/button";
@@ -391,45 +390,57 @@ const Game: React.FC = () => {
                     <li>
                       <div
                         className={
-                          username === currentPlayer ? "animate-pulse" : ""
+                          username === currentPlayer
+                            ? "animate-pulse flex justify-center items-center"
+                            : "flex justify-center items-center"
                         }
                       >
                         {username}
                         {username === user ? (
-                          " (you)"
+                          <p className="px-6">{" (you)"}</p>
                         ) : username === currentPlayer ? (
-                          " (now playing)"
+                          <p className="px-6">{" (now playing)"}</p>
                         ) : user === currentPlayer ? (
                           pokeReceiver !== username ? (
-                            <PokeButton
-                              onPoke={() => {
-                                setPokeReceiver(username);
-                                setShowPartSelection(true);
-                                handleClearRolls();
-                              }}
-                            />
+                            <p className="px-6">
+                              <Button
+                                onClick={() => {
+                                  setPokeReceiver(username);
+                                  setShowPartSelection(true);
+                                  handleClearRolls();
+                                }}
+                              >
+                                Attack
+                              </Button>
+                            </p>
                           ) : showPartSelection ? (
-                            <AttackOptions
-                              options={["Head", "Torso", "Limbs"]}
-                              onOptionSelection={handlePartSelection}
-                            />
+                            <div className="bg-gray-800 m-6 p-6 rounded">
+                              <AttackOptions
+                                options={["Head", "Torso", "Limbs"]}
+                                onOptionSelection={handlePartSelection}
+                              />
+                            </div>
                           ) : showAttackSelection ? (
                             character &&
                             character.characterSheet.equipment.hands
                               .damageType && (
-                              <AttackOptions
-                                options={
-                                  character.characterSheet.equipment.hands
-                                    .damageType
-                                }
-                                onOptionSelection={handleAttackSelection}
-                              />
+                              <div className="bg-gray-800 m-6 p-6 rounded">
+                                <AttackOptions
+                                  options={
+                                    character.characterSheet.equipment.hands
+                                      .damageType
+                                  }
+                                  onOptionSelection={handleAttackSelection}
+                                />
+                              </div>
                             )
                           ) : showAutoRollSelection ? (
-                            <AttackOptions
-                              options={["Auto", "Manual"]}
-                              onOptionSelection={handleRollSelection}
-                            />
+                            <div className="bg-gray-800 m-6 p-6 rounded">
+                              <AttackOptions
+                                options={["Auto", "Manual"]}
+                                onOptionSelection={handleRollSelection}
+                              />
+                            </div>
                           ) : null
                         ) : null}
                       </div>
