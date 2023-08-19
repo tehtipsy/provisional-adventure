@@ -41,7 +41,7 @@ const ManageCharacter: React.FC<{
     setParentCharacter(characterData);
     console.log(characterData);
     setIsLoading(false);
-  }, [user]);
+  }, [user, setParentCharacter]);
 
   useEffect(() => {
     if (!user) {

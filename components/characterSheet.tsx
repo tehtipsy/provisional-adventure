@@ -33,7 +33,7 @@ export const CharacterSheet: React.FC<{
             <ul className="flex justify-center">
               {Object.keys(character.characterSheet.attributes).map(
                 (attribute) => (
-                  <div>
+                  <div key={`div-${attribute}`}>
                     <li className="shrink-0 px-4" key={attribute}>
                       <h1>{attribute}</h1>
                       <br />

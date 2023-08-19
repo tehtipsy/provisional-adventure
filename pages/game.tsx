@@ -392,7 +392,7 @@ const Game: React.FC = () => {
                         ) : username === currentPlayer ? (
                           <p className="px-6">{" (now playing)"}</p>
                         ) : user === currentPlayer ? (
-                          pokeReceiver !== username ? (
+                          pokeReceiver !== username && character ? (
                             <p className="px-6">
                               <Button
                                 onClick={() => {
