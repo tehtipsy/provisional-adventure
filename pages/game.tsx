@@ -324,7 +324,7 @@ const Game: React.FC = () => {
   const handleDiceInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const tier = parseInt(event.target.value, 10);
     console.log("Dice Above 5 Input: ", tier);
-    setTimeout(() => setSuccessfulRolls(tier), 1000);
+    setTimeout(() => setSuccessfulRolls(tier), 1000); // change this to input
   };
 
   function handlePartSelection(bodyPart: string) {

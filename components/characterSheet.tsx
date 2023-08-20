@@ -13,10 +13,10 @@ export const CharacterSheet: React.FC<{
   const initialAttributeDisplayCols = [
     "total",
     "base",
-    "tier 1",
-    "tier 2",
-    "tier 3",
-    "tier 4",
+    "t1",
+    "t2",
+    "t3",
+    "t4",
     "bonus",
   ];
 
@@ -31,25 +31,13 @@ export const CharacterSheet: React.FC<{
   useEffect(() => {
     console.log(
       "Total Focus: ",
-      typeof (
         // character.characterSheet.attributes["focus"].unmodifiedValue +
         //   character.characterSheet.attributes["focus"].t1 +
         character.characterSheet.attributes["focus"].t2 //+
         //   character.characterSheet.attributes["focus"].t3 +
         //   character.characterSheet.attributes["focus"].t4 +
         // character.characterSheet.attributes["focus"].bonus
-      )
     );
-
-    // console.log("Total Attribute: ", character.characterSheet.attributes.map((attribute: string | number) => (
-    // character.characterSheet.attributes["focus"].unmodifiedValue +
-    //   character.characterSheet.attributes["focus"].t1 +
-    //   character.characterSheet.attributes["focus"].t2 +
-    //   character.characterSheet.attributes["focus"].t3 +
-    //   character.characterSheet.attributes["focus"].t4 +
-    //   character.characterSheet.attributes["focus"].bonus
-    // ))
-    // );
   }, [character]);
 
   return (

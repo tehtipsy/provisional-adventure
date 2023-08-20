@@ -7,6 +7,30 @@ import {
 import { GlobalContext } from "@/contexts/globalContext";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
+import { SelectSizeForm } from "@/components/ui/selectCharacterSize";
+
+const items: Record<string, any> = {
+  weapons: [
+    { name: "Sword", damage: 10, weight: 10, cost: 10 },
+    { name: "Knife", damage: 4, weight: 1, cost: 3 },
+    { name: "Bow", damage: 7, weight: 7, cost: 7 },
+    { name: "Cross Bow", damage: 12, weight: 10, cost: 12 },
+  ],
+  armor: [
+    { name: "Helmet", block: 10, cost: 5 },
+    { name: "Rusty Chest Piece", block: 5, cost: 5 },
+    { name: "Dirty Pants", block: 8, cost: 3 },
+    { name: "Chain Mail Chest Plate", block: 10, cost: 10 },
+  ],
+  misc: [
+    { name: "Shield", damage: 2, weight: 10, block: 10, cost: 3 },
+    { name: "Note Book", damage: 10, cost: 3 },
+    { name: "Gold Coin", damage: 5, cost: 3 },
+    { name: "Healing Potion", damage: 8, cost: 3 },
+    { name: "Arrow", damage: 4, cost: 3 },
+    { name: "Battle Scar", damage: 4, cost: 0 },
+  ],
+};
 
 type CreateCharacterFormProps = {
   onFormSubmit: () => void;
@@ -19,35 +43,46 @@ export const CreateCharacterForm = ({
 }: CreateCharacterFormProps) => {
   const { user } = useContext(GlobalContext);
   const [name, setName] = useState("");
-  const [prowess, setProwess] = useState("");
-  const [finesse, setFinesse] = useState("");
-  const [constitution, setConstitution] = useState("");
-  const [focus, setFocus] = useState("");
-  const [willpower, setWillpower] = useState("");
-  const [motivation, setMotivation] = useState("");
+  const [prowess, setProwess] = useState<number>(0);
+  const [finesse, setFinesse] = useState<number>(0);
+  const [constitution, setConstitution] = useState<number>(0);
+  const [focus, setFocus] = useState<number>(0);
+  const [willpower, setWillpower] = useState<number>(0);
+  const [motivation, setMotivation] = useState<number>(0);
+  const [size, setSize] = useState<number>(0);
+  const [capacity, setCapacity] = useState<number>(0);
+  const [totalCost, setTotalCost] = useState<number>(0);
 
-  const items: Record<string, any> = {
-    weapons: [
-      { name: "Sword", damage: 10, weight: 10, cost: 10 },
-      { name: "Knife", damage: 4, weight: 1, cost: 3 },
-      { name: "Bow", damage: 7, weight: 7, cost: 7 },
-      { name: "Cross Bow", damage: 12, weight: 10, cost: 12 },
-    ],
-    armor: [
-      { name: "Helmet", block: 10, cost: 5 },
-      { name: "Rusty Chest Piece", block: 5, cost: 5 },
-      { name: "Dirty Pants", block: 8, cost: 3 },
-      { name: "Chain Mail Chest Plate", block: 10, cost: 10 },
-    ],
-    misc: [
-      { name: "Shield", damage: 2, weight: 10, block: 10, cost: 3 },
-      { name: "Note Book", damage: 10, cost: 3 },
-      { name: "Gold Coin", damage: 5, cost: 3 },
-      { name: "Healing Potion", damage: 8, cost: 3 },
-      { name: "Arrow", damage: 4, cost: 3 },
-      { name: "Battle Scar", damage: 4, cost: 0 },
-    ],
+  const setSizeSelection = (e: FormEvent) => {
+    const sizeSelection = (e.target as HTMLSelectElement).value;
+    console.log((e.target as HTMLSelectElement).value);
+    setSize(parseInt(sizeSelection));
   };
+
+  // useEffect(() => {
+  //   console.log("Size Set To: ", size);
+  // }, [size]);
+
+  // useEffect(() => {
+  //     console.log("prowess Input: ", prowess);
+  // }, [prowess]);
+
+  useEffect(() => {
+    console.log("Remaining Capacity: ", capacity);
+  }, [capacity]);
+
+  useEffect(() => {
+    if (size === 3) {
+      const maxCapacity = 3 + prowess;
+      setCapacity(maxCapacity);
+    } else if (size === 2) {
+      const maxCapacity = 1 + prowess;
+      setCapacity(maxCapacity);
+    } else {
+      setCapacity(0); // change back to default
+    }
+  }, [size, prowess]);
+
   const initialSelectedStatus: Record<string, boolean> = {};
   Object.keys(items).forEach((key) => {
     const array = items[key];
@@ -98,9 +133,10 @@ export const CreateCharacterForm = ({
       user_id: {}, // user.id
       name: user,
       characterName: name,
+      characterSize: size,
       attributes: {
         prowess: {
-          unmodifiedValue: parseInt(prowess),
+          unmodifiedValue: prowess,
           t1: 0,
           t2: 0,
           t3: 0,
@@ -108,7 +144,7 @@ export const CreateCharacterForm = ({
           bonus: 0,
         },
         finesse: {
-          unmodifiedValue: parseInt(finesse),
+          unmodifiedValue: finesse,
           t1: 0,
           t2: 0,
           t3: 0,
@@ -116,7 +152,7 @@ export const CreateCharacterForm = ({
           bonus: 0,
         },
         constitution: {
-          unmodifiedValue: parseInt(constitution),
+          unmodifiedValue: constitution,
           t1: 0,
           t2: 0,
           t3: 0,
@@ -124,7 +160,7 @@ export const CreateCharacterForm = ({
           bonus: 0,
         },
         focus: {
-          unmodifiedValue: parseInt(focus),
+          unmodifiedValue: focus,
           t1: 0,
           t2: 0,
           t3: 0,
@@ -132,7 +168,7 @@ export const CreateCharacterForm = ({
           bonus: 0,
         },
         willpower: {
-          unmodifiedValue: parseInt(willpower),
+          unmodifiedValue: willpower,
           t1: 0,
           t2: 0,
           t3: 0,
@@ -140,7 +176,7 @@ export const CreateCharacterForm = ({
           bonus: 0,
         },
         motivation: {
-          unmodifiedValue: parseInt(motivation),
+          unmodifiedValue: motivation,
           t1: 0,
           t2: 0,
           t3: 0,
@@ -217,77 +253,82 @@ export const CreateCharacterForm = ({
           <div className="grid grid-cols-3 gap-4">
             <div>
               <p className="text-white font-medium leading-8 dark:text-gray-300">
-                Prowess
+                {"Prowess"}
               </p>
               <Input
                 type="number"
                 min={0}
-                max={12}
-                onChange={(e) => setProwess(e.target.value)}
+                max={4}
+                onChange={(e) => setProwess(parseInt(e.target.value))}
               />
               <br />
-              <br />
               <p className="text-white font-medium leading-8 dark:text-gray-300">
-                Finesse
+                {"Finesse"}
               </p>
               <Input
                 type="number"
                 min={0}
-                max={12}
-                onChange={(e) => setFinesse(e.target.value)}
-              />
-            </div>
-            <div>
-              <p className="text-white font-medium leading-8 dark:text-gray-300">
-                Constitution
-              </p>
-              <Input
-                type="number"
-                min={0}
-                max={12}
-                onChange={(e) => setConstitution(e.target.value)}
-              />
-              <br />
-              <br />
-              <p className="text-white font-medium leading-8 dark:text-gray-300">
-                Focus
-              </p>
-              <Input
-                type="number"
-                min={0}
-                max={12}
-                onChange={(e) => setFocus(e.target.value)}
+                max={4}
+                onChange={(e) => setFinesse(parseInt(e.target.value))}
               />
             </div>
             <div>
               <p className="text-white font-medium leading-8 dark:text-gray-300">
-                Willpower
+                {"Constitution"}
               </p>
               <Input
                 type="number"
                 min={0}
-                max={12}
-                onChange={(e) => setWillpower(e.target.value)}
+                max={4}
+                onChange={(e) => setConstitution(parseInt(e.target.value))}
               />
               <br />
-              <br />
               <p className="text-white font-medium leading-8 dark:text-gray-300">
-                Motivation
+                {"Focus"}
               </p>
               <Input
                 type="number"
                 min={0}
-                max={12}
-                onChange={(e) => setMotivation(e.target.value)}
+                max={4}
+                onChange={(e) => setFocus(parseInt(e.target.value))}
+              />
+            </div>
+            <div>
+              <p className="text-white font-medium leading-8 dark:text-gray-300">
+                {"Willpower"}
+              </p>
+              <Input
+                type="number"
+                min={0}
+                max={4}
+                onChange={(e) => setWillpower(parseInt(e.target.value))}
+              />
+              <br />
+              <p className="text-white font-medium leading-8 dark:text-gray-300">
+                {"Motivation"}
+              </p>
+              <Input
+                type="number"
+                min={0}
+                max={4}
+                onChange={(e) => setMotivation(parseInt(e.target.value))}
               />
             </div>
           </div>
         </div>
         <div>
           <div className="flex justify-center flex-col mt-4 md:flex-row md:space-x-8 md:mt-0">
+            <div className="m-4 text-center">
+              <SelectSizeForm setSizeSelection={setSizeSelection} />
+            </div>
             <div>
               <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
-                Select Weapon
+                {`Remainig Capacity: ${capacity}`}
+              </p>
+            </div>
+            <div>
+              <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
+                {"Select Weapon"}
               </p>
               <div className="text-center">
                 {items.weapons.map((item: { name: string; cost: number }) => (
@@ -302,7 +343,7 @@ export const CreateCharacterForm = ({
                       onClick={handleClick}
                       value={item.name}
                     >
-                      {item.name} - Cost: {item.cost}
+                      {`${item.name} - Cost: ${item.cost}`}
                     </Button>
                     <br />
                     <br />
@@ -312,7 +353,7 @@ export const CreateCharacterForm = ({
             </div>
             <div>
               <p className="text-white text-lg text-center  leading-8 dark:text-gray-300">
-                Select Armor
+                {"Select Armor"}
               </p>
               <div className="text-center">
                 {items.armor.map((item: { name: string; cost: number }) => (
@@ -327,7 +368,7 @@ export const CreateCharacterForm = ({
                       onClick={handleClick}
                       value={item.name}
                     >
-                      {item.name} - Cost: {item.cost}
+                      {`${item.name} - Cost: ${item.cost}`}
                     </Button>
                     <br />
                     <br />
@@ -337,7 +378,7 @@ export const CreateCharacterForm = ({
             </div>
             <div>
               <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
-                Select Misc
+                {"Select Misc"}
               </p>
               <div className="text-center">
                 {items.misc.map((item: { name: string; cost: number }) => (
@@ -352,7 +393,7 @@ export const CreateCharacterForm = ({
                       onClick={handleClick}
                       value={item.name}
                     >
-                      {item.name} - Cost: {item.cost}
+                      {`${item.name} - Cost: ${item.cost}`}
                     </Button>
                     <br />
                     <br />
