@@ -354,7 +354,7 @@ const Game: React.FC = () => {
       <div className="flex justify-center text-center flex-col mt-4 md:flex-row md:space-x-8 md:mt-0">
         <div className="bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
           <div className="text-white text-xl leading-8 dark:text-gray-300">
-            <h1>Online Users</h1>
+            <h1>{"Online Users"}</h1>
           </div>
           {onlineUsers.length === 0 ? (
             <div className="text-center w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
@@ -402,7 +402,7 @@ const Game: React.FC = () => {
                                     handleClearRolls();
                                   }}
                                 >
-                                  Attack
+                                  {"Attack"}
                                 </Button>
                               </p>
                             ) : showPartSelection ? (
@@ -446,13 +446,13 @@ const Game: React.FC = () => {
           )}
           <div>
             {numDiceToRoll && (
-              <div>Number Of Dice To Roll: {numDiceToRoll}</div>
+              <div className="bg-gray-800 m-6 p-6 rounded">
+                <div>{`Number Of Dice To Roll: ${numDiceToRoll}`}</div>
+              </div>
             )}
-          </div>
-          <div>
             {numDiceToRoll && successfulRolls === null && (
-              <div>
-                Enter the Number Of Dice 5 or Above:
+              <div className="bg-gray-800 m-6 p-6 rounded">
+                <p>{"Enter the Number Of Dice 5 or Above: "}</p>
                 <Input
                   placeholder="0"
                   type="number"
@@ -462,24 +462,26 @@ const Game: React.FC = () => {
                 />
               </div>
             )}
+            <div className="flex justify-center flex-col mt-4 md:flex-row md:space-x-8 md:mt-0">
+              {successfulRolls !== null && successfulRolls !== undefined && (
+                <div className="bg-gray-800 m-6 p-6 rounded">
+                  <div>{`Number Of Rolls 5 and above: ${successfulRolls}`}</div>
+                </div>
+              )}
+            </div>
+            {numDiceToRoll &&
+              successfulRolls !== null &&
+              successfulRolls !== undefined && (
+                <div>
+                  <Button
+                    className="bg-red-500 hover:bg-red-700"
+                    onClick={handleClearRolls}
+                  >
+                    {"Clear Rolls"}
+                  </Button>
+                </div>
+              )}
           </div>
-          <div className="flex justify-center flex-col mt-4 md:flex-row md:space-x-8 md:mt-0">
-            {successfulRolls !== null && successfulRolls !== undefined && (
-              <div>Number Of Rolls 5 and above: {successfulRolls}</div>
-            )}
-          </div>
-          {numDiceToRoll &&
-            successfulRolls !== null &&
-            successfulRolls !== undefined && (
-              <div>
-                <Button
-                  className="bg-red-500 hover:bg-red-700"
-                  onClick={handleClearRolls}
-                >
-                  Clear Rolls
-                </Button>
-              </div>
-            )}
         </div>
       </div>
       <ManageCharacter
