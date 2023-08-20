@@ -38,10 +38,12 @@ const ManageCharacter: React.FC<{
     setIsLoading(true);
     const characterData = await fetchCharacterSheet(user);
     setCharacter(characterData);
-    setParentCharacter(characterData);
+    if (isDisplayedInGame) {
+      setParentCharacter(characterData);
+    }
     console.log(characterData);
     setIsLoading(false);
-  }, [user, setParentCharacter]);
+  }, [user, isDisplayedInGame, setParentCharacter]);
 
   useEffect(() => {
     if (!user) {

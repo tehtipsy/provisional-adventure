@@ -65,23 +65,27 @@ export const CreateCharacterForm = ({
   const [selectedStatus, setDisabledStatus] = useState(initialSelectedStatus);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
-const handleClick = (e: FormEvent) => {
-  e.preventDefault();
-  const buttonValue = (e.target as HTMLSelectElement).value;
-  if (selectedItems.includes(buttonValue)) {
-    setSelectedItems((prev) => prev.filter((item) => item !== buttonValue));
-    setDisabledStatus((prev: any) => ({
-      ...prev,
-      [buttonValue]: false,
-    }));
-  } else {
-    setSelectedItems((prev) => [...prev, buttonValue]);
-    setDisabledStatus((prev: any) => ({
-      ...prev,
-      [buttonValue]: true,
-    }));
-  }
-};
+  const handleClickSelction = (buttonValue: string) => {
+    if (selectedItems.includes(buttonValue)) {
+      setSelectedItems((prev) => prev.filter((item) => item !== buttonValue));
+      setDisabledStatus((prev: any) => ({
+        ...prev,
+        [buttonValue]: false,
+      }));
+    } else {
+      setSelectedItems((prev) => [...prev, buttonValue]);
+      setDisabledStatus((prev: any) => ({
+        ...prev,
+        [buttonValue]: true,
+      }));
+    }
+  };
+
+  const handleClick = (e: FormEvent) => {
+    e.preventDefault();
+    const buttonValue = (e.target as HTMLSelectElement).value;
+    handleClickSelction(buttonValue);
+  };
   useEffect(() => {
     console.log("Selected Items: ", selectedItems);
     console.log("Selected Status: ", selectedStatus);
@@ -147,7 +151,7 @@ const handleClick = (e: FormEvent) => {
       actionPoints: 0,
       equipment: {
         selectedItems: {
-          ...selectedItems
+          ...selectedItems,
         },
         hands: {
           quantity: 2,
@@ -160,32 +164,17 @@ const handleClick = (e: FormEvent) => {
           damageRating: 2,
           damageType: ["Piercing", "Slashing"],
           name: "Short Sword",
-          //     // choose from items array
         },
-        quiver: {
-          //     // choose from items array
-        },
-        backpack: {
-          //     // choose from items array
-        },
+        quiver: {},
+        backpack: {},
         armor: {
-          head: {
-            //     // choose from items array
-          },
-          chest: {
-            //     // choose from items array
-          },
-          torso: {
-            //     // choose from items array
-          },
-          gloves: {
-            //     // choose from items array
-          },
+          head: {},
+          chest: {},
+          torso: {},
+          gloves: {},
         },
       },
-      statusEffects: {
-        //   // choose from Effects array
-      },
+      statusEffects: {},
     };
 
     fetch("/api/db/character", {
@@ -211,7 +200,7 @@ const handleClick = (e: FormEvent) => {
   };
 
   return (
-    <>
+    <div className="flex justify-center flex-col mt-4 md:flex-row md:space-x-8 md:mt-0">
       <form
         onSubmit={handleSubmit}
         className="w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded"
@@ -222,7 +211,7 @@ const handleClick = (e: FormEvent) => {
             <Input
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter Character Name"
-              className="w-1/2 m-4 text-center"
+              className="m-4 text-center"
             />
           </div>
           <div className="grid grid-cols-3 gap-4">
@@ -295,7 +284,7 @@ const handleClick = (e: FormEvent) => {
           </div>
         </div>
         <div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="flex justify-center flex-col mt-4 md:flex-row md:space-x-8 md:mt-0">
             <div>
               <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
                 Select Weapon
@@ -380,6 +369,6 @@ const handleClick = (e: FormEvent) => {
           Save New Character Sheet
         </Button>
       </form>
-    </>
+    </div>
   );
 };

@@ -351,132 +351,136 @@ const Game: React.FC = () => {
 
   return (
     <BasePage>
-      <div className="text-center w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
-        <div className="text-center text-white text-xl leading-8 dark:text-gray-300">
-          <h1>Online Users</h1>
-        </div>
-        {onlineUsers.length === 0 ? (
-          <div className="text-center w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
-            <Loading />
-            <Loading />
-            <Loading />
-            <Loading />
+      <div className="flex justify-center text-center flex-col mt-4 md:flex-row md:space-x-8 md:mt-0">
+        <div className="bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
+          <div className="text-white text-xl leading-8 dark:text-gray-300">
+            <h1>Online Users</h1>
           </div>
-        ) : (
-          <>
+          {onlineUsers.length === 0 ? (
+            <div className="text-center w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
+              <Loading />
+              <Loading />
+              <Loading />
+              <Loading />
+            </div>
+          ) : (
             <>
-              <div>
-                {user === currentPlayer ? (
-                  <EndTurnButton endTurn={endTurn} username={user} />
-                ) : (
-                  ""
-                )}
-              </div>
-              <br />
-            </>
-            <ul>
-              {onlineUsers.map((username: string) => {
-                return (
-                  <React.Fragment key={username}>
-                    <li>
-                      <div
-                        className={
-                          username === currentPlayer
-                            ? "animate-pulse flex justify-center items-center"
-                            : "flex justify-center items-center"
-                        }
-                      >
-                        {username}
-                        {username === user ? (
-                          <p className="px-6">{" (you)"}</p>
-                        ) : username === currentPlayer ? (
-                          <p className="px-6">{" (now playing)"}</p>
-                        ) : user === currentPlayer ? (
-                          pokeReceiver !== username && character ? (
-                            <p className="px-6">
-                              <Button
-                                onClick={() => {
-                                  setPokeReceiver(username);
-                                  setShowPartSelection(true);
-                                  handleClearRolls();
-                                }}
-                              >
-                                Attack
-                              </Button>
-                            </p>
-                          ) : showPartSelection ? (
-                            <div className="bg-gray-800 m-6 p-6 rounded">
-                              <AttackOptions
-                                options={["Head", "Torso", "Limbs"]}
-                                onOptionSelection={handlePartSelection}
-                              />
-                            </div>
-                          ) : showAttackSelection ? (
-                            character &&
-                            character.characterSheet.equipment.hands
-                              .damageType && (
+              <>
+                <div>
+                  {user === currentPlayer ? (
+                    <EndTurnButton endTurn={endTurn} username={user} />
+                  ) : (
+                    ""
+                  )}
+                </div>
+                <br />
+              </>
+              <ul>
+                {onlineUsers.map((username: string) => {
+                  return (
+                    <React.Fragment key={username}>
+                      <li>
+                        <div
+                          className={
+                            username === currentPlayer
+                              ? "animate-pulse flex justify-center items-center"
+                              : "flex justify-center items-center"
+                          }
+                        >
+                          {username}
+                          {username === user ? (
+                            <p className="px-6">{" (you)"}</p>
+                          ) : username === currentPlayer ? (
+                            <p className="px-6">{" (now playing)"}</p>
+                          ) : user === currentPlayer ? (
+                            pokeReceiver !== username && character ? (
+                              <p className="px-6">
+                                <Button
+                                  onClick={() => {
+                                    setPokeReceiver(username);
+                                    setShowPartSelection(true);
+                                    handleClearRolls();
+                                  }}
+                                >
+                                  Attack
+                                </Button>
+                              </p>
+                            ) : showPartSelection ? (
                               <div className="bg-gray-800 m-6 p-6 rounded">
                                 <AttackOptions
-                                  options={
-                                    character.characterSheet.equipment.hands
-                                      .damageType
-                                  }
-                                  onOptionSelection={handleAttackSelection}
+                                  options={["Head", "Torso", "Limbs"]}
+                                  onOptionSelection={handlePartSelection}
                                 />
                               </div>
-                            )
-                          ) : showAutoRollSelection ? (
-                            <div className="bg-gray-800 m-6 p-6 rounded">
-                              <AttackOptions
-                                options={["Auto", "Manual"]}
-                                onOptionSelection={handleRollSelection}
-                              />
-                            </div>
-                          ) : null
-                        ) : null}
-                      </div>
-                    </li>
-                    <br />
-                  </React.Fragment>
-                );
-              })}
-            </ul>
-          </>
-        )}
-        <div>
-          {numDiceToRoll && <div>Number Of Dice To Roll: {numDiceToRoll}</div>}
-        </div>
-        <div>
-          {numDiceToRoll && successfulRolls === null && (
-            <div>
-              Enter the Number Of Dice 5 or Above:
-              <Input
-                placeholder="0"
-                type="number"
-                min={1}
-                max={99}
-                onChange={handleDiceInput}
-              />
-            </div>
+                            ) : showAttackSelection ? (
+                              character &&
+                              character.characterSheet.equipment.hands
+                                .damageType && (
+                                <div className="bg-gray-800 m-6 p-6 rounded">
+                                  <AttackOptions
+                                    options={
+                                      character.characterSheet.equipment.hands
+                                        .damageType
+                                    }
+                                    onOptionSelection={handleAttackSelection}
+                                  />
+                                </div>
+                              )
+                            ) : showAutoRollSelection ? (
+                              <div className="bg-gray-800 m-6 p-6 rounded">
+                                <AttackOptions
+                                  options={["Auto", "Manual"]}
+                                  onOptionSelection={handleRollSelection}
+                                />
+                              </div>
+                            ) : null
+                          ) : null}
+                        </div>
+                      </li>
+                      <br />
+                    </React.Fragment>
+                  );
+                })}
+              </ul>
+            </>
           )}
+          <div>
+            {numDiceToRoll && (
+              <div>Number Of Dice To Roll: {numDiceToRoll}</div>
+            )}
+          </div>
+          <div>
+            {numDiceToRoll && successfulRolls === null && (
+              <div>
+                Enter the Number Of Dice 5 or Above:
+                <Input
+                  placeholder="0"
+                  type="number"
+                  min={1}
+                  max={99}
+                  onChange={handleDiceInput}
+                />
+              </div>
+            )}
+          </div>
+          <div className="flex justify-center flex-col mt-4 md:flex-row md:space-x-8 md:mt-0">
+            {successfulRolls !== null && successfulRolls !== undefined && (
+              <div>Number Of Rolls 5 and above: {successfulRolls}</div>
+            )}
+          </div>
+          {numDiceToRoll &&
+            successfulRolls !== null &&
+            successfulRolls !== undefined && (
+              <div>
+                <Button
+                  className="bg-red-500 hover:bg-red-700"
+                  onClick={handleClearRolls}
+                >
+                  Clear Rolls
+                </Button>
+              </div>
+            )}
         </div>
-        <div>
-          {successfulRolls !== null && successfulRolls !== undefined && (
-            <div>Number Of Rolls 5 and above: {successfulRolls}</div>
-          )}
-        </div>
-        {numDiceToRoll &&
-          successfulRolls !== null &&
-          successfulRolls !== undefined && (
-            <div>
-              <Button
-                className="bg-red-500 hover:bg-red-700"
-                onClick={handleClearRolls}
-              >
-                Clear Rolls
-              </Button>
-            </div>
-          )}
       </div>
       <ManageCharacter
         isRefreshNeeded={refreshNeeded}
