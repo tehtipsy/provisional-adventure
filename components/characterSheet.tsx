@@ -31,12 +31,12 @@ export const CharacterSheet: React.FC<{
   useEffect(() => {
     console.log(
       "Total Focus: ",
-        // character.characterSheet.attributes["focus"].unmodifiedValue +
-        //   character.characterSheet.attributes["focus"].t1 +
-        character.characterSheet.attributes["focus"].t2 //+
-        //   character.characterSheet.attributes["focus"].t3 +
-        //   character.characterSheet.attributes["focus"].t4 +
-        // character.characterSheet.attributes["focus"].bonus
+        character.characterSheet.attributes["focus"].unmodifiedValue +
+          character.characterSheet.attributes["focus"].t1 +
+        character.characterSheet.attributes["focus"].t2 +
+          character.characterSheet.attributes["focus"].t3 +
+          character.characterSheet.attributes["focus"].t4 +
+        character.characterSheet.attributes["focus"].bonus
     );
   }, [character]);
 

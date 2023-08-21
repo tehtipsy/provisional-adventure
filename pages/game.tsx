@@ -429,7 +429,7 @@ const Game: React.FC = () => {
                             ) : showAutoRollSelection ? (
                               <div className="bg-gray-800 m-6 p-6 rounded">
                                 <AttackOptions
-                                  options={["Auto", "Manual"]}
+                                  options={["Auto Roll", "Manual"]}
                                   onOptionSelection={handleRollSelection}
                                 />
                               </div>
