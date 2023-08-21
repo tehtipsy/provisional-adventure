@@ -302,7 +302,7 @@ export const CreateCharacterForm = ({
   };
 
   return (
-    <div className="flex justify-center flex-col mt-4 md:flex-row md:space-x-8 md:mt-0">
+    <div className="flex justify-center flex-row mt-4 md:flex-row md:space-x-8 md:mt-0">
       <form
         onSubmit={handleSubmit}
         className="w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded"

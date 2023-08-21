@@ -247,7 +247,7 @@ const Game: React.FC = () => {
   }, [character]);
 
   useEffect(() => {
-    // change to start of round
+    // !!! change to start of round !!!
     const InitActionPoints = async () => {
       if (user === currentPlayer && characterRef.current) {
         const initialData = {
@@ -316,28 +316,44 @@ const Game: React.FC = () => {
     }
   }, [successfulRolls, pokeReceiver, sendPoke]);
 
-  const endTurn = async (user: string) => {
-    const data = {
-      name: "endTurn",
-      username: user,
-      timestamp: new Date().toISOString(),
-    };
+  const endTurn = useCallback(
+    async (user: string) => {
+      const data = {
+        name: "endTurn",
+        username: user,
+        timestamp: new Date().toISOString(),
+      };
 
-    const response = await fetch("/api/db/turn-action", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
+      const response = await fetch("/api/db/turn-action", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-    const result = await response.json();
-    console.log(result);
-    if (result.success) {
-      channel?.publish("currentPlayer", result.currentPlayer);
+      const result = await response.json();
+      console.log(result);
+      if (result.success) {
+        channel?.publish("currentPlayer", result.currentPlayer);
+      }
+    },
+    [channel]
+  );
+
+  const prevActionPointsRef = useRef(
+    characterRef.current?.characterSheet.actionPoints
+  );
+
+  useEffect(() => {
+    const currentActionPoints =
+      characterRef.current?.characterSheet.actionPoints;
+    if (prevActionPointsRef.current === 1 && currentActionPoints === 0) {
+      endTurn(user);
     }
-  };
-
+    prevActionPointsRef.current = currentActionPoints;
+  }, [user, character, endTurn]);
+  
   const handleDiceRolls = (choice: string) => {
     const characterSheet = character?.characterSheet;
     const handsSlot = characterSheet.equipment.hands;
@@ -358,16 +374,16 @@ const Game: React.FC = () => {
     setNumDiceToRoll(numDice);
     console.log("numDice: ", numDice);
 
-    if (choice !== "Manual") {
+    if (choice !== "Manual Roll") {
       // get tier from dice roll
       const tier = rollDice(numDice);
       setSuccessfulRolls(tier);
     }
-  }; // useEffect [character, ???] ???
+  }; // characterRef
 
-  // handleDiceRolls (choice === "Auto"):
+  // handleDiceRolls (choice === "Auto Roll"):
   const handleDiceInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const tier = parseInt(event.target.value, 10);
+    const tier = parseInt(event.target.value);
     console.log("Dice Above 5 Input: ", tier);
     setTimeout(() => setSuccessfulRolls(tier), 1000); // change this to input
   };
@@ -397,7 +413,7 @@ const Game: React.FC = () => {
   return (
     <BasePage>
       <div className="flex justify-center text-center flex-col mt-4 md:flex-row md:space-x-8 md:mt-0">
-        <div className="bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
+        <div className="w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
           <div className="text-white text-xl leading-8 dark:text-gray-300">
             <h1>{"Online Users"}</h1>
           </div>
@@ -474,7 +490,7 @@ const Game: React.FC = () => {
                             ) : showAutoRollSelection ? (
                               <div className="bg-gray-800 m-6 p-6 rounded">
                                 <AttackOptions
-                                  options={["Auto Roll", "Manual"]}
+                                  options={["Auto Roll", "Manual Roll"]}
                                   onOptionSelection={handleRollSelection}
                                 />
                               </div>
@@ -492,17 +508,17 @@ const Game: React.FC = () => {
           <div>
             {numDiceToRoll && (
               <div className="bg-gray-800 m-6 p-6 rounded">
-                <div>{`Number Of Dice To Roll: ${numDiceToRoll}`}</div>
+                <div>{`Roll ${numDiceToRoll} Dice`}</div>
               </div>
             )}
             {numDiceToRoll && successfulRolls === null && (
               <div className="bg-gray-800 m-6 p-6 rounded">
-                <p>{"Enter the Number Of Dice 5 or Above: "}</p>
+                <p>{"Successful Rolls "}</p>
                 <Input
                   placeholder="0"
                   type="number"
                   min={1}
-                  max={99}
+                  max={numDiceToRoll}
                   onChange={handleDiceInput}
                 />
               </div>
@@ -510,7 +526,7 @@ const Game: React.FC = () => {
             <div className="flex justify-center flex-col mt-4 md:flex-row md:space-x-8 md:mt-0">
               {successfulRolls !== null && successfulRolls !== undefined && (
                 <div className="bg-gray-800 m-6 p-6 rounded">
-                  <div>{`Number Of Rolls 5 and above: ${successfulRolls}`}</div>
+                  <div>{`${successfulRolls} Successful Rolls (5 or above)`}</div>
                 </div>
               )}
             </div>
