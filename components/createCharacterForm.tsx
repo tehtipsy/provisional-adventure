@@ -79,7 +79,7 @@ export const CreateCharacterForm = ({
       const maxCapacity = 1 + prowess;
       setCapacity(maxCapacity);
     } else {
-      setCapacity(0); // change back to default
+      setCapacity(prowess);
     }
   }, [size, prowess]);
 
@@ -259,7 +259,7 @@ export const CreateCharacterForm = ({
                 type="number"
                 min={0}
                 max={4}
-                onChange={(e) => setProwess(parseInt(e.target.value))}
+                onChange={(e) => setProwess(parseInt(e.target.value) || 0)}
               />
               <br />
               <p className="text-white font-medium leading-8 dark:text-gray-300">
@@ -269,7 +269,7 @@ export const CreateCharacterForm = ({
                 type="number"
                 min={0}
                 max={4}
-                onChange={(e) => setFinesse(parseInt(e.target.value))}
+                onChange={(e) => setFinesse(parseInt(e.target.value)  || 0)}
               />
             </div>
             <div>
@@ -280,7 +280,7 @@ export const CreateCharacterForm = ({
                 type="number"
                 min={0}
                 max={4}
-                onChange={(e) => setConstitution(parseInt(e.target.value))}
+                onChange={(e) => setConstitution(parseInt(e.target.value)  || 0)}
               />
               <br />
               <p className="text-white font-medium leading-8 dark:text-gray-300">
@@ -290,7 +290,7 @@ export const CreateCharacterForm = ({
                 type="number"
                 min={0}
                 max={4}
-                onChange={(e) => setFocus(parseInt(e.target.value))}
+                onChange={(e) => setFocus(parseInt(e.target.value)  || 0)}
               />
             </div>
             <div>
@@ -301,7 +301,7 @@ export const CreateCharacterForm = ({
                 type="number"
                 min={0}
                 max={4}
-                onChange={(e) => setWillpower(parseInt(e.target.value))}
+                onChange={(e) => setWillpower(parseInt(e.target.value)  || 0)}
               />
               <br />
               <p className="text-white font-medium leading-8 dark:text-gray-300">
@@ -311,7 +311,7 @@ export const CreateCharacterForm = ({
                 type="number"
                 min={0}
                 max={4}
-                onChange={(e) => setMotivation(parseInt(e.target.value))}
+                onChange={(e) => setMotivation(parseInt(e.target.value)  || 0)}
               />
             </div>
           </div>
