@@ -12,20 +12,29 @@ export async function actionResolver(
   weapon: string,
   damageType: string,
   tier: number,
-  bodyPart: string
+  bodyPart: string,
+  actionPoints: number
 ) {
   console.log(sender, receiver, action, damageType, bodyPart, tier);
+  console.log("Action Points: ", actionPoints);
 
   // Construct the update object based on the action, damageType, and tier
   const update: UpdateInterface = {
     receiverUpdate: {},
     senderUpdate: {},
   };
-  
-  const chosenAttack = await fetchAttackObject(damageType, bodyPart);
-  console.log("chosenAttack: ", chosenAttack);
 
+  if (action === "subtractActionPoints") {
+    update.senderUpdate["actionPoints"] = -actionPoints;
+  }
+
+  if (action === "addActionPoints") {
+    update.senderUpdate["actionPoints"] = actionPoints;
+  }
+  
   if (action === "attack") {
+    const chosenAttack = await fetchAttackObject(damageType, bodyPart);
+    console.log("chosenAttack: ", chosenAttack);
     update.senderUpdate["actionPoints"] = -1;
     console.log(chosenAttack);
 

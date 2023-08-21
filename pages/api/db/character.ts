@@ -39,7 +39,7 @@ export default async function handler( // CharacterSheetHandler
       return res.status(200).json({ insertedId: result.insertedId });
     }
 
-    const { action, weapon, damageType, tier, bodyPart, sender, receiver } =
+    const {actionPoints, action, weapon, damageType, tier, bodyPart, sender, receiver } =
       data; // from poke event
 
     const update = await actionResolver(
@@ -49,7 +49,8 @@ export default async function handler( // CharacterSheetHandler
       weapon,
       damageType,
       tier,
-      bodyPart
+      bodyPart,
+      actionPoints
     );
 
     // https://www.mongodb.com/docs/manual/reference/method/db.collection.findOneAndUpdate/

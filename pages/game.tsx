@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useCallback, useContext, useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
@@ -37,6 +37,7 @@ const Game: React.FC = () => {
   const { currentPlayer, setCurrentPlayer } = useContext(TurnContext);
 
   const [character, setCharacter] = useState<CharacterSheetProps | null>(null);
+  const characterRef = useRef(character);
   const [refreshNeeded, setRefreshNeeded] = useState(false);
 
   const [pokeSender, setPokeSender] = useState<string | null>(null);
@@ -240,6 +241,50 @@ const Game: React.FC = () => {
       updateTurnInDatabase();
     }
   }, [onlineUsers, updateTurnInDatabase]);
+
+  useEffect(() => {
+    characterRef.current = character;
+  }, [character]);
+
+  useEffect(() => {
+    // change to start of round
+    const InitActionPoints = async () => {
+      if (user === currentPlayer && characterRef.current) {
+        const initialData = {
+          receiver: user,
+          sender: user,
+          actionPoints: characterRef.current.characterSheet.actionPoints,
+          action: "subtractActionPoints",
+        };
+
+        await updateCharacterSheet(initialData);
+
+        const characterSheet = characterRef.current.characterSheet;
+        const characterFocus = characterSheet.attributes.focus;
+        const actionPoints =
+          characterFocus.unmodifiedValue +
+          characterFocus.t1 +
+          characterFocus.t2 +
+          characterFocus.t3 +
+          characterFocus.t4 +
+          characterFocus.bonus;
+
+        const data = {
+          receiver: user,
+          sender: user,
+          actionPoints: actionPoints,
+          action: "addActionPoints",
+        };
+
+        console.log("Action Points Focus Value: ", actionPoints);
+        const updatedCharacterData = await updateCharacterSheet(data);
+        setRefreshNeeded(true);
+        console.log(updatedCharacterData); // sender and reciver sheets
+      }
+    };
+
+    InitActionPoints();
+  }, [user, currentPlayer]); // change current player to round count
 
   const sendPoke = useCallback(
     (receiver: string, tier: number) => {
