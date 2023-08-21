@@ -27,6 +27,7 @@ const Nav: React.FC = () => {
     {
       href: "/manage-character",
       label: "Manage character",
+      requireLogin: true,
     },
     {
       href: "/",
