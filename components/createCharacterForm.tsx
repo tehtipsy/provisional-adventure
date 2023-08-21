@@ -119,14 +119,14 @@ export const CreateCharacterForm = ({
     const cost = item.cost;
     const weight = item.weight;
     if (selectedStatus[buttonValue] === true) {
-      setRemainingBudget(cost ? remainingBudget - cost : remainingBudget - 0);
+      setRemainingBudget(cost ? remainingBudget + cost : (prev) => prev);
       setRemainingCapacity(
-        weight ? remainingCapacity - weight : remainingCapacity - 0
+        weight ? remainingCapacity + weight : (prev) => prev
       );
     } else {
-      setRemainingBudget(cost ? remainingBudget + cost : remainingBudget + 0);
+      setRemainingBudget(cost ? remainingBudget - cost : (prev) => prev);
       setRemainingCapacity(
-        weight ? remainingCapacity + weight : remainingCapacity + 0
+        weight ? remainingCapacity - weight : (prev) => prev
       );
     }
   };
@@ -140,21 +140,22 @@ export const CreateCharacterForm = ({
   //   setRemainingBudget(budget);
   // }, [budget]);
 
-  useEffect(() => {
-    setCapacity(
-      remainingCapacity
-        ? capacity - remainingCapacity
-        : capacity + remainingCapacity
-    );
-  }, [remainingCapacity]);
+  // useEffect(() => {
+  //   setCapacity(
+  //     remainingCapacity
+  //       ? capacity - remainingCapacity
+  //       : capacity + remainingCapacity
+  //   );
+  // }, [remainingCapacity]);
 
   useEffect(() => {
-    console.log("Remaining Budget: ", budget);
+    console.log("Budget: ", budget);
     // setRemainingBudget((prev) => prev - budget);
   }, [budget]);
 
   useEffect(() => {
-    console.log("Remaining Capacity: ", capacity);
+    console.log("Capacity: ", capacity);
+    setRemainingCapacity((prev) => prev + capacity);
   }, [capacity]);
 
   useEffect(() => {
@@ -162,10 +163,10 @@ export const CreateCharacterForm = ({
     console.log("remainingBudget: ", remainingBudget);
   }, [remainingCapacity, remainingBudget]);
 
-  useEffect(() => {
-    console.log("Selected Items: ", selectedItems);
-    console.log("Selected Status: ", selectedStatus);
-  }, [selectedItems, selectedStatus]);
+  // useEffect(() => {
+  //   console.log("Selected Items: ", selectedItems);
+  //   console.log("Selected Status: ", selectedStatus);
+  // }, [selectedItems, selectedStatus]);
 
   const handleClickSelction = (buttonValue: string) => {
     if (selectedItems.includes(buttonValue)) {
@@ -390,17 +391,17 @@ export const CreateCharacterForm = ({
               <SelectOriginForm setOriginSelection={setOriginSelection} />
             </div>
             <div>
-              <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
+              {/* <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
                 {`Total Capacity: ${capacity}Kg`}
-              </p>
+              </p> */}
               <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
                 {`Remainig Capacity: ${remainingCapacity}Kg`}
               </p>
             </div>
             <div>
-              <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
+              {/* <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
                 {`Total Budget: ${budget}$`}
-              </p>
+              </p> */}
               <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
                 {`Remainig Budget: ${remainingBudget}$`}
               </p>
