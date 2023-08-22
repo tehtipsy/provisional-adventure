@@ -303,7 +303,7 @@ const Game: React.FC = () => {
       setRefreshNeeded(true);
       console.log(updatedCharacterData); // sender and reciver sheets
     }
-  }, [roundCount, user]);
+  }, [user]);
 
   useEffect(() => {
     InitActionPoints();
