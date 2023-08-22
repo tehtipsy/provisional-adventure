@@ -24,9 +24,9 @@ export default async function handler( // turnDataHandler
       roundCount: turnData?.roundCount,
     });
   } else if (req.method === "POST") {
-    const { data } = req.body;
+    const data = req.body;
 
-    await db.collection("turn").updateOne({}, { $set: { data } });
+    await db.collection("turn").updateOne({}, { $set: { ...data } });
 
     await client.close();
 

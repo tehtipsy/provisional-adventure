@@ -226,7 +226,7 @@ const Game: React.FC = () => {
     }
   }, [channel, user]);
 
-  const updateTurnInDatabase = useCallback(async () => {
+  const updateTurnPlayersInDatabase = useCallback(async () => {
     // Post Online Users To turn MongoDB Doc
     await fetch("/api/db/turn", {
       method: "POST",
@@ -239,9 +239,9 @@ const Game: React.FC = () => {
 
   useEffect(() => {
     if (onlineUsers.length > 0) {
-      updateTurnInDatabase();
+      updateTurnPlayersInDatabase();
     }
-  }, [onlineUsers, updateTurnInDatabase]);
+  }, [onlineUsers, updateTurnPlayersInDatabase]);
 
   useEffect(() => {
     if (character !== null) {
