@@ -25,6 +25,11 @@ export default async function handler( // turnDataHandler
     });
   } else if (req.method === "POST") {
     const data = req.body;
+    if (data.actionPoints) {
+      await db
+        .collection("turn")
+        .updateOne({}, { $inc: { ...data.actionPoints } });
+    }
 
     await db.collection("turn").updateOne({}, { $set: { ...data } });
 

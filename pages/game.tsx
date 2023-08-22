@@ -266,7 +266,6 @@ const Game: React.FC = () => {
       damageRating.current =
         characterRef.current?.characterSheet.equipment.hands.damageRating;
       weaponName.current = character?.characterSheet.equipment.hands.name;
-
     }
   }, [character]);
 
@@ -311,6 +310,24 @@ const Game: React.FC = () => {
     console.log("round count in InitActionPoints useEffect: ", roundCount);
   }, [roundCount, InitActionPoints]); // fires when round count changes
 
+  useEffect(() => {
+    if (characterRef.current !== null) {
+    const incramentActionPointsInDatabase = async () => {
+      // sum everyone's action points at the start of each turn in MongoDB Doc
+      const actionPoints = 
+        { totalActionPoints: characterFocus?.current }
+      
+      await fetch("/api/db/turn", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ actionPoints: actionPoints}),
+      });
+    };
+    incramentActionPointsInDatabase();}
+  }, [roundCount]); // fires when round count changes
+
   const updateRoundCountInDatabase = async (newRoundCount: number) => {
     // Post Round Count To turn MongoDB Doc
     await fetch("/api/db/turn", {
@@ -321,7 +338,6 @@ const Game: React.FC = () => {
       body: JSON.stringify({ roundCount: newRoundCount }),
     });
   };
-
 
   const startNewRound = () => {
     const newRoundCount = roundCount + 1;
@@ -417,7 +433,7 @@ const Game: React.FC = () => {
     const currentActionPoints =
       characterRef.current?.characterSheet.actionPoints;
     if (prevActionPointsRef.current === 1 && currentActionPoints === 0) {
-    // if (currentActionPoints === 0) { // death loop, add new round switch when everyone's action points are at 0
+      // if (currentActionPoints === 0) { // death loop, add new round switch when everyone's action points are at 0
       endTurn(user);
     }
     prevActionPointsRef.current = currentActionPoints;
