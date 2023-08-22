@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useCallback, useContext, useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
@@ -35,8 +35,10 @@ const Game: React.FC = () => {
 
   const { user } = useContext(GlobalContext);
   const { currentPlayer, setCurrentPlayer } = useContext(TurnContext);
+  const { roundCount, setRoundCount } = useContext(TurnContext);
 
   const [character, setCharacter] = useState<CharacterSheetProps | null>(null);
+  const characterRef = useRef(character);
   const [refreshNeeded, setRefreshNeeded] = useState(false);
 
   const [pokeSender, setPokeSender] = useState<string | null>(null);
@@ -224,7 +226,7 @@ const Game: React.FC = () => {
     }
   }, [channel, user]);
 
-  const updateTurnInDatabase = useCallback(async () => {
+  const updateTurnPlayersInDatabase = useCallback(async () => {
     // Post Online Users To turn MongoDB Doc
     await fetch("/api/db/turn", {
       method: "POST",
@@ -237,19 +239,145 @@ const Game: React.FC = () => {
 
   useEffect(() => {
     if (onlineUsers.length > 0) {
-      updateTurnInDatabase();
+      updateTurnPlayersInDatabase();
     }
-  }, [onlineUsers, updateTurnInDatabase]);
+  }, [onlineUsers, updateTurnPlayersInDatabase]);
+
+  useEffect(() => {
+    if (character !== null) {
+      characterRef.current = character;
+      characterFocus.current =
+        characterRef.current?.characterSheet.attributes.focus.unmodifiedValue +
+        characterRef.current?.characterSheet.attributes.focus.t1 +
+        characterRef.current?.characterSheet.attributes.focus.t2 +
+        characterRef.current?.characterSheet.attributes.focus.t3 +
+        characterRef.current?.characterSheet.attributes.focus.t4 +
+        characterRef.current?.characterSheet.attributes.focus.bonus;
+      // prevActionPointsRef.current = // check this
+      //   characterRef.current?.characterSheet.actionPoints;
+      attackProwess.current =
+        characterRef.current?.characterSheet.attributes.prowess
+          .unmodifiedValue +
+        characterRef.current?.characterSheet.attributes.prowess.t1 +
+        characterRef.current?.characterSheet.attributes.prowess.t2 +
+        characterRef.current?.characterSheet.attributes.prowess.t3 +
+        characterRef.current?.characterSheet.attributes.prowess.t4 +
+        characterRef.current?.characterSheet.attributes.prowess.bonus;
+      damageRating.current =
+        characterRef.current?.characterSheet.equipment.hands.damageRating;
+      weaponName.current = character?.characterSheet.equipment.hands.name;
+    }
+  }, [character]);
+
+  const characterFocus = useRef(
+    characterRef.current?.characterSheet.attributes.focus.unmodifiedValue +
+      characterRef.current?.characterSheet.attributes.focus.t1 +
+      characterRef.current?.characterSheet.attributes.focus.t2 +
+      characterRef.current?.characterSheet.attributes.focus.t3 +
+      characterRef.current?.characterSheet.attributes.focus.t4 +
+      characterRef.current?.characterSheet.attributes.focus.bonus
+  );
+
+  const InitActionPoints = useCallback(async () => {
+    if (characterRef.current) {
+      const initialData = {
+        receiver: user,
+        sender: user,
+        actionPoints: characterRef.current.characterSheet.actionPoints,
+        action: "subtractActionPoints",
+      };
+
+      await updateCharacterSheet(initialData);
+
+      const actionPoints = characterFocus;
+
+      const data = {
+        receiver: user,
+        sender: user,
+        actionPoints: actionPoints.current,
+        action: "addActionPoints",
+      };
+
+      console.log("Action Points Focus Value: ", actionPoints.current);
+      const updatedCharacterData = await updateCharacterSheet(data);
+      setRefreshNeeded(true);
+      console.log(updatedCharacterData); // sender and reciver sheets
+    }
+  }, [roundCount, user]);
+
+  useEffect(() => {
+    InitActionPoints();
+    console.log("round count in InitActionPoints useEffect: ", roundCount);
+  }, [roundCount, InitActionPoints]); // fires when round count changes
+
+  useEffect(() => {
+    if (characterRef.current !== null) {
+    const incramentActionPointsInDatabase = async () => {
+      // sum everyone's action points at the start of each turn in MongoDB Doc
+      const actionPoints = 
+        { totalActionPoints: characterFocus?.current }
+      
+      await fetch("/api/db/turn", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ actionPoints: actionPoints}),
+      });
+    };
+    incramentActionPointsInDatabase();}
+  }, [roundCount]); // fires when round count changes
+
+  const updateRoundCountInDatabase = async (newRoundCount: number) => {
+    // Post Round Count To turn MongoDB Doc
+    await fetch("/api/db/turn", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ roundCount: newRoundCount }),
+    });
+  };
+
+  const startNewRound = () => {
+    const newRoundCount = roundCount + 1;
+    setRoundCount(newRoundCount);
+    channel?.publish("newRound", { newRoundCount });
+    // add post to db
+    updateRoundCountInDatabase(newRoundCount);
+  };
+
+  useEffect(() => {
+    channel?.subscribe("newRound", (message) => {
+      if (message) {
+        const { newRoundCount } = message.data;
+        setRoundCount(newRoundCount);
+        console.log(
+          "round count in newRound channel useEffect: ",
+          newRoundCount
+        );
+      }
+    });
+  }, [channel, setRoundCount]);
+
+  const handleStartNewRound = () => {
+    startNewRound();
+  };
+
+  // useEffect(() => {
+  //   const newRoundCount = roundCount + 1;
+  //   setRoundCount(newRoundCount);
+  //   // startNewRound();
+  // }, []); // leave empty
+
+  const weaponName = useRef(character?.characterSheet.equipment.hands.name);
 
   const sendPoke = useCallback(
+    // add action to parameters
     (receiver: string, tier: number) => {
       console.log("Tier in sendPoke: ", tier);
       console.log("Selected Body Part in sendPoke: ", selectedBodyPart);
       console.log("Selected Damage Type in sendPoke: ", selectedDamageType);
-
-      const characterSheet = character?.characterSheet;
-      const weaponName = characterSheet.equipment.hands.name;
-
       channel?.publish("poke", {
         action: "attack", // add choice !!!
         receiver,
@@ -257,11 +385,11 @@ const Game: React.FC = () => {
         sender: user,
         bodyPart: selectedBodyPart,
         damageType: selectedDamageType,
-        weapon: weaponName,
+        weapon: weaponName.current,
         timestamp: new Date().toISOString(),
       });
     },
-    [channel, user, selectedBodyPart, selectedDamageType, character] // , action]
+    [channel, user, selectedBodyPart, selectedDamageType] // , action]
   );
 
   useEffect(() => {
@@ -271,58 +399,74 @@ const Game: React.FC = () => {
     }
   }, [successfulRolls, pokeReceiver, sendPoke]);
 
-  const endTurn = async (user: string) => {
-    const data = {
-      name: "endTurn",
-      username: user,
-      timestamp: new Date().toISOString(),
-    };
+  const endTurn = useCallback(
+    async (user: string) => {
+      const data = {
+        name: "endTurn",
+        username: user,
+        timestamp: new Date().toISOString(),
+      };
 
-    const response = await fetch("/api/db/turn-action", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
+      const response = await fetch("/api/db/turn-action", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-    const result = await response.json();
-    console.log(result);
-    if (result.success) {
-      channel?.publish("currentPlayer", result.currentPlayer);
+      const result = await response.json();
+      console.log(result);
+      if (result.success) {
+        channel?.publish("currentPlayer", result.currentPlayer);
+      }
+    },
+    [channel]
+  );
+
+  const prevActionPointsRef = useRef(
+    // check this
+    characterRef.current?.characterSheet.actionPoints
+  );
+
+  useEffect(() => {
+    const currentActionPoints =
+      characterRef.current?.characterSheet.actionPoints;
+    if (prevActionPointsRef.current === 1 && currentActionPoints === 0) {
+      // if (currentActionPoints === 0) { // death loop, add new round switch when everyone's action points are at 0
+      endTurn(user);
     }
-  };
+    prevActionPointsRef.current = currentActionPoints;
+  }, [user, character, endTurn, characterFocus, currentPlayer]);
+
+  const attackProwess = useRef(
+    characterRef?.current?.characterSheet.attributes.prowess.unmodifiedValue +
+      characterRef.current?.characterSheet.attributes.prowess.t1 +
+      characterRef.current?.characterSheet.attributes.prowess.t2 +
+      characterRef.current?.characterSheet.attributes.prowess.t3 +
+      characterRef.current?.characterSheet.attributes.prowess.t4 +
+      characterRef.current?.characterSheet.attributes.prowess.bonus
+  );
+
+  const damageRating = useRef(
+    characterRef.current?.characterSheet.equipment.hands.damageRating
+  );
 
   const handleDiceRolls = (choice: string) => {
-    const characterSheet = character?.characterSheet;
-    const handsSlot = characterSheet.equipment.hands;
-
-    const damageRating = handsSlot.damageRating;
-
-    const characterProwess = characterSheet.attributes.prowess;
-    const attackProwess =
-      characterProwess.unmodifiedValue +
-      characterProwess.t1 +
-      characterProwess.t2 +
-      characterProwess.t3 +
-      characterProwess.t4 +
-      characterProwess.bonus;
-    console.log("attackProwess value: ", attackProwess);
-
-    const numDice = attackProwess + damageRating;
+    const numDice = attackProwess.current + damageRating.current;
     setNumDiceToRoll(numDice);
     console.log("numDice: ", numDice);
 
-    if (choice !== "Manual") {
+    if (choice !== "Manual Roll") {
       // get tier from dice roll
       const tier = rollDice(numDice);
       setSuccessfulRolls(tier);
     }
-  }; // useEffect [character, ???] ???
+  };
 
-  // handleDiceRolls (choice === "Auto"):
+  // handleDiceRolls (choice === "Auto Roll"):
   const handleDiceInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const tier = parseInt(event.target.value, 10);
+    const tier = parseInt(event.target.value);
     console.log("Dice Above 5 Input: ", tier);
     setTimeout(() => setSuccessfulRolls(tier), 1000); // change this to input
   };
@@ -352,7 +496,7 @@ const Game: React.FC = () => {
   return (
     <BasePage>
       <div className="flex justify-center text-center flex-col mt-4 md:flex-row md:space-x-8 md:mt-0">
-        <div className="bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
+        <div className="w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">
           <div className="text-white text-xl leading-8 dark:text-gray-300">
             <h1>{"Online Users"}</h1>
           </div>
@@ -429,7 +573,7 @@ const Game: React.FC = () => {
                             ) : showAutoRollSelection ? (
                               <div className="bg-gray-800 m-6 p-6 rounded">
                                 <AttackOptions
-                                  options={["Auto", "Manual"]}
+                                  options={["Auto Roll", "Manual Roll"]}
                                   onOptionSelection={handleRollSelection}
                                 />
                               </div>
@@ -447,17 +591,17 @@ const Game: React.FC = () => {
           <div>
             {numDiceToRoll && (
               <div className="bg-gray-800 m-6 p-6 rounded">
-                <div>{`Number Of Dice To Roll: ${numDiceToRoll}`}</div>
+                <div>{`Roll ${numDiceToRoll} Dice`}</div>
               </div>
             )}
             {numDiceToRoll && successfulRolls === null && (
               <div className="bg-gray-800 m-6 p-6 rounded">
-                <p>{"Enter the Number Of Dice 5 or Above: "}</p>
+                <p>{"Successful Rolls "}</p>
                 <Input
                   placeholder="0"
                   type="number"
                   min={1}
-                  max={99}
+                  max={numDiceToRoll}
                   onChange={handleDiceInput}
                 />
               </div>
@@ -465,7 +609,7 @@ const Game: React.FC = () => {
             <div className="flex justify-center flex-col mt-4 md:flex-row md:space-x-8 md:mt-0">
               {successfulRolls !== null && successfulRolls !== undefined && (
                 <div className="bg-gray-800 m-6 p-6 rounded">
-                  <div>{`Number Of Rolls 5 and above: ${successfulRolls}`}</div>
+                  <div>{`${successfulRolls} Successful Rolls (5 or above)`}</div>
                 </div>
               )}
             </div>
@@ -484,6 +628,15 @@ const Game: React.FC = () => {
           </div>
         </div>
       </div>
+      <div className="flex justify-center items-center ">
+        <Button
+          className="bg-red-500 hover:bg-red-700"
+          onClick={handleStartNewRound}
+        >
+          {"New Round Reset"}
+        </Button>
+      </div>
+
       <ManageCharacter
         isRefreshNeeded={refreshNeeded}
         setRefreshNeeded={setRefreshNeeded}

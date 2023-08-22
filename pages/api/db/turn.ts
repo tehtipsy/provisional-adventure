@@ -19,11 +19,19 @@ export default async function handler( // turnDataHandler
 
     await client.close();
 
-    return res.status(200).json({ currentPlayer: turnData?.currentPlayer });
+    return res.status(200).json({
+      currentPlayer: turnData?.currentPlayer,
+      roundCount: turnData?.roundCount,
+    });
   } else if (req.method === "POST") {
-    const { players } = req.body;
+    const data = req.body;
+    if (data.actionPoints) {
+      await db
+        .collection("turn")
+        .updateOne({}, { $inc: { ...data.actionPoints } });
+    }
 
-    await db.collection("turn").updateOne({}, { $set: { players } });
+    await db.collection("turn").updateOne({}, { $set: { ...data } });
 
     await client.close();
 

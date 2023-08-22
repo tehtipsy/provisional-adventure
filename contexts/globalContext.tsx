@@ -16,6 +16,7 @@ interface GlobalContextProviderProps {
 
 export const GlobalContextProvider = (props: GlobalContextProviderProps) => {
   const [username, setUsername] = useState("");
+  // const [isAdmin, setIsAdmin] = useState(false); // set in DB
 
   return (
     <GlobalContext.Provider
