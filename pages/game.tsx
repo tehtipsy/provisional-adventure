@@ -35,6 +35,7 @@ const Game: React.FC = () => {
 
   const { user } = useContext(GlobalContext);
   const { currentPlayer, setCurrentPlayer } = useContext(TurnContext);
+  const { roundCount, setRoundCount } = useContext(TurnContext);
 
   const [character, setCharacter] = useState<CharacterSheetProps | null>(null);
   const characterRef = useRef(character);
@@ -243,58 +244,111 @@ const Game: React.FC = () => {
   }, [onlineUsers, updateTurnInDatabase]);
 
   useEffect(() => {
-    characterRef.current = character;
+    if (character !== null) {
+      characterRef.current = character;
+      characterFocus.current =
+        characterRef.current?.characterSheet.attributes.focus.unmodifiedValue +
+        characterRef.current?.characterSheet.attributes.focus.t1 +
+        characterRef.current?.characterSheet.attributes.focus.t2 +
+        characterRef.current?.characterSheet.attributes.focus.t3 +
+        characterRef.current?.characterSheet.attributes.focus.t4 +
+        characterRef.current?.characterSheet.attributes.focus.bonus;
+      // prevActionPointsRef.current = // check this
+      //   characterRef.current?.characterSheet.actionPoints;
+      attackProwess.current =
+        characterRef.current?.characterSheet.attributes.prowess
+          .unmodifiedValue +
+        characterRef.current?.characterSheet.attributes.prowess.t1 +
+        characterRef.current?.characterSheet.attributes.prowess.t2 +
+        characterRef.current?.characterSheet.attributes.prowess.t3 +
+        characterRef.current?.characterSheet.attributes.prowess.t4 +
+        characterRef.current?.characterSheet.attributes.prowess.bonus;
+      damageRating.current =
+        characterRef.current?.characterSheet.equipment.hands.damageRating;
+      weaponName.current = character?.characterSheet.equipment.hands.name;
+
+    }
   }, [character]);
 
+  const characterFocus = useRef(
+    characterRef.current?.characterSheet.attributes.focus.unmodifiedValue +
+      characterRef.current?.characterSheet.attributes.focus.t1 +
+      characterRef.current?.characterSheet.attributes.focus.t2 +
+      characterRef.current?.characterSheet.attributes.focus.t3 +
+      characterRef.current?.characterSheet.attributes.focus.t4 +
+      characterRef.current?.characterSheet.attributes.focus.bonus
+  );
+
+  const InitActionPoints = useCallback(async () => {
+    if (characterRef.current) {
+      const initialData = {
+        receiver: user,
+        sender: user,
+        actionPoints: characterRef.current.characterSheet.actionPoints,
+        action: "subtractActionPoints",
+      };
+
+      await updateCharacterSheet(initialData);
+
+      const actionPoints = characterFocus;
+
+      const data = {
+        receiver: user,
+        sender: user,
+        actionPoints: actionPoints.current,
+        action: "addActionPoints",
+      };
+
+      console.log("Action Points Focus Value: ", actionPoints.current);
+      const updatedCharacterData = await updateCharacterSheet(data);
+      setRefreshNeeded(true);
+      console.log(updatedCharacterData); // sender and reciver sheets
+    }
+  }, [roundCount]);
+
   useEffect(() => {
-    // !!! change to start of round !!!
-    const InitActionPoints = async () => {
-      if (user === currentPlayer && characterRef.current) {
-        const initialData = {
-          receiver: user,
-          sender: user,
-          actionPoints: characterRef.current.characterSheet.actionPoints,
-          action: "subtractActionPoints",
-        };
-
-        await updateCharacterSheet(initialData);
-
-        const characterSheet = characterRef.current.characterSheet;
-        const characterFocus = characterSheet.attributes.focus;
-        const actionPoints =
-          characterFocus.unmodifiedValue +
-          characterFocus.t1 +
-          characterFocus.t2 +
-          characterFocus.t3 +
-          characterFocus.t4 +
-          characterFocus.bonus;
-
-        const data = {
-          receiver: user,
-          sender: user,
-          actionPoints: actionPoints,
-          action: "addActionPoints",
-        };
-
-        console.log("Action Points Focus Value: ", actionPoints);
-        const updatedCharacterData = await updateCharacterSheet(data);
-        setRefreshNeeded(true);
-        console.log(updatedCharacterData); // sender and reciver sheets
-      }
-    };
-
     InitActionPoints();
-  }, [user, currentPlayer]); // change current player to round count
+    console.log("round count in InitActionPoints useEffect: ", roundCount);
+  }, [roundCount, InitActionPoints]); // fires when round count changes
+
+  const startNewRound = () => {
+    const newRoundCount = roundCount + 1;
+    setRoundCount(newRoundCount);
+    channel?.publish("newRound", { newRoundCount });
+    // add post to db
+  };
+
+  useEffect(() => {
+    channel?.subscribe("newRound", (message) => {
+      if (message) {
+        const { newRoundCount } = message.data;
+        setRoundCount(newRoundCount);
+        console.log(
+          "round count in newRound channel useEffect: ",
+          newRoundCount
+        );
+      }
+    });
+  }, [channel]);
+
+  const handleStartNewRound = () => {
+    startNewRound();
+  };
+
+  // useEffect(() => {
+  //   const newRoundCount = roundCount + 1;
+  //   setRoundCount(newRoundCount);
+  //   // startNewRound();
+  // }, []); // leave empty
+
+  const weaponName = useRef(character?.characterSheet.equipment.hands.name);
 
   const sendPoke = useCallback(
+    // add action to parameters
     (receiver: string, tier: number) => {
       console.log("Tier in sendPoke: ", tier);
       console.log("Selected Body Part in sendPoke: ", selectedBodyPart);
       console.log("Selected Damage Type in sendPoke: ", selectedDamageType);
-
-      const characterSheet = character?.characterSheet;
-      const weaponName = characterSheet.equipment.hands.name;
-
       channel?.publish("poke", {
         action: "attack", // add choice !!!
         receiver,
@@ -302,11 +356,11 @@ const Game: React.FC = () => {
         sender: user,
         bodyPart: selectedBodyPart,
         damageType: selectedDamageType,
-        weapon: weaponName,
+        weapon: weaponName.current,
         timestamp: new Date().toISOString(),
       });
     },
-    [channel, user, selectedBodyPart, selectedDamageType, character] // , action]
+    [channel, user, selectedBodyPart, selectedDamageType] // , action]
   );
 
   useEffect(() => {
@@ -342,6 +396,7 @@ const Game: React.FC = () => {
   );
 
   const prevActionPointsRef = useRef(
+    // check this
     characterRef.current?.characterSheet.actionPoints
   );
 
@@ -349,28 +404,27 @@ const Game: React.FC = () => {
     const currentActionPoints =
       characterRef.current?.characterSheet.actionPoints;
     if (prevActionPointsRef.current === 1 && currentActionPoints === 0) {
+    // if (currentActionPoints === 0) { // death loop, add new round switch when everyone's action points are at 0
       endTurn(user);
     }
     prevActionPointsRef.current = currentActionPoints;
-  }, [user, character, endTurn]);
-  
+  }, [user, character, endTurn, characterFocus, currentPlayer]);
+
+  const attackProwess = useRef(
+    characterRef?.current?.characterSheet.attributes.prowess.unmodifiedValue +
+      characterRef.current?.characterSheet.attributes.prowess.t1 +
+      characterRef.current?.characterSheet.attributes.prowess.t2 +
+      characterRef.current?.characterSheet.attributes.prowess.t3 +
+      characterRef.current?.characterSheet.attributes.prowess.t4 +
+      characterRef.current?.characterSheet.attributes.prowess.bonus
+  );
+
+  const damageRating = useRef(
+    characterRef.current?.characterSheet.equipment.hands.damageRating
+  );
+
   const handleDiceRolls = (choice: string) => {
-    const characterSheet = character?.characterSheet;
-    const handsSlot = characterSheet.equipment.hands;
-
-    const damageRating = handsSlot.damageRating;
-
-    const characterProwess = characterSheet.attributes.prowess;
-    const attackProwess =
-      characterProwess.unmodifiedValue +
-      characterProwess.t1 +
-      characterProwess.t2 +
-      characterProwess.t3 +
-      characterProwess.t4 +
-      characterProwess.bonus;
-    console.log("attackProwess value: ", attackProwess);
-
-    const numDice = attackProwess + damageRating;
+    const numDice = attackProwess.current + damageRating.current;
     setNumDiceToRoll(numDice);
     console.log("numDice: ", numDice);
 
@@ -379,7 +433,7 @@ const Game: React.FC = () => {
       const tier = rollDice(numDice);
       setSuccessfulRolls(tier);
     }
-  }; // characterRef
+  };
 
   // handleDiceRolls (choice === "Auto Roll"):
   const handleDiceInput = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -545,6 +599,15 @@ const Game: React.FC = () => {
           </div>
         </div>
       </div>
+      <div className="flex justify-center items-center ">
+        <Button
+          className="bg-red-500 hover:bg-red-700"
+          onClick={handleStartNewRound}
+        >
+          {"New Round Reset"}
+        </Button>
+      </div>
+
       <ManageCharacter
         isRefreshNeeded={refreshNeeded}
         setRefreshNeeded={setRefreshNeeded}
