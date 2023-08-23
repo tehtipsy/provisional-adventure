@@ -35,7 +35,8 @@ const Game: React.FC = () => {
 
   const { user } = useContext(GlobalContext);
   const { currentPlayer, setCurrentPlayer } = useContext(TurnContext);
-  const { roundCount, setRoundCount } = useContext(TurnContext);
+  const { roundCount, setRoundCount, totalActionPoints, setTotalActionPoints } =
+    useContext(TurnContext);
 
   const [character, setCharacter] = useState<CharacterSheetProps | null>(null);
   const characterRef = useRef(character);
@@ -178,7 +179,7 @@ const Game: React.FC = () => {
             damageType: damageType,
           };
 
-          const updatedCharacterData = await updateCharacterSheet(data);
+          const updatedCharacterData = await updateCharacterSheet(data); // move to poke sub event
           console.log(updatedCharacterData); // sender and reciver sheets
           console.log(updatedCharacterData.updatedSenderCharacterData.value);
           setCharacter({
@@ -312,20 +313,22 @@ const Game: React.FC = () => {
 
   useEffect(() => {
     if (characterRef.current !== null) {
-    const incramentActionPointsInDatabase = async () => {
-      // sum everyone's action points at the start of each turn in MongoDB Doc
-      const actionPoints = 
-        { totalActionPoints: characterFocus?.current }
-      
-      await fetch("/api/db/turn", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ actionPoints: actionPoints}),
-      });
-    };
-    incramentActionPointsInDatabase();}
+      const incramentActionPointsInDatabase = async () => {
+        // sum everyone's action points at the start of each turn in MongoDB Doc
+        const actionPoints = { totalActionPoints: characterFocus?.current };
+        setTotalActionPoints(
+          prevTotalActionPointsRef.current + characterFocus?.current
+        );
+        await fetch("/api/db/turn", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ actionPoints: actionPoints }),
+        });
+      };
+      incramentActionPointsInDatabase();
+    }
   }, [roundCount]); // fires when round count changes
 
   const updateRoundCountInDatabase = async (newRoundCount: number) => {
@@ -339,13 +342,18 @@ const Game: React.FC = () => {
     });
   };
 
-  const startNewRound = () => {
+  const startNewRound = useCallback(async () => {
     const newRoundCount = roundCount + 1;
     setRoundCount(newRoundCount);
     channel?.publish("newRound", { newRoundCount });
     // add post to db
-    updateRoundCountInDatabase(newRoundCount);
-  };
+    await updateRoundCountInDatabase(newRoundCount);
+    // const response = await fetch("/api/db/turn");
+    // const data = await response.json();
+    // setCurrentPlayer(data.currentPlayer);
+    // setRoundCount(data.roundCount);
+    // setTotalActionPoints(data.totalActionPoints);
+  }, [channel, roundCount, setRoundCount, setTotalActionPoints]);
 
   useEffect(() => {
     channel?.subscribe("newRound", (message) => {
@@ -364,11 +372,18 @@ const Game: React.FC = () => {
     startNewRound();
   };
 
-  // useEffect(() => {
-  //   const newRoundCount = roundCount + 1;
-  //   setRoundCount(newRoundCount);
-  //   // startNewRound();
-  // }, []); // leave empty
+  const prevTotalActionPointsRef = useRef(totalActionPoints);
+
+  useEffect(() => {
+    console.log("total action points: ", totalActionPoints)
+    if (prevTotalActionPointsRef.current > 0 && totalActionPoints === 0) {
+      startNewRound();
+    }
+  }, [totalActionPoints, startNewRound]);
+  
+  useEffect(() => {
+    console.log("total action points: ", totalActionPoints);
+  }, [totalActionPoints]);
 
   const weaponName = useRef(character?.characterSheet.equipment.hands.name);
 
@@ -388,8 +403,15 @@ const Game: React.FC = () => {
         weapon: weaponName.current,
         timestamp: new Date().toISOString(),
       });
+      setTotalActionPoints(prevTotalActionPointsRef.current - 1);
     },
-    [channel, user, selectedBodyPart, selectedDamageType] // , action]
+    [
+      channel,
+      user,
+      selectedBodyPart,
+      selectedDamageType,
+      setTotalActionPoints,
+    ] // , action]
   );
 
   useEffect(() => {

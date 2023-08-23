@@ -5,6 +5,8 @@ interface TurnContextProps {
   setCurrentPlayer: (player: string) => void;
   roundCount: number;
   setRoundCount: (roundCount: number) => void;
+  totalActionPoints: number;
+  setTotalActionPoints: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export const TurnContext = createContext<TurnContextProps>({
@@ -12,6 +14,8 @@ export const TurnContext = createContext<TurnContextProps>({
   setCurrentPlayer: () => {},
   roundCount: 0,
   setRoundCount: () => {},
+  totalActionPoints: 0,
+  setTotalActionPoints: () => {},
 });
 
 interface TurnContextProviderProps {
@@ -22,6 +26,8 @@ export const TurnContextProvider = (props: TurnContextProviderProps) => {
   console.log("Loading TurnContextProvider");
   const [currentPlayer, setCurrentPlayer] = useState("");
   const [roundCount, setRoundCount] = useState(0);
+  const [totalActionPoints, setTotalActionPoints] = useState(0);
+
 
   useEffect(() => {
     // fix this garbaje
@@ -31,6 +37,7 @@ export const TurnContextProvider = (props: TurnContextProviderProps) => {
       const data = await response.json();
       setCurrentPlayer(data.currentPlayer);
       setRoundCount(data.roundCount);
+      setTotalActionPoints(data.totalActionPoints);
       console.log(data.currentPlayer);
       console.log(data.roundCount);
     };
@@ -42,6 +49,8 @@ export const TurnContextProvider = (props: TurnContextProviderProps) => {
     setCurrentPlayer,
     roundCount,
     setRoundCount,
+    totalActionPoints,
+    setTotalActionPoints,
   };
 
   return (

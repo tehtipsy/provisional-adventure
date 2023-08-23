@@ -22,6 +22,7 @@ export default async function handler( // turnDataHandler
     return res.status(200).json({
       currentPlayer: turnData?.currentPlayer,
       roundCount: turnData?.roundCount,
+      totalActionPoints: turnData?.totalActionPoints,
     });
   } else if (req.method === "POST") {
     const data = req.body;
