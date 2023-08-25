@@ -247,7 +247,7 @@ const Game: React.FC = () => {
   useEffect(() => {
     if (character !== null) {
       characterRef.current = character;
-      characterFocus.current =
+      characterFocusRef.current =
         characterRef.current?.characterSheet.attributes.focus.unmodifiedValue +
         characterRef.current?.characterSheet.attributes.focus.t1 +
         characterRef.current?.characterSheet.attributes.focus.t2 +
@@ -256,7 +256,7 @@ const Game: React.FC = () => {
         characterRef.current?.characterSheet.attributes.focus.bonus;
       // prevActionPointsRef.current = // check this
       //   characterRef.current?.characterSheet.actionPoints;
-      attackProwess.current =
+      attackProwessRef.current =
         characterRef.current?.characterSheet.attributes.prowess
           .unmodifiedValue +
         characterRef.current?.characterSheet.attributes.prowess.t1 +
@@ -264,13 +264,13 @@ const Game: React.FC = () => {
         characterRef.current?.characterSheet.attributes.prowess.t3 +
         characterRef.current?.characterSheet.attributes.prowess.t4 +
         characterRef.current?.characterSheet.attributes.prowess.bonus;
-      damageRating.current =
+      damageRatingRef.current =
         characterRef.current?.characterSheet.equipment.hands.damageRating;
       weaponName.current = character?.characterSheet.equipment.hands.name;
     }
   }, [character]);
 
-  const characterFocus = useRef(
+  const characterFocusRef = useRef(
     characterRef.current?.characterSheet.attributes.focus.unmodifiedValue +
       characterRef.current?.characterSheet.attributes.focus.t1 +
       characterRef.current?.characterSheet.attributes.focus.t2 +
@@ -290,7 +290,7 @@ const Game: React.FC = () => {
 
       await updateCharacterSheet(initialData);
 
-      const actionPoints = characterFocus;
+      const actionPoints = characterFocusRef;
 
       const data = {
         receiver: user,
@@ -313,12 +313,9 @@ const Game: React.FC = () => {
 
   useEffect(() => {
     if (characterRef.current !== null) {
+      // sum everyone's action points at the start of each round in MongoDB Doc
+      const actionPoints = { totalActionPoints: characterFocusRef?.current };
       const incramentActionPointsInDatabase = async () => {
-        // sum everyone's action points at the start of each turn in MongoDB Doc
-        const actionPoints = { totalActionPoints: characterFocus?.current };
-        setTotalActionPoints(
-          prevTotalActionPointsRef.current + characterFocus?.current
-        );
         await fetch("/api/db/turn", {
           method: "POST",
           headers: {
@@ -375,15 +372,31 @@ const Game: React.FC = () => {
   const prevTotalActionPointsRef = useRef(totalActionPoints);
 
   useEffect(() => {
-    console.log("total action points: ", totalActionPoints)
+    console.log("total action points: ", totalActionPoints);
     if (prevTotalActionPointsRef.current > 0 && totalActionPoints === 0) {
       startNewRound();
     }
   }, [totalActionPoints, startNewRound]);
-  
+
   useEffect(() => {
     console.log("total action points: ", totalActionPoints);
   }, [totalActionPoints]);
+
+  const refetchActionPoints = useCallback(async () => {
+      const response = await fetch("/api/db/turn", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      const data = await response.json();
+      console.log("total action points in DB: ", data.totalActionPoints)
+      setTotalActionPoints(data.totalActionPoints)
+  }, [totalActionPoints, setTotalActionPoints]);
+
+  useEffect(() => {
+    setTimeout(() => refetchActionPoints(), 1000); // BAD BUT WORKS
+  }, [roundCount]);
 
   const weaponName = useRef(character?.characterSheet.equipment.hands.name);
 
@@ -403,15 +416,9 @@ const Game: React.FC = () => {
         weapon: weaponName.current,
         timestamp: new Date().toISOString(),
       });
-      setTotalActionPoints(prevTotalActionPointsRef.current - 1);
+      setTotalActionPoints(totalActionPoints - 1); // move inside poke and set total in other clients.
     },
-    [
-      channel,
-      user,
-      selectedBodyPart,
-      selectedDamageType,
-      setTotalActionPoints,
-    ] // , action]
+    [channel, user, selectedBodyPart, selectedDamageType, totalActionPoints, setTotalActionPoints] // , action]
   );
 
   useEffect(() => {
@@ -459,9 +466,9 @@ const Game: React.FC = () => {
       endTurn(user);
     }
     prevActionPointsRef.current = currentActionPoints;
-  }, [user, character, endTurn, characterFocus, currentPlayer]);
+  }, [user, character, endTurn, characterFocusRef, currentPlayer]);
 
-  const attackProwess = useRef(
+  const attackProwessRef = useRef(
     characterRef?.current?.characterSheet.attributes.prowess.unmodifiedValue +
       characterRef.current?.characterSheet.attributes.prowess.t1 +
       characterRef.current?.characterSheet.attributes.prowess.t2 +
@@ -470,12 +477,12 @@ const Game: React.FC = () => {
       characterRef.current?.characterSheet.attributes.prowess.bonus
   );
 
-  const damageRating = useRef(
+  const damageRatingRef = useRef(
     characterRef.current?.characterSheet.equipment.hands.damageRating
   );
 
   const handleDiceRolls = (choice: string) => {
-    const numDice = attackProwess.current + damageRating.current;
+    const numDice = attackProwessRef.current + damageRatingRef.current;
     setNumDiceToRoll(numDice);
     console.log("numDice: ", numDice);
 

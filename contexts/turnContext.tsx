@@ -6,7 +6,7 @@ interface TurnContextProps {
   roundCount: number;
   setRoundCount: (roundCount: number) => void;
   totalActionPoints: number;
-  setTotalActionPoints: React.Dispatch<React.SetStateAction<number>>;
+  setTotalActionPoints: (totalActionPoints: number) => void;
 }
 
 export const TurnContext = createContext<TurnContextProps>({
