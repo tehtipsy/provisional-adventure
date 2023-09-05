@@ -9,6 +9,7 @@ import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import { SelectSizeForm } from "@/components/ui/selectCharacterSize";
 import { SelectOriginForm } from "@/components/ui/selectOriginForm";
+import useSheetState from "@/utils/game/useSheetState";
 
 interface Item {
   name: string;
@@ -41,8 +42,6 @@ const items: Record<string, Array<Item>> = {
   ],
 };
 
-const initialBudget = 100;
-
 type CreateCharacterFormProps = {
   onFormSubmit: () => void;
   fetchCharacterData: () => void;
@@ -53,17 +52,8 @@ export const CreateCharacterForm = ({
   fetchCharacterData,
 }: CreateCharacterFormProps) => {
   const { user } = useContext(GlobalContext);
-  const [name, setName] = useState("");
-  const [prowess, setProwess] = useState<number>(0);
-  const [finesse, setFinesse] = useState<number>(0);
-  const [constitution, setConstitution] = useState<number>(0);
-  const [focus, setFocus] = useState<number>(0);
-  const [willpower, setWillpower] = useState<number>(0);
-  const [motivation, setMotivation] = useState<number>(0);
-  const [size, setSize] = useState<number>(0);
-  const [capacity, setCapacity] = useState<number>(0);
-  const [budget, setBudget] = useState<number>(initialBudget);
-  const [origin, setOrigin] = useState("");
+
+  const { sheet, setSheet } = useSheetState();
 
   const setSizeSelection = (e: FormEvent) => {
     const sizeSelection = (e.target as HTMLSelectElement).value;
@@ -148,15 +138,7 @@ export const CreateCharacterForm = ({
   //   );
   // }, [remainingCapacity]);
 
-  useEffect(() => {
-    console.log("Budget: ", budget);
-    // setRemainingBudget((prev) => prev - budget);
-  }, [budget]);
 
-  useEffect(() => {
-    console.log("Capacity: ", capacity);
-    setRemainingCapacity((prev) => prev + capacity);
-  }, [capacity]);
 
   useEffect(() => {
     console.log("remainingCapacity: ", remainingCapacity);
@@ -193,111 +175,6 @@ export const CreateCharacterForm = ({
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-
-    const newSheet = {
-      user_id: {}, // user.id
-      name: user,
-      characterName: name,
-      characterSize: size,
-      characterOrigin: origin,
-      attributes: {
-        prowess: {
-          unmodifiedValue: prowess,
-          t1: 0,
-          t2: 0,
-          t3: 0,
-          t4: 0,
-          bonus: 0,
-        },
-        finesse: {
-          unmodifiedValue: finesse,
-          t1: 0,
-          t2: 0,
-          t3: 0,
-          t4: 0,
-          bonus: 0,
-        },
-        constitution: {
-          unmodifiedValue: constitution,
-          t1: 0,
-          t2: 0,
-          t3: 0,
-          t4: 0,
-          bonus: 0,
-        },
-        focus: {
-          unmodifiedValue: focus,
-          t1: 0,
-          t2: 0,
-          t3: 0,
-          t4: 0,
-          bonus: 0,
-        },
-        willpower: {
-          unmodifiedValue: willpower,
-          t1: 0,
-          t2: 0,
-          t3: 0,
-          t4: 0,
-          bonus: 0,
-        },
-        motivation: {
-          unmodifiedValue: motivation,
-          t1: 0,
-          t2: 0,
-          t3: 0,
-          t4: 0,
-          bonus: 0,
-        },
-      },
-      actionPoints: 0,
-      equipment: {
-        selectedItems: {
-          ...selectedItems,
-        },
-        hands: {
-          quantity: 2,
-          damageRating: 1,
-          damageType: ["Bludgeoning", "Slapping"],
-          name: "Fist of Fury",
-        },
-        belt: {
-          quantity: 1,
-          damageRating: 2,
-          damageType: ["Piercing", "Slashing"],
-          name: "Short Sword",
-        },
-        quiver: {},
-        backpack: {},
-        armor: {
-          head: {},
-          chest: {},
-          torso: {},
-          gloves: {},
-        },
-      },
-      statusEffects: {},
-    };
-
-    fetch("/api/db/character", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ newSheet: newSheet }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data); // return Character Sheet MongoDB doc _id and save to user, set in global context
-        fetchCharacterData(); // Refetch character data after successful form submission
-      })
-      .catch((error) => console.error("Error: ", error));
-
     onFormSubmit();
   };
 
@@ -311,7 +188,7 @@ export const CreateCharacterForm = ({
         <div className="m-4 text-center">
           <div className="m-4 text-center">
             <Input
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => setSheet.setName(e.target.value)}
               placeholder="Enter Character Name"
               className="m-4 text-center"
             />
@@ -325,7 +202,9 @@ export const CreateCharacterForm = ({
                 type="number"
                 min={0}
                 max={4}
-                onChange={(e) => setProwess(parseInt(e.target.value) || 0)}
+                onChange={(e) =>
+                  setSheet.setProwess(parseInt(e.target.value) || 0)
+                }
               />
               <br />
               <p className="text-white font-medium leading-8 dark:text-gray-300">
@@ -335,7 +214,9 @@ export const CreateCharacterForm = ({
                 type="number"
                 min={0}
                 max={4}
-                onChange={(e) => setFinesse(parseInt(e.target.value) || 0)}
+                onChange={(e) =>
+                  setSheet.setFinesse(parseInt(e.target.value) || 0)
+                }
               />
             </div>
             <div>
@@ -346,7 +227,9 @@ export const CreateCharacterForm = ({
                 type="number"
                 min={0}
                 max={4}
-                onChange={(e) => setConstitution(parseInt(e.target.value) || 0)}
+                onChange={(e) =>
+                  setSheet.setConstitution(parseInt(e.target.value) || 0)
+                }
               />
               <br />
               <p className="text-white font-medium leading-8 dark:text-gray-300">
@@ -356,7 +239,9 @@ export const CreateCharacterForm = ({
                 type="number"
                 min={0}
                 max={4}
-                onChange={(e) => setFocus(parseInt(e.target.value) || 0)}
+                onChange={(e) =>
+                  setSheet.setFocus(parseInt(e.target.value) || 0)
+                }
               />
             </div>
             <div>
@@ -367,7 +252,9 @@ export const CreateCharacterForm = ({
                 type="number"
                 min={0}
                 max={4}
-                onChange={(e) => setWillpower(parseInt(e.target.value) || 0)}
+                onChange={(e) =>
+                  setSheet.setWillpower(parseInt(e.target.value) || 0)
+                }
               />
               <br />
               <p className="text-white font-medium leading-8 dark:text-gray-300">
@@ -377,7 +264,9 @@ export const CreateCharacterForm = ({
                 type="number"
                 min={0}
                 max={4}
-                onChange={(e) => setMotivation(parseInt(e.target.value) || 0)}
+                onChange={(e) =>
+                  setSheet.setMotivation(parseInt(e.target.value) || 0)
+                }
               />
             </div>
           </div>

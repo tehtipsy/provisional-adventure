@@ -28,11 +28,10 @@ export const TurnContextProvider = (props: TurnContextProviderProps) => {
   const [roundCount, setRoundCount] = useState(0);
   const [totalActionPoints, setTotalActionPoints] = useState(0);
 
-
   useEffect(() => {
     // fix this garbaje
-    console.log("Fetching currentPlayer from database");
-    const fetchCurrentPlayer = async () => {
+    console.log("Fetching TurnData from database");
+    const fetchTurnData = async () => {
       const response = await fetch("/api/db/turn");
       const data = await response.json();
       setCurrentPlayer(data.currentPlayer);
@@ -41,7 +40,7 @@ export const TurnContextProvider = (props: TurnContextProviderProps) => {
       console.log(data.currentPlayer);
       console.log(data.roundCount);
     };
-    fetchCurrentPlayer();
+    fetchTurnData();
   }, []);
 
   const value = {

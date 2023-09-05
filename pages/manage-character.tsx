@@ -6,6 +6,8 @@ import { fetchCharacterSheet } from "@/utils/game/characterSheets";
 import { CreateCharacterForm } from "@/components/createCharacterForm";
 import BasePage from "@/components/base/basePage";
 import Loading from "@/components/ui/loading";
+import { createNewSheet } from "@/utils/game/newCharacterSheet";
+import useSheetState from "@/utils/game/useSheetState";
 
 type CharacterSheetProps = {
   characterSheet: any;
@@ -29,8 +31,30 @@ const ManageCharacter: React.FC<{
 
   const [isLoading, setIsLoading] = useState(true);
   const [character, setCharacter] = useState<CharacterSheetProps | null>(null);
+  const { sheet } = useSheetState()
 
   const handleFormSubmit = () => {
+    const newSheet = createNewSheet(sheet);
+
+    fetch("/api/db/character", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ newSheet: newSheet }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data); // return Character Sheet MongoDB doc _id and save to user, set in global context
+        fetchCharacterData(); // Refetch character data after successful form submission
+      })
+      .catch((error) => console.error("Error: ", error));
+
     setIsLoading((prevState) => !prevState);
   };
 
