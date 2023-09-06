@@ -35,6 +35,7 @@ const ManageCharacter: React.FC<{
 
   const handleFormSubmit = () => {
     const newSheet = createNewSheet(sheet);
+    console.log("new sheet to be saved in DB: ", newSheet);
 
     fetch("/api/db/character", {
       method: "POST",

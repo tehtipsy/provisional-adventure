@@ -10,6 +10,7 @@ import Input from "@/components/ui/input";
 import { SelectSizeForm } from "@/components/ui/selectCharacterSize";
 import { SelectOriginForm } from "@/components/ui/selectOriginForm";
 import useSheetState from "@/utils/game/useSheetState";
+import { handleTotal } from "@/utils/game/newSheet/handleTotal";
 
 interface Item {
   name: string;
@@ -57,31 +58,31 @@ export const CreateCharacterForm = ({
 
   const setSizeSelection = (e: FormEvent) => {
     const sizeSelection = (e.target as HTMLSelectElement).value;
-    setSize(parseInt(sizeSelection));
+    setSheet.setSize(parseInt(sizeSelection));
   };
 
   const setOriginSelection = (e: FormEvent) => {
     const originSelection = (e.target as HTMLSelectElement).value;
     console.log("Origin Selection: ", originSelection);
-    setOrigin(originSelection);
+    setSheet.setOrigin(originSelection);
   };
 
   useEffect(() => {
-    if (size === 3) {
-      const maxCapacity = 3 + prowess;
-      setCapacity(maxCapacity);
-    } else if (size === 2) {
-      const maxCapacity = 1 + prowess;
-      setCapacity(maxCapacity);
+    if (sheet.size === 3) {
+      const maxCapacity = 3 + sheet.prowess;
+      setSheet.setCapacity(maxCapacity);
+    } else if (sheet.size === 2) {
+      const maxCapacity = 1 + sheet.prowess;
+      setSheet.setCapacity(maxCapacity);
     } else {
-      setCapacity(prowess);
+      setSheet.setCapacity(sheet.prowess);
     }
-  }, [size, prowess]);
+  }, [sheet.size, sheet.prowess]);
 
   useEffect(() => {
-    const bonus = 20 * willpower;
-    setBudget((prevBudget) => prevBudget + bonus);
-  }, [willpower]);
+    const bonus = 20 * sheet.willpower;
+    setSheet.setBudget((prevBudget) => prevBudget + bonus);
+  }, [sheet.willpower]);
 
   const initialSelectedStatus: Record<string, boolean> = {};
   Object.keys(items).forEach((key) => {
@@ -95,60 +96,13 @@ export const CreateCharacterForm = ({
     );
     Object.assign(initialSelectedStatus, obj);
   });
-  console.log("Initial Selected Status set to: ", initialSelectedStatus);
+  // console.log("Initial Selected Status set to: ", initialSelectedStatus);
+
+  const [remainingBudget, setRemainingBudget] = useState(sheet.budget);
+  const [remainingCapacity, setRemainingCapacity] = useState(sheet.capacity);
 
   const [selectedStatus, setDisabledStatus] = useState(initialSelectedStatus);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [remainingBudget, setRemainingBudget] = useState(budget);
-  const [remainingCapacity, setRemainingCapacity] = useState(capacity);
-
-  // useEffect(() => {
-  const handleTotal = (buttonValue: string) => {
-    const values = Object.values(items).flat();
-    const item = values.filter((value) => value.name === buttonValue)[0];
-    const cost = item.cost;
-    const weight = item.weight;
-    if (selectedStatus[buttonValue] === true) {
-      setRemainingBudget(cost ? remainingBudget + cost : (prev) => prev);
-      setRemainingCapacity(
-        weight ? remainingCapacity + weight : (prev) => prev
-      );
-    } else {
-      setRemainingBudget(cost ? remainingBudget - cost : (prev) => prev);
-      setRemainingCapacity(
-        weight ? remainingCapacity - weight : (prev) => prev
-      );
-    }
-  };
-  // }, []);
-
-  // useEffect(() => {
-  //   setRemainingCapacity(capacity);
-  // }, [capacity]);
-
-  // useEffect(() => {
-  //   setRemainingBudget(budget);
-  // }, [budget]);
-
-  // useEffect(() => {
-  //   setCapacity(
-  //     remainingCapacity
-  //       ? capacity - remainingCapacity
-  //       : capacity + remainingCapacity
-  //   );
-  // }, [remainingCapacity]);
-
-
-
-  useEffect(() => {
-    console.log("remainingCapacity: ", remainingCapacity);
-    console.log("remainingBudget: ", remainingBudget);
-  }, [remainingCapacity, remainingBudget]);
-
-  // useEffect(() => {
-  //   console.log("Selected Items: ", selectedItems);
-  //   console.log("Selected Status: ", selectedStatus);
-  // }, [selectedItems, selectedStatus]);
 
   const handleClickSelction = (buttonValue: string) => {
     if (selectedItems.includes(buttonValue)) {
@@ -164,7 +118,15 @@ export const CreateCharacterForm = ({
         [buttonValue]: true,
       }));
     }
-    handleTotal(buttonValue);
+    handleTotal(
+      buttonValue,
+      items,
+      selectedStatus,
+      remainingBudget,
+      setRemainingBudget,
+      remainingCapacity,
+      setRemainingCapacity
+    );
   };
 
   const handleClick = (e: FormEvent) => {
@@ -283,17 +245,17 @@ export const CreateCharacterForm = ({
               {/* <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
                 {`Total Capacity: ${capacity}Kg`}
               </p> */}
-              <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
+              {/* <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
                 {`Remainig Capacity: ${remainingCapacity}Kg`}
-              </p>
+              </p> */}
             </div>
             <div>
               {/* <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
                 {`Total Budget: ${budget}$`}
               </p> */}
-              <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
+              {/* <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
                 {`Remainig Budget: ${remainingBudget}$`}
-              </p>
+              </p> */}
             </div>
             <div>
               <p className="text-white text-lg text-center leading-8 dark:text-gray-300">

@@ -1,6 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { GlobalContext } from "@/contexts/globalContext";
+
 
 export default function useSheetState() {
+  const { user } = useContext(GlobalContext);
+
   const [name, setName] = useState("");
 
   const [prowess, setProwess] = useState(0);
@@ -17,18 +21,9 @@ export default function useSheetState() {
   const [capacity, setCapacity] = useState(0);
   const [origin, setOrigin] = useState("");
 
-  // useEffect(() => {
-  //   console.log("Budget: ", budget);
-  //   // setRemainingBudget((prev) => prev - budget);
-  // }, [budget]);
-
-  // useEffect(() => {
-  //   console.log("Capacity: ", capacity);
-  //   setRemainingCapacity((prev) => prev + capacity);
-  // }, [capacity]);
-
   return {
     sheet: {
+      user,
       name,
       prowess,
       finesse,
