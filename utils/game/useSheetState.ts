@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { GlobalContext } from "@/contexts/globalContext";
 
+const initialBudget = 100;
 
 export default function useSheetState() {
   const { user } = useContext(GlobalContext);
@@ -14,15 +15,31 @@ export default function useSheetState() {
   const [willpower, setWillpower] = useState(0);
   const [motivation, setMotivation] = useState(0);
 
-  const initialBudget = 100;
   const [budget, setBudget] = useState(initialBudget);
   
   const [size, setSize] = useState(0);
   const [capacity, setCapacity] = useState(0);
   const [origin, setOrigin] = useState("");
 
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  
   useEffect(() => {
-    console.log("willpower in useSheetState: ",willpower);
+    if (size === 3) {
+      const maxCapacity = 3 + prowess;
+      setCapacity(maxCapacity);
+    } else if (size === 2) {
+      const maxCapacity = 1 + prowess;
+      setCapacity(maxCapacity);
+    } else {
+      setCapacity(prowess);
+    }
+  }, [size, prowess]);
+
+  useEffect(() => {
+    const bonus = 20 * willpower;
+    // setBudget((prevBudget) => prevBudget + bonus); // doesnt update when willpower changes
+    // setBudget(budget + bonus);
+    setBudget(initialBudget + bonus); // LEAST SHIT OPTION I GUESS
   }, [willpower]);
 
   return {
@@ -39,6 +56,7 @@ export default function useSheetState() {
       capacity,
       budget,
       origin,
+      selectedItems,
     },
     setSheet: {
       setName,
@@ -52,6 +70,7 @@ export default function useSheetState() {
       setCapacity,
       setBudget,
       setOrigin,
+      setSelectedItems,
     },
   };
 }

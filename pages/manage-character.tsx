@@ -28,6 +28,7 @@ const ManageCharacter: React.FC<{
   const { user } = useContext(GlobalContext);
 
   const [isLoading, setIsLoading] = useState(true);
+
   const [character, setCharacter] = useState<CharacterSheetProps | null>(null);
 
   const handleFormSubmit = (newSheet: any) => {
@@ -76,7 +77,6 @@ const ManageCharacter: React.FC<{
   useEffect(() => {
     if (isRefreshNeeded) {
       fetchCharacterData();
-      console.log(isRefreshNeeded);
     }
   }, [isRefreshNeeded, fetchCharacterData]);
 

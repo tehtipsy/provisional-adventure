@@ -1,7 +1,6 @@
 import {
   FormEvent,
   useContext,
-  useEffect,
   useState,
 } from "react";
 import { GlobalContext } from "@/contexts/globalContext";
@@ -10,8 +9,8 @@ import Input from "@/components/ui/input";
 import { SelectSizeForm } from "@/components/ui/selectCharacterSize";
 import { SelectOriginForm } from "@/components/ui/selectOriginForm";
 import useSheetState from "@/utils/game/useSheetState";
-import { handleTotal } from "@/utils/game/newSheet/handleTotal";
 import { createNewSheet } from "@/utils/game/newCharacterSheet";
+import { handleTotal } from "@/utils/game/newSheet/handleTotal";
 
 interface Item {
   name: string;
@@ -52,9 +51,9 @@ export const CreateCharacterForm = ({
   onFormSubmit,
 }: CreateCharacterFormProps) => {
   const { user } = useContext(GlobalContext);
-
   const { sheet, setSheet } = useSheetState();
 
+  // keep this here?
   const setSizeSelection = (e: FormEvent) => {
     const sizeSelection = (e.target as HTMLSelectElement).value;
     setSheet.setSize(parseInt(sizeSelection));
@@ -65,24 +64,9 @@ export const CreateCharacterForm = ({
     setSheet.setOrigin(originSelection);
   };
 
-  useEffect(() => {
-    if (sheet.size === 3) {
-      const maxCapacity = 3 + sheet.prowess;
-      setSheet.setCapacity(maxCapacity);
-    } else if (sheet.size === 2) {
-      const maxCapacity = 1 + sheet.prowess;
-      setSheet.setCapacity(maxCapacity);
-    } else {
-      setSheet.setCapacity(sheet.prowess);
-    }
-  }, [sheet.size, sheet.prowess]);
-
-  useEffect(() => {
-    const bonus = 20 * sheet.willpower;
-    setSheet.setBudget((prevBudget) => prevBudget + bonus);
-  }, [sheet.willpower]);
-
+// add cost and weight summing logic and move to handle total
   const initialSelectedStatus: Record<string, boolean> = {};
+
   Object.keys(items).forEach((key) => {
     const array = items[key];
     const obj = array.reduce(
@@ -94,23 +78,21 @@ export const CreateCharacterForm = ({
     );
     Object.assign(initialSelectedStatus, obj);
   });
-  // console.log("Initial Selected Status set to: ", initialSelectedStatus);
-
-  const [remainingBudget, setRemainingBudget] = useState(sheet.budget);
-  const [remainingCapacity, setRemainingCapacity] = useState(sheet.capacity);
 
   const [selectedStatus, setDisabledStatus] = useState(initialSelectedStatus);
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   const handleClickSelction = (buttonValue: string) => {
-    if (selectedItems.includes(buttonValue)) {
-      setSelectedItems((prev) => prev.filter((item) => item !== buttonValue));
+    // move this to handleTotal
+    if (sheet.selectedItems.includes(buttonValue)) {
+      setSheet.setSelectedItems((prev) =>
+        prev.filter((item) => item !== buttonValue)
+      );
       setDisabledStatus((prev: any) => ({
         ...prev,
         [buttonValue]: false,
       }));
     } else {
-      setSelectedItems((prev) => [...prev, buttonValue]);
+      setSheet.setSelectedItems((prev) => [...prev, buttonValue]);
       setDisabledStatus((prev: any) => ({
         ...prev,
         [buttonValue]: true,
@@ -120,10 +102,10 @@ export const CreateCharacterForm = ({
       buttonValue,
       items,
       selectedStatus,
-      remainingBudget,
-      setRemainingBudget,
-      remainingCapacity,
-      setRemainingCapacity
+      sheet.budget,
+      setSheet.setBudget,
+      sheet.capacity,
+      setSheet.setCapacity
     );
   };
 
@@ -242,20 +224,14 @@ export const CreateCharacterForm = ({
               <SelectOriginForm setOriginSelection={setOriginSelection} />
             </div>
             <div>
-              {/* <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
-                {`Total Capacity: ${capacity}Kg`}
-              </p> */}
-              {/* <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
-                {`Remainig Capacity: ${remainingCapacity}Kg`}
-              </p> */}
+              <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
+                {`Remainig Capacity: ${sheet.capacity}Kg`}
+              </p>
             </div>
             <div>
-              {/* <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
-                {`Total Budget: ${budget}$`}
-              </p> */}
-              {/* <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
-                {`Remainig Budget: ${remainingBudget}$`}
-              </p> */}
+              <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
+                {`Remainig Budget: ${sheet.budget}$`}
+              </p>
             </div>
             <div>
               <p className="text-white text-lg text-center leading-8 dark:text-gray-300">

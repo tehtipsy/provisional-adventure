@@ -392,11 +392,11 @@ const Game: React.FC = () => {
       const data = await response.json();
       console.log("total action points in DB: ", data.totalActionPoints)
       setTotalActionPoints(data.totalActionPoints)
-  }, [totalActionPoints, setTotalActionPoints]);
+  }, [totalActionPoints]);
 
   useEffect(() => {
-    setTimeout(() => refetchActionPoints(), 1000); // BAD BUT WORKS
-  }, [roundCount]);
+    setTimeout(() => refetchActionPoints(), 1000); // BAD
+  }, [roundCount, refetchActionPoints]);
 
   const weaponName = useRef(character?.characterSheet.equipment.hands.name);
 
