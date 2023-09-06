@@ -11,6 +11,7 @@ import { SelectSizeForm } from "@/components/ui/selectCharacterSize";
 import { SelectOriginForm } from "@/components/ui/selectOriginForm";
 import useSheetState from "@/utils/game/useSheetState";
 import { handleTotal } from "@/utils/game/newSheet/handleTotal";
+import { createNewSheet } from "@/utils/game/newCharacterSheet";
 
 interface Item {
   name: string;
@@ -44,13 +45,11 @@ const items: Record<string, Array<Item>> = {
 };
 
 type CreateCharacterFormProps = {
-  onFormSubmit: () => void;
-  fetchCharacterData: () => void;
+  onFormSubmit: (sheet: any) => void;
 };
 
 export const CreateCharacterForm = ({
   onFormSubmit,
-  fetchCharacterData,
 }: CreateCharacterFormProps) => {
   const { user } = useContext(GlobalContext);
 
@@ -136,7 +135,9 @@ export const CreateCharacterForm = ({
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    onFormSubmit();
+    console.log("sheet in character form submission: ", sheet);
+    const newSheet = createNewSheet(sheet);
+    onFormSubmit(newSheet);
   };
 
   return (

@@ -6,8 +6,6 @@ import { fetchCharacterSheet } from "@/utils/game/characterSheets";
 import { CreateCharacterForm } from "@/components/createCharacterForm";
 import BasePage from "@/components/base/basePage";
 import Loading from "@/components/ui/loading";
-import { createNewSheet } from "@/utils/game/newCharacterSheet";
-import useSheetState from "@/utils/game/useSheetState";
 
 type CharacterSheetProps = {
   characterSheet: any;
@@ -31,11 +29,8 @@ const ManageCharacter: React.FC<{
 
   const [isLoading, setIsLoading] = useState(true);
   const [character, setCharacter] = useState<CharacterSheetProps | null>(null);
-  const { sheet } = useSheetState()
 
-  const handleFormSubmit = () => {
-    console.log("form data to be saved: ", sheet);
-    const newSheet = createNewSheet(sheet);
+  const handleFormSubmit = (newSheet: any) => {
     console.log("new sheet to be saved in DB: ", newSheet);
 
     fetch("/api/db/character", {
@@ -104,7 +99,6 @@ const ManageCharacter: React.FC<{
     ) : (
       <CreateCharacterForm
         onFormSubmit={handleFormSubmit}
-        fetchCharacterData={fetchCharacterData}
       />
     )
   ) : isLoading ? (
@@ -130,7 +124,6 @@ const ManageCharacter: React.FC<{
     <BasePage>
       <CreateCharacterForm
         onFormSubmit={handleFormSubmit}
-        fetchCharacterData={fetchCharacterData}
       />
     </BasePage>
   );

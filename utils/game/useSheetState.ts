@@ -21,6 +21,10 @@ export default function useSheetState() {
   const [capacity, setCapacity] = useState(0);
   const [origin, setOrigin] = useState("");
 
+  useEffect(() => {
+    console.log("willpower in useSheetState: ",willpower);
+  }, [willpower]);
+
   return {
     sheet: {
       user,
