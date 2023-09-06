@@ -3,6 +3,8 @@ export const createNewSheet = (userInput: any) => {
       user_id: {}, // user.id
       name: userInput.user,
       characterName: userInput.name,
+      characterSize: userInput.size,
+      characterOrigin: userInput.origin,
       attributes: {
         prowess: {
           unmodifiedValue: parseInt(userInput.prowess),
@@ -55,45 +57,46 @@ export const createNewSheet = (userInput: any) => {
       },
       actionPoints: 0,
       equipment: {
+        selectedItems: {...userInput.selectedItems},
         hands: {
-      //     ...(Object.keys(userInput.selectedItems.hands).length === 0
-            // ?
+          //     ...(Object.keys(userInput.selectedItems.hands).length === 0
+          // ?
           // {
-                quantity: 2,
-                damageRating: 1,
-                damageType: ["Bludgeoning", "Slapping"],
-                name: "Fist of Fury",
-              // }
-      //       : userInput.selectedItems.hands),
+          quantity: 2,
+          damageRating: 1,
+          damageType: ["Bludgeoning", "Slapping"],
+          name: "Fist of Fury",
+          // }
+          //       : userInput.selectedItems.hands),
         },
 
-      //   belt: {
-      //     ...userInput.selectedItems.belt,
-      //   },
-      //   quiver: {
-      //     ...userInput.selectedItems.quiver,
-      //   },
-      //   backpack: {
-      //     ...userInput.selectedItems.backpack,
-      //   },
-      //   armor: {
-      //     head: {
-      //       ...userInput.selectedItems.head,
-      //     },
-      //     chest: {
-      //       ...userInput.selectedItems.chest,
-      //     },
-      //     torso: {
-      //       ...userInput.selectedItems.torso,
-      //     },
-      //     gloves: {
-      //       ...userInput.selectedItems.gloves,
-      //     },
-      //   },
+        //   belt: {
+        //     ...userInput.selectedItems.belt,
+        //   },
+        //   quiver: {
+        //     ...userInput.selectedItems.quiver,
+        //   },
+        //   backpack: {
+        //     ...userInput.selectedItems.backpack,
+        //   },
+        //   armor: {
+        //     head: {
+        //       ...userInput.selectedItems.head,
+        //     },
+        //     chest: {
+        //       ...userInput.selectedItems.chest,
+        //     },
+        //     torso: {
+        //       ...userInput.selectedItems.torso,
+        //     },
+        //     gloves: {
+        //       ...userInput.selectedItems.gloves,
+        //     },
+        //   },
       },
-      // statusEffects: {
-      //   ...userInput.selectedItems.statusEffects,
-      // },
+      statusEffects: {
+        // ...userInput.selectedItems.statusEffects,
+      },
     };
 
   return newSheet;

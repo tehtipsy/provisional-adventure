@@ -63,7 +63,6 @@ export const CreateCharacterForm = ({
 
   const setOriginSelection = (e: FormEvent) => {
     const originSelection = (e.target as HTMLSelectElement).value;
-    console.log("Origin Selection: ", originSelection);
     setSheet.setOrigin(originSelection);
   };
 

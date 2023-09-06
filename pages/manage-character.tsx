@@ -34,6 +34,7 @@ const ManageCharacter: React.FC<{
   const { sheet } = useSheetState()
 
   const handleFormSubmit = () => {
+    console.log("form data to be saved: ", sheet);
     const newSheet = createNewSheet(sheet);
     console.log("new sheet to be saved in DB: ", newSheet);
 
