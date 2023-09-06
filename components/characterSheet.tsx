@@ -28,18 +28,6 @@ export const CharacterSheet: React.FC<{
     }
   }, [isRefreshNeeded, setRefreshNeeded]);
 
-  useEffect(() => {
-    console.log(
-      "Total Focus: ",
-        character.characterSheet.attributes["focus"].unmodifiedValue +
-          character.characterSheet.attributes["focus"].t1 +
-        character.characterSheet.attributes["focus"].t2 +
-          character.characterSheet.attributes["focus"].t3 +
-          character.characterSheet.attributes["focus"].t4 +
-        character.characterSheet.attributes["focus"].bonus
-    );
-  }, [character]);
-
   return (
     <div className="flex justify-center flex-col mt-4 md:flex-row md:space-x-8 md:mt-0">
       <div className=" text-center w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded">

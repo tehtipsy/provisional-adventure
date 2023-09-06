@@ -24,7 +24,7 @@ export const UserForm = () => {
       className="w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded"
     >
       <Input onChange={handleUsernameChange} placeholder="Enter username" />
-      <Button type="submit">Save Username</Button>
+      <Button type="submit">{"Save Username"}</Button>
     </form>
   );
 };

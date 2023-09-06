@@ -5,6 +5,8 @@ interface TurnContextProps {
   setCurrentPlayer: (player: string) => void;
   roundCount: number;
   setRoundCount: (roundCount: number) => void;
+  totalActionPoints: number;
+  setTotalActionPoints: (totalActionPoints: number) => void;
 }
 
 export const TurnContext = createContext<TurnContextProps>({
@@ -12,6 +14,8 @@ export const TurnContext = createContext<TurnContextProps>({
   setCurrentPlayer: () => {},
   roundCount: 0,
   setRoundCount: () => {},
+  totalActionPoints: 0,
+  setTotalActionPoints: () => {},
 });
 
 interface TurnContextProviderProps {
@@ -22,19 +26,21 @@ export const TurnContextProvider = (props: TurnContextProviderProps) => {
   console.log("Loading TurnContextProvider");
   const [currentPlayer, setCurrentPlayer] = useState("");
   const [roundCount, setRoundCount] = useState(0);
+  const [totalActionPoints, setTotalActionPoints] = useState(0);
 
   useEffect(() => {
     // fix this garbaje
-    console.log("Fetching currentPlayer from database");
-    const fetchCurrentPlayer = async () => {
+    console.log("Fetching TurnData from database");
+    const fetchTurnData = async () => {
       const response = await fetch("/api/db/turn");
       const data = await response.json();
       setCurrentPlayer(data.currentPlayer);
       setRoundCount(data.roundCount);
+      setTotalActionPoints(data.totalActionPoints);
       console.log(data.currentPlayer);
       console.log(data.roundCount);
     };
-    fetchCurrentPlayer();
+    fetchTurnData();
   }, []);
 
   const value = {
@@ -42,6 +48,8 @@ export const TurnContextProvider = (props: TurnContextProviderProps) => {
     setCurrentPlayer,
     roundCount,
     setRoundCount,
+    totalActionPoints,
+    setTotalActionPoints,
   };
 
   return (

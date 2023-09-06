@@ -1,7 +1,6 @@
 import {
   FormEvent,
   useContext,
-  useEffect,
   useState,
 } from "react";
 import { GlobalContext } from "@/contexts/globalContext";
@@ -9,6 +8,9 @@ import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import { SelectSizeForm } from "@/components/ui/selectCharacterSize";
 import { SelectOriginForm } from "@/components/ui/selectOriginForm";
+import useSheetState from "@/utils/game/useSheetState";
+import { createNewSheet } from "@/utils/game/newCharacterSheet";
+import { handleTotal } from "@/utils/game/newSheet/handleTotal";
 
 interface Item {
   name: string;
@@ -41,59 +43,30 @@ const items: Record<string, Array<Item>> = {
   ],
 };
 
-const initialBudget = 100;
-
 type CreateCharacterFormProps = {
-  onFormSubmit: () => void;
-  fetchCharacterData: () => void;
+  onFormSubmit: (sheet: any) => void;
 };
 
 export const CreateCharacterForm = ({
   onFormSubmit,
-  fetchCharacterData,
 }: CreateCharacterFormProps) => {
   const { user } = useContext(GlobalContext);
-  const [name, setName] = useState("");
-  const [prowess, setProwess] = useState<number>(0);
-  const [finesse, setFinesse] = useState<number>(0);
-  const [constitution, setConstitution] = useState<number>(0);
-  const [focus, setFocus] = useState<number>(0);
-  const [willpower, setWillpower] = useState<number>(0);
-  const [motivation, setMotivation] = useState<number>(0);
-  const [size, setSize] = useState<number>(0);
-  const [capacity, setCapacity] = useState<number>(0);
-  const [budget, setBudget] = useState<number>(initialBudget);
-  const [origin, setOrigin] = useState("");
+  const { sheet, setSheet } = useSheetState();
 
+  // keep this here?
   const setSizeSelection = (e: FormEvent) => {
     const sizeSelection = (e.target as HTMLSelectElement).value;
-    setSize(parseInt(sizeSelection));
+    setSheet.setSize(parseInt(sizeSelection));
   };
 
   const setOriginSelection = (e: FormEvent) => {
     const originSelection = (e.target as HTMLSelectElement).value;
-    console.log("Origin Selection: ", originSelection);
-    setOrigin(originSelection);
+    setSheet.setOrigin(originSelection);
   };
 
-  useEffect(() => {
-    if (size === 3) {
-      const maxCapacity = 3 + prowess;
-      setCapacity(maxCapacity);
-    } else if (size === 2) {
-      const maxCapacity = 1 + prowess;
-      setCapacity(maxCapacity);
-    } else {
-      setCapacity(prowess);
-    }
-  }, [size, prowess]);
-
-  useEffect(() => {
-    const bonus = 20 * willpower;
-    setBudget((prevBudget) => prevBudget + bonus);
-  }, [willpower]);
-
+// add cost and weight summing logic and move to handle total
   const initialSelectedStatus: Record<string, boolean> = {};
+
   Object.keys(items).forEach((key) => {
     const array = items[key];
     const obj = array.reduce(
@@ -105,84 +78,35 @@ export const CreateCharacterForm = ({
     );
     Object.assign(initialSelectedStatus, obj);
   });
-  console.log("Initial Selected Status set to: ", initialSelectedStatus);
 
   const [selectedStatus, setDisabledStatus] = useState(initialSelectedStatus);
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [remainingBudget, setRemainingBudget] = useState(budget);
-  const [remainingCapacity, setRemainingCapacity] = useState(capacity);
-
-  // useEffect(() => {
-  const handleTotal = (buttonValue: string) => {
-    const values = Object.values(items).flat();
-    const item = values.filter((value) => value.name === buttonValue)[0];
-    const cost = item.cost;
-    const weight = item.weight;
-    if (selectedStatus[buttonValue] === true) {
-      setRemainingBudget(cost ? remainingBudget + cost : (prev) => prev);
-      setRemainingCapacity(
-        weight ? remainingCapacity + weight : (prev) => prev
-      );
-    } else {
-      setRemainingBudget(cost ? remainingBudget - cost : (prev) => prev);
-      setRemainingCapacity(
-        weight ? remainingCapacity - weight : (prev) => prev
-      );
-    }
-  };
-  // }, []);
-
-  // useEffect(() => {
-  //   setRemainingCapacity(capacity);
-  // }, [capacity]);
-
-  // useEffect(() => {
-  //   setRemainingBudget(budget);
-  // }, [budget]);
-
-  // useEffect(() => {
-  //   setCapacity(
-  //     remainingCapacity
-  //       ? capacity - remainingCapacity
-  //       : capacity + remainingCapacity
-  //   );
-  // }, [remainingCapacity]);
-
-  useEffect(() => {
-    console.log("Budget: ", budget);
-    // setRemainingBudget((prev) => prev - budget);
-  }, [budget]);
-
-  useEffect(() => {
-    console.log("Capacity: ", capacity);
-    setRemainingCapacity((prev) => prev + capacity);
-  }, [capacity]);
-
-  useEffect(() => {
-    console.log("remainingCapacity: ", remainingCapacity);
-    console.log("remainingBudget: ", remainingBudget);
-  }, [remainingCapacity, remainingBudget]);
-
-  // useEffect(() => {
-  //   console.log("Selected Items: ", selectedItems);
-  //   console.log("Selected Status: ", selectedStatus);
-  // }, [selectedItems, selectedStatus]);
 
   const handleClickSelction = (buttonValue: string) => {
-    if (selectedItems.includes(buttonValue)) {
-      setSelectedItems((prev) => prev.filter((item) => item !== buttonValue));
+    // move this to handleTotal
+    if (sheet.selectedItems.includes(buttonValue)) {
+      setSheet.setSelectedItems((prev) =>
+        prev.filter((item) => item !== buttonValue)
+      );
       setDisabledStatus((prev: any) => ({
         ...prev,
         [buttonValue]: false,
       }));
     } else {
-      setSelectedItems((prev) => [...prev, buttonValue]);
+      setSheet.setSelectedItems((prev) => [...prev, buttonValue]);
       setDisabledStatus((prev: any) => ({
         ...prev,
         [buttonValue]: true,
       }));
     }
-    handleTotal(buttonValue);
+    handleTotal(
+      buttonValue,
+      items,
+      selectedStatus,
+      sheet.budget,
+      setSheet.setBudget,
+      sheet.capacity,
+      setSheet.setCapacity
+    );
   };
 
   const handleClick = (e: FormEvent) => {
@@ -193,112 +117,9 @@ export const CreateCharacterForm = ({
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-
-    const newSheet = {
-      user_id: {}, // user.id
-      name: user,
-      characterName: name,
-      characterSize: size,
-      characterOrigin: origin,
-      attributes: {
-        prowess: {
-          unmodifiedValue: prowess,
-          t1: 0,
-          t2: 0,
-          t3: 0,
-          t4: 0,
-          bonus: 0,
-        },
-        finesse: {
-          unmodifiedValue: finesse,
-          t1: 0,
-          t2: 0,
-          t3: 0,
-          t4: 0,
-          bonus: 0,
-        },
-        constitution: {
-          unmodifiedValue: constitution,
-          t1: 0,
-          t2: 0,
-          t3: 0,
-          t4: 0,
-          bonus: 0,
-        },
-        focus: {
-          unmodifiedValue: focus,
-          t1: 0,
-          t2: 0,
-          t3: 0,
-          t4: 0,
-          bonus: 0,
-        },
-        willpower: {
-          unmodifiedValue: willpower,
-          t1: 0,
-          t2: 0,
-          t3: 0,
-          t4: 0,
-          bonus: 0,
-        },
-        motivation: {
-          unmodifiedValue: motivation,
-          t1: 0,
-          t2: 0,
-          t3: 0,
-          t4: 0,
-          bonus: 0,
-        },
-      },
-      actionPoints: 0,
-      equipment: {
-        selectedItems: {
-          ...selectedItems,
-        },
-        hands: {
-          quantity: 2,
-          damageRating: 1,
-          damageType: ["Bludgeoning", "Slapping"],
-          name: "Fist of Fury",
-        },
-        belt: {
-          quantity: 1,
-          damageRating: 2,
-          damageType: ["Piercing", "Slashing"],
-          name: "Short Sword",
-        },
-        quiver: {},
-        backpack: {},
-        armor: {
-          head: {},
-          chest: {},
-          torso: {},
-          gloves: {},
-        },
-      },
-      statusEffects: {},
-    };
-
-    fetch("/api/db/character", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ newSheet: newSheet }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data); // return Character Sheet MongoDB doc _id and save to user, set in global context
-        fetchCharacterData(); // Refetch character data after successful form submission
-      })
-      .catch((error) => console.error("Error: ", error));
-
-    onFormSubmit();
+    console.log("sheet in character form submission: ", sheet);
+    const newSheet = createNewSheet(sheet);
+    onFormSubmit(newSheet);
   };
 
   return (
@@ -311,7 +132,7 @@ export const CreateCharacterForm = ({
         <div className="m-4 text-center">
           <div className="m-4 text-center">
             <Input
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => setSheet.setName(e.target.value)}
               placeholder="Enter Character Name"
               className="m-4 text-center"
             />
@@ -325,7 +146,9 @@ export const CreateCharacterForm = ({
                 type="number"
                 min={0}
                 max={4}
-                onChange={(e) => setProwess(parseInt(e.target.value) || 0)}
+                onChange={(e) =>
+                  setSheet.setProwess(parseInt(e.target.value) || 0)
+                }
               />
               <br />
               <p className="text-white font-medium leading-8 dark:text-gray-300">
@@ -335,7 +158,9 @@ export const CreateCharacterForm = ({
                 type="number"
                 min={0}
                 max={4}
-                onChange={(e) => setFinesse(parseInt(e.target.value) || 0)}
+                onChange={(e) =>
+                  setSheet.setFinesse(parseInt(e.target.value) || 0)
+                }
               />
             </div>
             <div>
@@ -346,7 +171,9 @@ export const CreateCharacterForm = ({
                 type="number"
                 min={0}
                 max={4}
-                onChange={(e) => setConstitution(parseInt(e.target.value) || 0)}
+                onChange={(e) =>
+                  setSheet.setConstitution(parseInt(e.target.value) || 0)
+                }
               />
               <br />
               <p className="text-white font-medium leading-8 dark:text-gray-300">
@@ -356,7 +183,9 @@ export const CreateCharacterForm = ({
                 type="number"
                 min={0}
                 max={4}
-                onChange={(e) => setFocus(parseInt(e.target.value) || 0)}
+                onChange={(e) =>
+                  setSheet.setFocus(parseInt(e.target.value) || 0)
+                }
               />
             </div>
             <div>
@@ -367,7 +196,9 @@ export const CreateCharacterForm = ({
                 type="number"
                 min={0}
                 max={4}
-                onChange={(e) => setWillpower(parseInt(e.target.value) || 0)}
+                onChange={(e) =>
+                  setSheet.setWillpower(parseInt(e.target.value) || 0)
+                }
               />
               <br />
               <p className="text-white font-medium leading-8 dark:text-gray-300">
@@ -377,7 +208,9 @@ export const CreateCharacterForm = ({
                 type="number"
                 min={0}
                 max={4}
-                onChange={(e) => setMotivation(parseInt(e.target.value) || 0)}
+                onChange={(e) =>
+                  setSheet.setMotivation(parseInt(e.target.value) || 0)
+                }
               />
             </div>
           </div>
@@ -391,19 +224,13 @@ export const CreateCharacterForm = ({
               <SelectOriginForm setOriginSelection={setOriginSelection} />
             </div>
             <div>
-              {/* <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
-                {`Total Capacity: ${capacity}Kg`}
-              </p> */}
               <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
-                {`Remainig Capacity: ${remainingCapacity}Kg`}
+                {`Remainig Capacity: ${sheet.capacity}Kg`}
               </p>
             </div>
             <div>
-              {/* <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
-                {`Total Budget: ${budget}$`}
-              </p> */}
               <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
-                {`Remainig Budget: ${remainingBudget}$`}
+                {`Remainig Budget: ${sheet.budget}$`}
               </p>
             </div>
             <div>

@@ -28,9 +28,31 @@ const ManageCharacter: React.FC<{
   const { user } = useContext(GlobalContext);
 
   const [isLoading, setIsLoading] = useState(true);
+
   const [character, setCharacter] = useState<CharacterSheetProps | null>(null);
 
-  const handleFormSubmit = () => {
+  const handleFormSubmit = (newSheet: any) => {
+    console.log("new sheet to be saved in DB: ", newSheet);
+
+    fetch("/api/db/character", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ newSheet: newSheet }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data); // return Character Sheet MongoDB doc _id and save to user, set in global context
+        fetchCharacterData(); // Refetch character data after successful form submission
+      })
+      .catch((error) => console.error("Error: ", error));
+
     setIsLoading((prevState) => !prevState);
   };
 
@@ -55,7 +77,6 @@ const ManageCharacter: React.FC<{
   useEffect(() => {
     if (isRefreshNeeded) {
       fetchCharacterData();
-      console.log(isRefreshNeeded);
     }
   }, [isRefreshNeeded, fetchCharacterData]);
 
@@ -78,7 +99,6 @@ const ManageCharacter: React.FC<{
     ) : (
       <CreateCharacterForm
         onFormSubmit={handleFormSubmit}
-        fetchCharacterData={fetchCharacterData}
       />
     )
   ) : isLoading ? (
@@ -104,7 +124,6 @@ const ManageCharacter: React.FC<{
     <BasePage>
       <CreateCharacterForm
         onFormSubmit={handleFormSubmit}
-        fetchCharacterData={fetchCharacterData}
       />
     </BasePage>
   );

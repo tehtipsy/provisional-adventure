@@ -35,7 +35,8 @@ const Game: React.FC = () => {
 
   const { user } = useContext(GlobalContext);
   const { currentPlayer, setCurrentPlayer } = useContext(TurnContext);
-  const { roundCount, setRoundCount } = useContext(TurnContext);
+  const { roundCount, setRoundCount, totalActionPoints, setTotalActionPoints } =
+    useContext(TurnContext);
 
   const [character, setCharacter] = useState<CharacterSheetProps | null>(null);
   const characterRef = useRef(character);
@@ -178,7 +179,7 @@ const Game: React.FC = () => {
             damageType: damageType,
           };
 
-          const updatedCharacterData = await updateCharacterSheet(data);
+          const updatedCharacterData = await updateCharacterSheet(data); // move to poke sub event
           console.log(updatedCharacterData); // sender and reciver sheets
           console.log(updatedCharacterData.updatedSenderCharacterData.value);
           setCharacter({
@@ -246,7 +247,7 @@ const Game: React.FC = () => {
   useEffect(() => {
     if (character !== null) {
       characterRef.current = character;
-      characterFocus.current =
+      characterFocusRef.current =
         characterRef.current?.characterSheet.attributes.focus.unmodifiedValue +
         characterRef.current?.characterSheet.attributes.focus.t1 +
         characterRef.current?.characterSheet.attributes.focus.t2 +
@@ -255,7 +256,7 @@ const Game: React.FC = () => {
         characterRef.current?.characterSheet.attributes.focus.bonus;
       // prevActionPointsRef.current = // check this
       //   characterRef.current?.characterSheet.actionPoints;
-      attackProwess.current =
+      attackProwessRef.current =
         characterRef.current?.characterSheet.attributes.prowess
           .unmodifiedValue +
         characterRef.current?.characterSheet.attributes.prowess.t1 +
@@ -263,13 +264,13 @@ const Game: React.FC = () => {
         characterRef.current?.characterSheet.attributes.prowess.t3 +
         characterRef.current?.characterSheet.attributes.prowess.t4 +
         characterRef.current?.characterSheet.attributes.prowess.bonus;
-      damageRating.current =
+      damageRatingRef.current =
         characterRef.current?.characterSheet.equipment.hands.damageRating;
       weaponName.current = character?.characterSheet.equipment.hands.name;
     }
   }, [character]);
 
-  const characterFocus = useRef(
+  const characterFocusRef = useRef(
     characterRef.current?.characterSheet.attributes.focus.unmodifiedValue +
       characterRef.current?.characterSheet.attributes.focus.t1 +
       characterRef.current?.characterSheet.attributes.focus.t2 +
@@ -289,7 +290,7 @@ const Game: React.FC = () => {
 
       await updateCharacterSheet(initialData);
 
-      const actionPoints = characterFocus;
+      const actionPoints = characterFocusRef;
 
       const data = {
         receiver: user,
@@ -312,20 +313,19 @@ const Game: React.FC = () => {
 
   useEffect(() => {
     if (characterRef.current !== null) {
-    const incramentActionPointsInDatabase = async () => {
-      // sum everyone's action points at the start of each turn in MongoDB Doc
-      const actionPoints = 
-        { totalActionPoints: characterFocus?.current }
-      
-      await fetch("/api/db/turn", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ actionPoints: actionPoints}),
-      });
-    };
-    incramentActionPointsInDatabase();}
+      // sum everyone's action points at the start of each round in MongoDB Doc
+      const actionPoints = { totalActionPoints: characterFocusRef?.current };
+      const incramentActionPointsInDatabase = async () => {
+        await fetch("/api/db/turn", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ actionPoints: actionPoints }),
+        });
+      };
+      incramentActionPointsInDatabase();
+    }
   }, [roundCount]); // fires when round count changes
 
   const updateRoundCountInDatabase = async (newRoundCount: number) => {
@@ -339,13 +339,18 @@ const Game: React.FC = () => {
     });
   };
 
-  const startNewRound = () => {
+  const startNewRound = useCallback(async () => {
     const newRoundCount = roundCount + 1;
     setRoundCount(newRoundCount);
     channel?.publish("newRound", { newRoundCount });
     // add post to db
-    updateRoundCountInDatabase(newRoundCount);
-  };
+    await updateRoundCountInDatabase(newRoundCount);
+    // const response = await fetch("/api/db/turn");
+    // const data = await response.json();
+    // setCurrentPlayer(data.currentPlayer);
+    // setRoundCount(data.roundCount);
+    // setTotalActionPoints(data.totalActionPoints);
+  }, [channel, roundCount, setRoundCount, setTotalActionPoints]);
 
   useEffect(() => {
     channel?.subscribe("newRound", (message) => {
@@ -364,11 +369,34 @@ const Game: React.FC = () => {
     startNewRound();
   };
 
-  // useEffect(() => {
-  //   const newRoundCount = roundCount + 1;
-  //   setRoundCount(newRoundCount);
-  //   // startNewRound();
-  // }, []); // leave empty
+  const prevTotalActionPointsRef = useRef(totalActionPoints);
+
+  useEffect(() => {
+    console.log("total action points: ", totalActionPoints);
+    if (prevTotalActionPointsRef.current > 0 && totalActionPoints === 0) {
+      startNewRound();
+    }
+  }, [totalActionPoints, startNewRound]);
+
+  useEffect(() => {
+    console.log("total action points: ", totalActionPoints);
+  }, [totalActionPoints]);
+
+  const refetchActionPoints = useCallback(async () => {
+      const response = await fetch("/api/db/turn", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      const data = await response.json();
+      console.log("total action points in DB: ", data.totalActionPoints)
+      setTotalActionPoints(data.totalActionPoints)
+  }, [totalActionPoints]);
+
+  useEffect(() => {
+    setTimeout(() => refetchActionPoints(), 1000); // BAD
+  }, [roundCount, refetchActionPoints]);
 
   const weaponName = useRef(character?.characterSheet.equipment.hands.name);
 
@@ -388,8 +416,9 @@ const Game: React.FC = () => {
         weapon: weaponName.current,
         timestamp: new Date().toISOString(),
       });
+      setTotalActionPoints(totalActionPoints - 1); // move inside poke and set total in other clients.
     },
-    [channel, user, selectedBodyPart, selectedDamageType] // , action]
+    [channel, user, selectedBodyPart, selectedDamageType, totalActionPoints, setTotalActionPoints] // , action]
   );
 
   useEffect(() => {
@@ -437,9 +466,9 @@ const Game: React.FC = () => {
       endTurn(user);
     }
     prevActionPointsRef.current = currentActionPoints;
-  }, [user, character, endTurn, characterFocus, currentPlayer]);
+  }, [user, character, endTurn, characterFocusRef, currentPlayer]);
 
-  const attackProwess = useRef(
+  const attackProwessRef = useRef(
     characterRef?.current?.characterSheet.attributes.prowess.unmodifiedValue +
       characterRef.current?.characterSheet.attributes.prowess.t1 +
       characterRef.current?.characterSheet.attributes.prowess.t2 +
@@ -448,12 +477,12 @@ const Game: React.FC = () => {
       characterRef.current?.characterSheet.attributes.prowess.bonus
   );
 
-  const damageRating = useRef(
+  const damageRatingRef = useRef(
     characterRef.current?.characterSheet.equipment.hands.damageRating
   );
 
   const handleDiceRolls = (choice: string) => {
-    const numDice = attackProwess.current + damageRating.current;
+    const numDice = attackProwessRef.current + damageRatingRef.current;
     setNumDiceToRoll(numDice);
     console.log("numDice: ", numDice);
 
