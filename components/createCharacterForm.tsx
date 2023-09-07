@@ -79,21 +79,21 @@ export const CreateCharacterForm = ({
     Object.assign(initialSelectedStatus, obj);
   });
 
-  const [selectedStatus, setDisabledStatus] = useState(initialSelectedStatus);
+  const [selectedStatus, setSelectedStatus] = useState(initialSelectedStatus);
 
   const handleClickSelction = (buttonValue: string) => {
-    // move this to handleTotal
+    // move to same somewhere else
     if (sheet.selectedItems.includes(buttonValue)) {
       setSheet.setSelectedItems((prev) =>
         prev.filter((item) => item !== buttonValue)
       );
-      setDisabledStatus((prev: any) => ({
+      setSelectedStatus((prev: any) => ({
         ...prev,
         [buttonValue]: false,
       }));
     } else {
       setSheet.setSelectedItems((prev) => [...prev, buttonValue]);
-      setDisabledStatus((prev: any) => ({
+      setSelectedStatus((prev: any) => ({
         ...prev,
         [buttonValue]: true,
       }));
