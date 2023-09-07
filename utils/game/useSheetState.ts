@@ -19,7 +19,7 @@ export default function useSheetState() {
   
   const [size, setSize] = useState(0);
   const [capacity, setCapacity] = useState(0);
-  const [origin, setOrigin] = useState("");
+  const [origin, setOrigin] = useState(""); // add origin useEffect here to apply origin bonuses
 
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   
@@ -39,7 +39,7 @@ export default function useSheetState() {
     const bonus = 20 * willpower;
     // setBudget((prevBudget) => prevBudget + bonus); // doesnt update when willpower changes
     // setBudget(budget + bonus);
-    setBudget(initialBudget + bonus); // LEAST SHIT OPTION I GUESS
+    setBudget(initialBudget + bonus); // LEAST SHIT OPTION I GUESS, add sum of items cost
   }, [willpower]);
 
   return {

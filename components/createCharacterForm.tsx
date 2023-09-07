@@ -53,7 +53,7 @@ export const CreateCharacterForm = ({
   const { user } = useContext(GlobalContext);
   const { sheet, setSheet } = useSheetState();
 
-  // keep this here?
+  // rewrite select from scratch and move it there
   const setSizeSelection = (e: FormEvent) => {
     const sizeSelection = (e.target as HTMLSelectElement).value;
     setSheet.setSize(parseInt(sizeSelection));
@@ -64,7 +64,7 @@ export const CreateCharacterForm = ({
     setSheet.setOrigin(originSelection);
   };
 
-// add cost and weight summing logic and move to handle total
+  // move somewhere else
   const initialSelectedStatus: Record<string, boolean> = {};
 
   Object.keys(items).forEach((key) => {
@@ -237,6 +237,7 @@ export const CreateCharacterForm = ({
               <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
                 {"Select Weapon"}
               </p>
+              <br />
               <div className="text-center">
                 {items.weapons.map((item: Item) => (
                   <div key={`div-button-${item.name}`}>
@@ -249,8 +250,16 @@ export const CreateCharacterForm = ({
                       }
                       onClick={handleClick}
                       value={item.name}
+                      disabled={
+                        selectedStatus[item.name] === false
+                          ? (item.cost ? item.cost > sheet.budget : false) ||
+                            (item.weight ? item.weight > sheet.capacity : false)
+                          : false
+                      }
                     >
-                      {`${item.name} ${item.cost}$ ${item.weight}Kg`}
+                      {`${item.name} ${item.cost ? item.cost : 0}$ ${
+                        item.weight ? item.weight : 0
+                      }Kg`}
                     </Button>
                     <br />
                     <br />
@@ -262,6 +271,7 @@ export const CreateCharacterForm = ({
               <p className="text-white text-lg text-center  leading-8 dark:text-gray-300">
                 {"Select Armor"}
               </p>
+              <br />
               <div className="text-center">
                 {items.armor.map((item: Item) => (
                   <div key={`div-button-${item.name}`}>
@@ -274,8 +284,16 @@ export const CreateCharacterForm = ({
                       }
                       onClick={handleClick}
                       value={item.name}
+                      disabled={
+                        selectedStatus[item.name] === false
+                          ? (item.cost ? item.cost > sheet.budget : false) ||
+                            (item.weight ? item.weight > sheet.capacity : false)
+                          : false
+                      }
                     >
-                      {`${item.name} ${item.cost}$ ${item.weight}Kg`}
+                      {`${item.name} ${item.cost ? item.cost : 0}$ ${
+                        item.weight ? item.weight : 0
+                      }Kg`}
                     </Button>
                     <br />
                     <br />
@@ -287,6 +305,7 @@ export const CreateCharacterForm = ({
               <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
                 {"Select Misc"}
               </p>
+              <br />
               <div className="text-center">
                 {items.misc.map((item: Item) => (
                   <div key={`div-button-${item.name}`}>
@@ -299,8 +318,16 @@ export const CreateCharacterForm = ({
                       }
                       onClick={handleClick}
                       value={item.name}
+                      disabled={
+                        selectedStatus[item.name] === false
+                          ? (item.cost ? item.cost > sheet.budget : false) ||
+                            (item.weight ? item.weight > sheet.capacity : false)
+                          : false
+                      }
                     >
-                      {`${item.name} ${item.cost}$ ${item.weight}Kg`}
+                      {`${item.name} ${item.cost ? item.cost : 0}$ ${
+                        item.weight ? item.weight : 0
+                      }Kg`}
                     </Button>
                     <br />
                     <br />
