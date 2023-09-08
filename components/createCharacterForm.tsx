@@ -71,8 +71,8 @@ export const CreateCharacterForm = ({
       selectedStatus,
       sheet.budget,
       setSheet.setBudget,
-      sheet.capacity,
-      setSheet.setCapacity
+      sheet.encumbrance,
+      setSheet.setEncumbrance
     );
   };
 
@@ -103,7 +103,8 @@ export const CreateCharacterForm = ({
           <div className="grid grid-cols-3 gap-4">
             <div>
               <p className="text-white font-medium leading-8 dark:text-gray-300">
-                {"Prowess"}
+                {sheet.prowess}
+                {" Prowess"}
               </p>
               <Input
                 type="number"
@@ -115,7 +116,8 @@ export const CreateCharacterForm = ({
               />
               <br />
               <p className="text-white font-medium leading-8 dark:text-gray-300">
-                {"Finesse"}
+                {sheet.finesse}
+                {" Finesse"}
               </p>
               <Input
                 type="number"
@@ -128,7 +130,8 @@ export const CreateCharacterForm = ({
             </div>
             <div>
               <p className="text-white font-medium leading-8 dark:text-gray-300">
-                {"Constitution"}
+                {sheet.constitution}
+                {" Constitution"}
               </p>
               <Input
                 type="number"
@@ -140,7 +143,8 @@ export const CreateCharacterForm = ({
               />
               <br />
               <p className="text-white font-medium leading-8 dark:text-gray-300">
-                {"Focus"}
+                {sheet.focus}
+                {" Focus"}
               </p>
               <Input
                 type="number"
@@ -153,7 +157,8 @@ export const CreateCharacterForm = ({
             </div>
             <div>
               <p className="text-white font-medium leading-8 dark:text-gray-300">
-                {"Willpower"}
+                {sheet.willpower}
+                {" Willpower"}
               </p>
               <Input
                 type="number"
@@ -165,7 +170,8 @@ export const CreateCharacterForm = ({
               />
               <br />
               <p className="text-white font-medium leading-8 dark:text-gray-300">
-                {"Motivation"}
+                {sheet.motivation}
+                {" Motivation"}
               </p>
               <Input
                 type="number"
@@ -206,11 +212,11 @@ export const CreateCharacterForm = ({
                 }
               />
             </div>
-            {/* <div>
+            <div>
               <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
-                {`Remainig Capacity: ${sheet.capacity} wr`}
+                {`Encumbrance Rating: ${sheet.encumbrance}`}
               </p>
-            </div> */}
+            </div>
             <div>
               <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
                 {`Remainig Budget: ${sheet.budget} Coin`}

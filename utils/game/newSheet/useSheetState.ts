@@ -3,6 +3,37 @@ import { GlobalContext } from "@/contexts/globalContext";
 
 const initialBudget = 10; // set in config from db
 
+interface Item {
+  name: string;
+  cost?: number;
+  weight?: number;
+  damage?: number;
+  block?: number;
+}
+
+const itemsWeightRating: Record<string, Array<Item>> = {
+  weapons: [
+    { name: "Sword", damage: 10, weight: 10, cost: 10 },
+    { name: "Knife", damage: 4, weight: 1, cost: 3 },
+    { name: "Bow", damage: 7, weight: 7, cost: 7 },
+    { name: "Cross Bow", damage: 12, weight: 10, cost: 12 },
+  ],
+  armor: [
+    { name: "Helmet", block: 10, cost: 5, weight: 3 },
+    { name: "Rusty Chest Piece", block: 5, cost: 5, weight: 6 },
+    { name: "Dirty Pants", block: 8, cost: 3, weight: 4 },
+    { name: "Chain Mail Chest Plate", block: 10, cost: 10, weight: 10 },
+  ],
+  misc: [
+    { name: "Shield", damage: 2, weight: 10, block: 10, cost: 3 },
+    { name: "Note Book", damage: 10, cost: 3 },
+    { name: "Gold Coin", damage: 5, cost: 3, weight: 1 },
+    { name: "Healing Potion", damage: 8, cost: 3, weight: 1 },
+    { name: "Arrow", damage: 4, cost: 3, weight: 1 },
+    { name: "Battle Scar", damage: 4 },
+  ],
+};
+
 export default function useSheetState() {
   const { user } = useContext(GlobalContext);
 
@@ -19,28 +50,49 @@ export default function useSheetState() {
 
   const [size, setSize] = useState(2); // regret this later, rewrite select to fix
   const [origin, setOrigin] = useState("Commonfolk"); // regret this later, rewrite select to fix
-  const [capacity, setCapacity] = useState(0);
+  const [encumbrance, setEncumbrance] = useState(0);
 
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  
+  const [totalWeight, setTotalWeight] = useState<number>(0);
+
   // add origin useEffect here to apply origin bonuses
-  
+  useEffect(() => {
+    let weight = 0;
+    selectedItems.forEach((itemName) => {
+      const item = Object.values(itemsWeightRating)
+        .flat()
+        .find((item) => item.name === itemName);
+      if (item && item.weight) {
+        weight += item.weight;
+      }
+    });
+    setTotalWeight(weight);
+  }, [selectedItems, itemsWeightRating]);
+
+  useEffect(() => {
+    let encumbranceTier = 0;
+    if (prowess !== 0) {
+      encumbranceTier = Math.min(
+        Math.max(Math.floor((totalWeight - 1) / prowess) + 1, 0),
+        4
+      );
+    }
+    setEncumbrance(encumbranceTier);
+  }, [prowess, totalWeight]);
+
   useEffect(() => {
     if (size === 3) {
-      const maxCapacity = 3 + prowess;
-      setCapacity(maxCapacity);
-    } else if (size === 2) {
-      const maxCapacity = 1 + prowess;
-      setCapacity(maxCapacity);
-    } else {
-      setCapacity(prowess);
+      setProwess((prev) => prev + 1);
+      setConstitution((prev) => prev + 1);
+      setFinesse((prev) => prev - 1);
+    } else if (size === 1) {
+      setFinesse((prev) => prev + 1);
+      setProwess((prev) => prev - 1);
     }
-  }, [size, prowess]);
+  }, [size]);
 
   useEffect(() => {
     const bonus = 1 * willpower;
-    // setBudget((prevBudget) => prevBudget + bonus); // doesnt update when willpower changes
-    // setBudget(budget + bonus);
     setBudget(initialBudget + bonus); // LEAST SHIT OPTION I GUESS, add sum of items cost
   }, [willpower]);
 
@@ -55,7 +107,7 @@ export default function useSheetState() {
       willpower,
       motivation,
       size,
-      capacity,
+      encumbrance,
       budget,
       origin,
       selectedItems,
@@ -69,7 +121,7 @@ export default function useSheetState() {
       setWillpower,
       setMotivation,
       setSize,
-      setCapacity,
+      setEncumbrance,
       setBudget,
       setOrigin,
       setSelectedItems,

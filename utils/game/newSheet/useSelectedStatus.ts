@@ -10,9 +10,5 @@ export default function useSelectedStatus(initialStatus: any) {
     }));
   };
 
-  useEffect(() => {
-    console.log(selectedStatus);
-  }, [selectedStatus]);
-
   return [selectedStatus, handleClickSelection];
 }
