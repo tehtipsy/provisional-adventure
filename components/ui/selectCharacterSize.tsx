@@ -22,7 +22,7 @@ export function SelectSizeForm({ setSizeSelection }: SelectSizeFormProps) {
     >
       <Select>
         <SelectTrigger className="p-2 rounded border border-black dark:border-gray-700">
-          <SelectValue placeholder="Select Race Size Category" />
+          <SelectValue placeholder="Medium" />
         </SelectTrigger>
         <SelectContent className="bg-gray-900 w-auto p-2 rounded border border-black dark:border-gray-700">
           <SelectItem value="1">{"Small"}</SelectItem>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { GlobalContext } from "@/contexts/globalContext";
 
-const initialBudget = 100;
+const initialBudget = 10; // set in config from db
 
 export default function useSheetState() {
   const { user } = useContext(GlobalContext);
@@ -16,12 +16,14 @@ export default function useSheetState() {
   const [motivation, setMotivation] = useState(0);
 
   const [budget, setBudget] = useState(initialBudget);
-  
-  const [size, setSize] = useState(0);
+
+  const [size, setSize] = useState(2); // regret this later, rewrite select to fix
+  const [origin, setOrigin] = useState("Commonfolk"); // regret this later, rewrite select to fix
   const [capacity, setCapacity] = useState(0);
-  const [origin, setOrigin] = useState(""); // add origin useEffect here to apply origin bonuses
 
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  
+  // add origin useEffect here to apply origin bonuses
   
   useEffect(() => {
     if (size === 3) {
@@ -36,7 +38,7 @@ export default function useSheetState() {
   }, [size, prowess]);
 
   useEffect(() => {
-    const bonus = 20 * willpower;
+    const bonus = 1 * willpower;
     // setBudget((prevBudget) => prevBudget + bonus); // doesnt update when willpower changes
     // setBudget(budget + bonus);
     setBudget(initialBudget + bonus); // LEAST SHIT OPTION I GUESS, add sum of items cost
