@@ -10,7 +10,7 @@ import {
 type SelectSizeFormProps = { setOriginSelection: (e: FormEvent) => void };
 
 export function SelectOriginForm({
-  setOriginSelection: setOriginSelection,
+  setOriginSelection
 }: SelectSizeFormProps) {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -24,7 +24,7 @@ export function SelectOriginForm({
     >
       <Select>
         <SelectTrigger className="p-2 rounded border border-black dark:border-gray-700">
-          <SelectValue placeholder="Select Origin" />
+          <SelectValue placeholder="Commonfolk" />
         </SelectTrigger>
         <SelectContent className="bg-gray-900 w-auto p-2 rounded border border-black dark:border-gray-700">
           <SelectItem value="Commonfolk">{"Commonfolk"}</SelectItem>

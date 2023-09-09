@@ -1,16 +1,17 @@
 import {
   FormEvent,
   useContext,
-  useState,
 } from "react";
 import { GlobalContext } from "@/contexts/globalContext";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import { SelectSizeForm } from "@/components/ui/selectCharacterSize";
 import { SelectOriginForm } from "@/components/ui/selectOriginForm";
-import useSheetState from "@/utils/game/useSheetState";
-import { createNewSheet } from "@/utils/game/newCharacterSheet";
+import useSheetState from "@/utils/game/newSheet/useSheetState";
+import { createNewSheet } from "@/utils/game/newSheet/newCharacterSheet";
 import { handleTotal } from "@/utils/game/newSheet/handleTotal";
+import useSelectedStatus from "@/utils/game/newSheet/useSelectedStatus";
+import initializeSelectedStatus from "@/utils/game/newSheet/initializeSelectedStatus";
 
 interface Item {
   name: string;
@@ -52,67 +53,27 @@ export const CreateCharacterForm = ({
 }: CreateCharacterFormProps) => {
   const { user } = useContext(GlobalContext);
   const { sheet, setSheet } = useSheetState();
+  const initialSelectedStatus = initializeSelectedStatus(items);
+  const [selectedStatus, handleClickSelection] = useSelectedStatus(
+    initialSelectedStatus
+  );
 
-  // keep this here?
-  const setSizeSelection = (e: FormEvent) => {
-    const sizeSelection = (e.target as HTMLSelectElement).value;
-    setSheet.setSize(parseInt(sizeSelection));
-  };
-
-  const setOriginSelection = (e: FormEvent) => {
-    const originSelection = (e.target as HTMLSelectElement).value;
-    setSheet.setOrigin(originSelection);
-  };
-
-// add cost and weight summing logic and move to handle total
-  const initialSelectedStatus: Record<string, boolean> = {};
-
-  Object.keys(items).forEach((key) => {
-    const array = items[key];
-    const obj = array.reduce(
-      (obj: { [x: string]: boolean }, item: { name: string }) => {
-        obj[item.name] = false;
-        return obj;
-      },
-      {}
+  const handleClick = (buttonValue: string) => {
+    handleClickSelection(buttonValue);
+    setSheet.setSelectedItems((prev) =>
+      selectedStatus[buttonValue]
+        ? prev.filter((item) => item !== buttonValue)
+        : [...prev, buttonValue]
     );
-    Object.assign(initialSelectedStatus, obj);
-  });
-
-  const [selectedStatus, setDisabledStatus] = useState(initialSelectedStatus);
-
-  const handleClickSelction = (buttonValue: string) => {
-    // move this to handleTotal
-    if (sheet.selectedItems.includes(buttonValue)) {
-      setSheet.setSelectedItems((prev) =>
-        prev.filter((item) => item !== buttonValue)
-      );
-      setDisabledStatus((prev: any) => ({
-        ...prev,
-        [buttonValue]: false,
-      }));
-    } else {
-      setSheet.setSelectedItems((prev) => [...prev, buttonValue]);
-      setDisabledStatus((prev: any) => ({
-        ...prev,
-        [buttonValue]: true,
-      }));
-    }
     handleTotal(
       buttonValue,
       items,
       selectedStatus,
       sheet.budget,
       setSheet.setBudget,
-      sheet.capacity,
-      setSheet.setCapacity
+      sheet.encumbrance,
+      setSheet.setEncumbrance
     );
-  };
-
-  const handleClick = (e: FormEvent) => {
-    e.preventDefault();
-    const buttonValue = (e.target as HTMLSelectElement).value;
-    handleClickSelction(buttonValue);
   };
 
   const handleSubmit = (e: FormEvent) => {
@@ -121,6 +82,8 @@ export const CreateCharacterForm = ({
     const newSheet = createNewSheet(sheet);
     onFormSubmit(newSheet);
   };
+
+  const categories = ["weapons", "armor", "misc"]; // get item categories from config, set in db
 
   return (
     <div className="flex justify-center flex-row mt-4 md:flex-row md:space-x-8 md:mt-0">
@@ -140,7 +103,8 @@ export const CreateCharacterForm = ({
           <div className="grid grid-cols-3 gap-4">
             <div>
               <p className="text-white font-medium leading-8 dark:text-gray-300">
-                {"Prowess"}
+                {sheet.prowess}
+                {" Prowess"}
               </p>
               <Input
                 type="number"
@@ -152,7 +116,8 @@ export const CreateCharacterForm = ({
               />
               <br />
               <p className="text-white font-medium leading-8 dark:text-gray-300">
-                {"Finesse"}
+                {sheet.finesse}
+                {" Finesse"}
               </p>
               <Input
                 type="number"
@@ -165,7 +130,8 @@ export const CreateCharacterForm = ({
             </div>
             <div>
               <p className="text-white font-medium leading-8 dark:text-gray-300">
-                {"Constitution"}
+                {sheet.constitution}
+                {" Constitution"}
               </p>
               <Input
                 type="number"
@@ -177,7 +143,8 @@ export const CreateCharacterForm = ({
               />
               <br />
               <p className="text-white font-medium leading-8 dark:text-gray-300">
-                {"Focus"}
+                {sheet.focus}
+                {" Focus"}
               </p>
               <Input
                 type="number"
@@ -190,7 +157,8 @@ export const CreateCharacterForm = ({
             </div>
             <div>
               <p className="text-white font-medium leading-8 dark:text-gray-300">
-                {"Willpower"}
+                {sheet.willpower}
+                {" Willpower"}
               </p>
               <Input
                 type="number"
@@ -202,7 +170,8 @@ export const CreateCharacterForm = ({
               />
               <br />
               <p className="text-white font-medium leading-8 dark:text-gray-300">
-                {"Motivation"}
+                {sheet.motivation}
+                {" Motivation"}
               </p>
               <Input
                 type="number"
@@ -217,96 +186,87 @@ export const CreateCharacterForm = ({
         </div>
         <div>
           <div className="flex justify-center flex-col mt-4 md:flex-row md:space-x-8 md:mt-0">
+            <div>
+              <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
+                {"Select Size"}
+              </p>
+            </div>
             <div className="text-center">
-              <SelectSizeForm setSizeSelection={setSizeSelection} />
+              <SelectSizeForm
+                setSizeSelection={(e) =>
+                  setSheet.setSize(
+                    parseInt((e.target as HTMLSelectElement).value) || 0
+                  )
+                }
+              />
+            </div>
+            <div>
+              <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
+                {"Select Origin"}
+              </p>
             </div>
             <div className="text-center">
-              <SelectOriginForm setOriginSelection={setOriginSelection} />
+              <SelectOriginForm
+                setOriginSelection={(e) =>
+                  setSheet.setOrigin((e.target as HTMLSelectElement).value)
+                }
+              />
             </div>
             <div>
               <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
-                {`Remainig Capacity: ${sheet.capacity}Kg`}
+                {`Encumbrance Rating: ${sheet.encumbrance}`}
               </p>
             </div>
             <div>
               <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
-                {`Remainig Budget: ${sheet.budget}$`}
+                {`Remainig Budget: ${sheet.budget} Coin`}
               </p>
             </div>
             <div>
-              <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
-                {"Select Weapon"}
-              </p>
-              <div className="text-center">
-                {items.weapons.map((item: Item) => (
-                  <div key={`div-button-${item.name}`}>
-                    <Button
-                      key={item.name}
-                      className={
-                        selectedStatus[item.name] === true
-                          ? " bg-purple-900 hover:bg-purple-800 md:active:bg-purple-700"
-                          : ""
-                      }
-                      onClick={handleClick}
-                      value={item.name}
-                    >
-                      {`${item.name} ${item.cost}$ ${item.weight}Kg`}
-                    </Button>
-                    <br />
-                    <br />
+              {categories.map((category) => (
+                <div key={category}>
+                  <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
+                    {`Select ${category}`}
+                  </p>
+                  <br />
+                  <div className="text-center">
+                    {items[category].map((item: Item) => (
+                      <div key={`div-button-${item.name}`}>
+                        <Button
+                          key={item.name}
+                          className={`${
+                            selectedStatus[item.name] === true
+                              ? " bg-purple-900 hover:bg-purple-800 md:active:bg-purple-700"
+                              : ""
+                          } ${
+                            item.cost && item.cost > sheet.budget
+                              ? "opacity-50"
+                              : ""
+                          }`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleClick((e.target as HTMLButtonElement).value);
+                          }}
+                          value={item.name}
+                          disabled={
+                            selectedStatus[item.name] === false
+                              ? item.cost
+                                ? item.cost > sheet.budget
+                                : false
+                              : false
+                          }
+                        >
+                          {`${item.name} | 
+                            ${item.cost ? item.cost : 0} Coin | 
+                            ${item.weight ? item.weight : 0} wr`}
+                        </Button>
+                        <br />
+                        <br />
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
-            <div>
-              <p className="text-white text-lg text-center  leading-8 dark:text-gray-300">
-                {"Select Armor"}
-              </p>
-              <div className="text-center">
-                {items.armor.map((item: Item) => (
-                  <div key={`div-button-${item.name}`}>
-                    <Button
-                      key={item.name}
-                      className={
-                        selectedStatus[item.name] === true
-                          ? " bg-purple-900 hover:bg-purple-800 md:active:bg-purple-700"
-                          : ""
-                      }
-                      onClick={handleClick}
-                      value={item.name}
-                    >
-                      {`${item.name} ${item.cost}$ ${item.weight}Kg`}
-                    </Button>
-                    <br />
-                    <br />
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div>
-              <p className="text-white text-lg text-center leading-8 dark:text-gray-300">
-                {"Select Misc"}
-              </p>
-              <div className="text-center">
-                {items.misc.map((item: Item) => (
-                  <div key={`div-button-${item.name}`}>
-                    <Button
-                      key={item.name}
-                      className={
-                        selectedStatus[item.name] === true
-                          ? " bg-purple-900 hover:bg-purple-800 md:active:bg-purple-700"
-                          : ""
-                      }
-                      onClick={handleClick}
-                      value={item.name}
-                    >
-                      {`${item.name} ${item.cost}$ ${item.weight}Kg`}
-                    </Button>
-                    <br />
-                    <br />
-                  </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
