@@ -1,13 +1,12 @@
-import { useCallback } from "react";
 import { updateCharacterSheet } from "@/utils/game/characterSheets";
 
-export const initActionPoints = useCallback(
-  async (character: any, characterFocus: number, user: string) => {
-    if (character) {
+export const initActionPoints = 
+  async (actionPoints: number, characterFocus: number, user: string) => {
+    if (actionPoints) {
       const initialData = {
         receiver: user,
         sender: user,
-        actionPoints: character.current.characterSheet.actionPoints,
+        actionPoints: actionPoints,
         action: "subtractActionPoints",
       };
 
@@ -23,6 +22,4 @@ export const initActionPoints = useCallback(
       const updatedCharacterData = await updateCharacterSheet(data);
       console.log(updatedCharacterData); // sender and reciver sheets
     }
-  },
-  []
-);
+  };

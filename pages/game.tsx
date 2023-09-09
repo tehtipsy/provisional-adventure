@@ -24,8 +24,9 @@ import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
 
 import Loading from "@/components/ui/loading";
-import { initActionPoints } from "@/utils/game/useCallbacks/initActionPoints";
-import { updateTurnPlayersInDatabase } from "@/utils/game/useCallbacks/updateTurnPlayersInDatabase";
+import { initActionPoints } from "@/utils/game/initActionPoints";
+import { updateTurnPlayersInDatabase } from "@/utils/game/updateTurnPlayersInDatabase";
+import { useOnlineUsers } from "@/utils/ably/useOnlineUsers";
 
 type CharacterSheetProps = {
   characterSheet: any;
@@ -63,40 +64,11 @@ const Game: React.FC = () => {
   const [pokeNotification, setPokeNotification] = useState<string | null>();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const [ably, setAbly] = useState<Ably.Types.RealtimePromise | null>(null);
   const [channel, setChannel] =
     useState<Ably.Types.RealtimeChannelPromise | null>(null);
-
-  const handlePresenceMessage = useCallback(
-    (message: Ably.Types.PresenceMessage) => {
-      console.log(
-        "handlePresenceMessage",
-        message.action,
-        message.clientId,
-        new Date()
-      );
-
-      if (message.action === "enter" || message.action === "present") {
-        setOnlineUsers((prev) => {
-          if (prev.includes(message.clientId) === false) {
-            return [...prev, message.clientId];
-          } else {
-            return prev;
-          }
-        });
-      } else {
-        // user has left
-        setOnlineUsers((prev) =>
-          prev.filter((username) => {
-            const keep: boolean = username !== message.clientId;
-            return keep;
-          })
-        );
-      }
-    },
-    []
-  );
+  
+  const { onlineUsers, handlePresenceMessage } = useOnlineUsers();
 
   useEffect(() => {
     // The first requirement is to have a valid username
@@ -233,17 +205,6 @@ const Game: React.FC = () => {
     }
   }, [channel, user]);
 
-  // const updateTurnPlayersInDatabase = useCallback(async () => {
-  //   // Post Online Users To turn MongoDB Doc
-  //   await fetch("/api/db/turn", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({ players: onlineUsers }),
-  //   });
-  // }, [onlineUsers]);
-
   useEffect(() => {
     if (onlineUsers.length > 0) {
       updateTurnPlayersInDatabase(onlineUsers);
@@ -285,35 +246,12 @@ const Game: React.FC = () => {
       characterRef.current?.characterSheet.attributes.focus.bonus
   );
 
-  // const initActionPoints = useCallback(async () => {
-  //   if (characterRef.current) {
-  //     const initialData = {
-  //       receiver: user,
-  //       sender: user,
-  //       actionPoints: characterRef.current.characterSheet.actionPoints,
-  //       action: "subtractActionPoints",
-  //     };
-
-  //     await updateCharacterSheet(initialData);
-
-  //     const actionPoints = characterFocusRef;
-
-  //     const data = {
-  //       receiver: user,
-  //       sender: user,
-  //       actionPoints: actionPoints.current,
-  //       action: "addActionPoints",
-  //     };
-
-  //     console.log("Action Points Focus Value: ", actionPoints.current);
-  //     const updatedCharacterData = await updateCharacterSheet(data);
-  //     setRefreshNeeded(true);
-  //     console.log(updatedCharacterData); // sender and reciver sheets
-  //   }
-  // }, [user]);
-
   useEffect(() => {
-    initActionPoints(characterRef.current, characterFocusRef.current, user);
+    initActionPoints(
+      characterRef.current?.characterSheet.actionPoints,
+      characterFocusRef.current,
+      user
+    );
     console.log("round count in InitActionPoints useEffect: ", roundCount);
   }, [roundCount, initActionPoints, user]); // fires when round count changes
 
