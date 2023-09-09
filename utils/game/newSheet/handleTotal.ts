@@ -1,15 +1,9 @@
-interface Item {
-  name: string;
-  cost?: number;
-  weight?: number;
-  damage?: number;
-  block?: number;
-}
+import { ItemProps } from "@/utils/props/ItemsProps";
 
-// handle total weight capacity and budget when creating a new character sheet 
+// handle total weight capacity and budget when creating a new character sheet
 export const handleTotal = (
   buttonValue: string,
-  items: Record<string, Array<Item>>,
+  items: Record<string, Array<ItemProps>>,
   selectedStatus: Record<string, boolean>,
   budget: number,
   setBudget: (value: number) => void,

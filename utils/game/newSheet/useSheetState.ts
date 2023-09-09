@@ -61,14 +61,14 @@ export default function useSheetState() {
 
   // add origin useEffect here to apply origin bonuses
   useEffect(() => {
-    const weight = calculateWeightRating(selectedItems, itemsWeightRatings);
+    const weight = calculateWeightRating({ selectedItems, itemsWeightRatings });
     setTotalWeight(weight);
   }, [selectedItems, itemsWeightRatings]);
 
   useEffect(() => {
     let encumbranceTier = 0;
     if (prowess !== 0) {
-      encumbranceTier = calculateEncumbranceTier(totalWeight, prowess);
+      encumbranceTier = calculateEncumbranceTier({ totalWeight, prowess });
     }
     setEncumbrance(encumbranceTier);
   }, [prowess, totalWeight]);

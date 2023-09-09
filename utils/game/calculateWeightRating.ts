@@ -1,15 +1,14 @@
-interface Item {
-  name: string;
-  cost?: number;
-  weight?: number;
-  damage?: number;
-  block?: number;
-}
+import { ItemsProps } from "@/utils/props/ItemsProps";
 
-export default function calculateWeightRating(
-  selectedItems: string[],
-  itemsWeightRatings: Record<string, Array<Item>>
-) {
+interface WeightRatingProps {
+  selectedItems: string[];
+  itemsWeightRatings: ItemsProps;
+};
+
+export default function calculateWeightRating({
+  selectedItems,
+  itemsWeightRatings,
+}: WeightRatingProps): number {
   let weight = 0;
   selectedItems.forEach((itemName) => {
     const item = Object.values(itemsWeightRatings)

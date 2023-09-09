@@ -1,7 +1,12 @@
-export default function calculateEncumbranceTier(
-  totalWeight: number,
-  prowess: number
-) {
+interface EncumbranceTierProps {
+  totalWeight: number;
+  prowess: number;
+};
+
+export default function calculateEncumbranceTier({
+  totalWeight,
+  prowess,
+}: EncumbranceTierProps): number {
   let encumbranceTier = 0;
   if (prowess !== 0) {
     encumbranceTier = Math.min(
