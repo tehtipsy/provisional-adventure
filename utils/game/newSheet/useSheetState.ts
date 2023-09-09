@@ -1,7 +1,11 @@
 import { useState, useEffect, useContext } from "react";
 import { GlobalContext } from "@/contexts/globalContext";
+import calculateEncumbranceTier from "@/utils/game/calculateEncumbranceTier";
+import calculateWeightRating from "@/utils/game/calculateWeightRating";
 
-const initialBudget = 10; // set in config from db
+const defaultBudget: number = 10; // set in config from db
+const defaultSize: number = 2; // set in config from db
+const defaultOrigin: string = "Commonfolk"; // set in config from db
 
 interface Item {
   name: string;
@@ -11,7 +15,7 @@ interface Item {
   block?: number;
 }
 
-const itemsWeightRating: Record<string, Array<Item>> = {
+const itemsWeightRatings: Record<string, Array<Item>> = {
   weapons: [
     { name: "Sword", damage: 10, weight: 10, cost: 10 },
     { name: "Knife", damage: 4, weight: 1, cost: 3 },
@@ -39,17 +43,17 @@ export default function useSheetState() {
 
   const [name, setName] = useState("");
 
-  const [prowess, setProwess] = useState(0);
   const [finesse, setFinesse] = useState(0);
   const [constitution, setConstitution] = useState(0);
   const [focus, setFocus] = useState(0);
   const [willpower, setWillpower] = useState(0);
   const [motivation, setMotivation] = useState(0);
+  const [prowess, setProwess] = useState(0);
 
-  const [budget, setBudget] = useState(initialBudget);
+  const [budget, setBudget] = useState(defaultBudget);
 
-  const [size, setSize] = useState(2); // regret this later, rewrite select to fix
-  const [origin, setOrigin] = useState("Commonfolk"); // regret this later, rewrite select to fix
+  const [size, setSize] = useState(defaultSize);
+  const [origin, setOrigin] = useState(defaultOrigin);
   const [encumbrance, setEncumbrance] = useState(0);
 
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -57,25 +61,14 @@ export default function useSheetState() {
 
   // add origin useEffect here to apply origin bonuses
   useEffect(() => {
-    let weight = 0;
-    selectedItems.forEach((itemName) => {
-      const item = Object.values(itemsWeightRating)
-        .flat()
-        .find((item) => item.name === itemName);
-      if (item && item.weight) {
-        weight += item.weight;
-      }
-    });
+    const weight = calculateWeightRating(selectedItems, itemsWeightRatings);
     setTotalWeight(weight);
-  }, [selectedItems, itemsWeightRating]);
+  }, [selectedItems, itemsWeightRatings]);
 
   useEffect(() => {
     let encumbranceTier = 0;
     if (prowess !== 0) {
-      encumbranceTier = Math.min(
-        Math.max(Math.floor((totalWeight - 1) / prowess) + 1, 0),
-        4
-      );
+      encumbranceTier = calculateEncumbranceTier(totalWeight, prowess);
     }
     setEncumbrance(encumbranceTier);
   }, [prowess, totalWeight]);
@@ -93,7 +86,7 @@ export default function useSheetState() {
 
   useEffect(() => {
     const bonus = 1 * willpower;
-    setBudget(initialBudget + bonus); // LEAST SHIT OPTION I GUESS, add sum of items cost
+    setBudget(defaultBudget + bonus); // LEAST SHIT OPTION I GUESS, add sum of items cost
   }, [willpower]);
 
   return {

@@ -9,7 +9,6 @@ import { TurnContext } from "@/contexts/turnContext";
 
 import ManageCharacter from "@/pages/manage-character";
 import {
-  fetchCharacterSheet,
   updateCharacterSheet,
 } from "@/utils/game/characterSheets";
 import rollDice from "@/utils/game/rollDice";
@@ -25,6 +24,8 @@ import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
 
 import Loading from "@/components/ui/loading";
+import { initActionPoints } from "@/utils/game/useCallbacks/initActionPoints";
+import { updateTurnPlayersInDatabase } from "@/utils/game/useCallbacks/updateTurnPlayersInDatabase";
 
 type CharacterSheetProps = {
   characterSheet: any;
@@ -34,9 +35,14 @@ const Game: React.FC = () => {
   const router = useRouter();
 
   const { user } = useContext(GlobalContext);
-  const { currentPlayer, setCurrentPlayer } = useContext(TurnContext);
-  const { roundCount, setRoundCount, totalActionPoints, setTotalActionPoints } =
-    useContext(TurnContext);
+  const {
+    currentPlayer,
+    setCurrentPlayer,
+    roundCount,
+    setRoundCount,
+    totalActionPoints,
+    setTotalActionPoints,
+  } = useContext(TurnContext);
 
   const [character, setCharacter] = useState<CharacterSheetProps | null>(null);
   const characterRef = useRef(character);
@@ -227,20 +233,20 @@ const Game: React.FC = () => {
     }
   }, [channel, user]);
 
-  const updateTurnPlayersInDatabase = useCallback(async () => {
-    // Post Online Users To turn MongoDB Doc
-    await fetch("/api/db/turn", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ players: onlineUsers }),
-    });
-  }, [onlineUsers]);
+  // const updateTurnPlayersInDatabase = useCallback(async () => {
+  //   // Post Online Users To turn MongoDB Doc
+  //   await fetch("/api/db/turn", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({ players: onlineUsers }),
+  //   });
+  // }, [onlineUsers]);
 
   useEffect(() => {
     if (onlineUsers.length > 0) {
-      updateTurnPlayersInDatabase();
+      updateTurnPlayersInDatabase(onlineUsers);
     }
   }, [onlineUsers, updateTurnPlayersInDatabase]);
 
@@ -279,37 +285,37 @@ const Game: React.FC = () => {
       characterRef.current?.characterSheet.attributes.focus.bonus
   );
 
-  const InitActionPoints = useCallback(async () => {
-    if (characterRef.current) {
-      const initialData = {
-        receiver: user,
-        sender: user,
-        actionPoints: characterRef.current.characterSheet.actionPoints,
-        action: "subtractActionPoints",
-      };
+  // const initActionPoints = useCallback(async () => {
+  //   if (characterRef.current) {
+  //     const initialData = {
+  //       receiver: user,
+  //       sender: user,
+  //       actionPoints: characterRef.current.characterSheet.actionPoints,
+  //       action: "subtractActionPoints",
+  //     };
 
-      await updateCharacterSheet(initialData);
+  //     await updateCharacterSheet(initialData);
 
-      const actionPoints = characterFocusRef;
+  //     const actionPoints = characterFocusRef;
 
-      const data = {
-        receiver: user,
-        sender: user,
-        actionPoints: actionPoints.current,
-        action: "addActionPoints",
-      };
+  //     const data = {
+  //       receiver: user,
+  //       sender: user,
+  //       actionPoints: actionPoints.current,
+  //       action: "addActionPoints",
+  //     };
 
-      console.log("Action Points Focus Value: ", actionPoints.current);
-      const updatedCharacterData = await updateCharacterSheet(data);
-      setRefreshNeeded(true);
-      console.log(updatedCharacterData); // sender and reciver sheets
-    }
-  }, [user]);
+  //     console.log("Action Points Focus Value: ", actionPoints.current);
+  //     const updatedCharacterData = await updateCharacterSheet(data);
+  //     setRefreshNeeded(true);
+  //     console.log(updatedCharacterData); // sender and reciver sheets
+  //   }
+  // }, [user]);
 
   useEffect(() => {
-    InitActionPoints();
+    initActionPoints(characterRef.current, characterFocusRef.current, user);
     console.log("round count in InitActionPoints useEffect: ", roundCount);
-  }, [roundCount, InitActionPoints]); // fires when round count changes
+  }, [roundCount, initActionPoints, user]); // fires when round count changes
 
   useEffect(() => {
     if (characterRef.current !== null) {

@@ -5,6 +5,7 @@ export const createNewSheet = (userInput: any) => {
       characterName: userInput.name,
       characterSize: userInput.size,
       characterOrigin: userInput.origin,
+      characterEncumbrance: userInput.encumbrance,
       attributes: {
         prowess: {
           unmodifiedValue: parseInt(userInput.prowess),
@@ -57,7 +58,7 @@ export const createNewSheet = (userInput: any) => {
       },
       actionPoints: 0,
       equipment: {
-        selectedItems: {...userInput.selectedItems},
+        selectedItems: { ...userInput.selectedItems },
         hands: {
           //     ...(Object.keys(userInput.selectedItems.hands).length === 0
           // ?
