@@ -1,27 +1,27 @@
 import React, { useRef } from "react";
 import { useCallback, useContext, useEffect, useState } from "react";
 
+import { CharacterProps } from "@/utils/props/CharacterProps";
+
 import { GlobalContext } from "@/contexts/globalContext";
 import { TurnContext } from "@/contexts/turnContext";
 
 import ManageCharacter from "@/pages/manage-character";
-import { updateCharacterSheet } from "@/utils/game/characterSheets";
-import rollDice from "@/utils/game/rollDice";
-
 import BasePage from "@/components/base/basePage";
+import Button from "@/components/ui/button";
+import Input from "@/components/ui/input";
+import EndTurnButton from "@/components/ui/endTurnButton";
+import AttackOptions from "@/components/attackOptions";
+
+import rollDice from "@/utils/game/rollDice";
+import { updateCharacterSheet } from "@/utils/game/characterSheets";
+import { useAblyChannel } from "@/utils/ably/useAblyChannel";
+import { initActionPoints } from "@/utils/game/initActionPoints";
+import { updateTurnPlayersInDatabase } from "@/utils/game/updateTurnPlayersInDatabase";
 
 import Modal from "react-modal";
 import { PokeNotification } from "@/components/pokeNotification";
-
-import EndTurnButton from "@/components/ui/endTurnButton";
-import AttackOptions from "@/components/attackOptions";
-import Button from "@/components/ui/button";
-import Input from "@/components/ui/input";
-
 import Loading from "@/components/ui/loading";
-import { initActionPoints } from "@/utils/game/initActionPoints";
-import { updateTurnPlayersInDatabase } from "@/utils/game/updateTurnPlayersInDatabase";
-import { useAblyChannel } from "@/utils/ably/useAblyChannel";
 
 type CharacterSheetProps = {
   characterSheet: any;
@@ -144,7 +144,7 @@ const Game: React.FC = () => {
     if (onlineUsers.length > 0) {
       updateTurnPlayersInDatabase(onlineUsers);
     }
-  }, [onlineUsers, updateTurnPlayersInDatabase]);
+  }, [onlineUsers]);
 
   useEffect(() => {
     if (character !== null) {
@@ -188,7 +188,7 @@ const Game: React.FC = () => {
       user
     );
     console.log("round count in InitActionPoints useEffect: ", roundCount);
-  }, [roundCount, initActionPoints, user]); // fires when round count changes
+  }, [roundCount, user]); // fires when round count changes
 
   useEffect(() => {
     if (characterRef.current !== null) {
@@ -203,7 +203,7 @@ const Game: React.FC = () => {
           body: JSON.stringify({ actionPoints: actionPoints }),
         });
       };
-      incramentActionPointsInDatabase();
+      incramentActionPointsInDatabase;
     }
   }, [roundCount]); // fires when round count changes
 
@@ -271,7 +271,7 @@ const Game: React.FC = () => {
     const data = await response.json();
     console.log("total action points in DB: ", data.totalActionPoints);
     setTotalActionPoints(data.totalActionPoints);
-  }, [totalActionPoints]);
+  }, [totalActionPoints, setTotalActionPoints]);
 
   useEffect(() => {
     setTimeout(() => refetchActionPoints(), 1000); // BAD

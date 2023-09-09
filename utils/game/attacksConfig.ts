@@ -1,4 +1,3 @@
-// call from client and set in poke ? YES
 import * as dotenv from "dotenv";
 
 dotenv.config();
@@ -19,6 +18,6 @@ export const fetchAttackObject = async (
     `http://${process.env.VERCEL_BRANCH_URL}/api/db/wounds?${params}`
   );
   const attackConfig = await response.json();
-  console.log("fetched Attack Config: ", attackConfig);
+  // console.log("fetched Attack Config: ", attackConfig);
   return attackConfig;
 };

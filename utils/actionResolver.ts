@@ -1,25 +1,32 @@
 import { fetchAttackObject } from "@/utils/game/attacksConfig";
+import {
+  ActionResolverProps,
+  UpdatesProps,
+} from "@/utils/props/ActionResolverProps";
 
-interface UpdateInterface {
-  receiverUpdate: any;
-  senderUpdate: any;
-}
+export async function actionResolver({
+  sender,
+  receiver,
+  action,
+  weapon,
+  damageType,
+  tier,
+  bodyPart,
+  actionPoints,
+}: ActionResolverProps): Promise<UpdatesProps> {
+  console.log(
+    "Payload in actionResolver: ",
+    sender,
+    receiver,
+    action,
+    damageType,
+    bodyPart,
+    tier
+  );
+  console.log("Action Points in actionResolver: ", actionPoints);
+  console.log("Weapon in actionResolver: ", weapon);
 
-export async function actionResolver(
-  sender: string,
-  receiver: string,
-  action: string,
-  weapon: string,
-  damageType: string,
-  tier: number,
-  bodyPart: string,
-  actionPoints: number
-) {
-  console.log(sender, receiver, action, damageType, bodyPart, tier);
-  console.log("Action Points: ", actionPoints);
-
-  // Construct the update object based on the action, damageType, and tier
-  const update: UpdateInterface = {
+  const update: UpdatesProps = {
     receiverUpdate: {},
     senderUpdate: {},
   };
@@ -31,11 +38,11 @@ export async function actionResolver(
   if (action === "addActionPoints") {
     update.senderUpdate["actionPoints"] = actionPoints;
   }
-  
+
   if (action === "attack") {
     const chosenAttack = await fetchAttackObject(damageType, bodyPart);
-    console.log("chosenAttack: ", chosenAttack);
-    update.senderUpdate["actionPoints"] = -1;
+    console.log("chosenAttack in actionResolver: ", chosenAttack);
+    update.senderUpdate["actionPoints"] = -1; // change to action points parameter
     console.log(chosenAttack);
 
     if (chosenAttack) {
