@@ -1,16 +1,11 @@
 import React, { useRef } from "react";
 import { useCallback, useContext, useEffect, useState } from "react";
 
-import { useRouter } from "next/navigation";
-import * as Ably from "ably/promises";
-
 import { GlobalContext } from "@/contexts/globalContext";
 import { TurnContext } from "@/contexts/turnContext";
 
 import ManageCharacter from "@/pages/manage-character";
-import {
-  updateCharacterSheet,
-} from "@/utils/game/characterSheets";
+import { updateCharacterSheet } from "@/utils/game/characterSheets";
 import rollDice from "@/utils/game/rollDice";
 
 import BasePage from "@/components/base/basePage";
@@ -26,15 +21,13 @@ import Input from "@/components/ui/input";
 import Loading from "@/components/ui/loading";
 import { initActionPoints } from "@/utils/game/initActionPoints";
 import { updateTurnPlayersInDatabase } from "@/utils/game/updateTurnPlayersInDatabase";
-import { useOnlineUsers } from "@/utils/ably/useOnlineUsers";
+import { useAblyChannel } from "@/utils/ably/useAblyChannel";
 
 type CharacterSheetProps = {
   characterSheet: any;
 };
 
 const Game: React.FC = () => {
-  const router = useRouter();
-
   const { user } = useContext(GlobalContext);
   const {
     currentPlayer,
@@ -64,65 +57,7 @@ const Game: React.FC = () => {
   const [pokeNotification, setPokeNotification] = useState<string | null>();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [ably, setAbly] = useState<Ably.Types.RealtimePromise | null>(null);
-  const [channel, setChannel] =
-    useState<Ably.Types.RealtimeChannelPromise | null>(null);
-  
-  const { onlineUsers, handlePresenceMessage } = useOnlineUsers();
-
-  useEffect(() => {
-    // The first requirement is to have a valid username
-    // to be used as the Ably clientId
-    if (!user) {
-      // redirect to User Form
-      router.push("/");
-      return async () => {
-        await channel?.presence.leave();
-        channel?.presence.unsubscribe();
-        ably?.close();
-        setChannel(null);
-        setAbly(null);
-      };
-    }
-    // If not already connected to ably, connect
-    if (ably === null) {
-      const ably = new Ably.Realtime.Promise({
-        authUrl: "/api/authentication/token-auth",
-        authMethod: "POST",
-        clientId: user,
-      });
-
-      ably.connection.on((stateChange: Ably.Types.ConnectionStateChange) => {
-        console.log(stateChange);
-      });
-
-      setAbly(ably);
-    }
-
-    if (ably === null) return;
-
-    // If not already subscribed to a channel, subscribe
-    if (channel === null) {
-      const _channel: Ably.Types.RealtimeChannelPromise =
-        ably.channels.get("game");
-      setChannel(_channel);
-
-      // Note: the 'present' event doesn't always seem to fire
-      // so we use presence.get() later to get the initial list of users
-      // _channel.presence.subscribe(['present', 'enter', 'leave'], handlePresenceMessage)
-      _channel.presence.subscribe(["enter", "leave"], handlePresenceMessage);
-
-      const getExistingMembers = async () => {
-        const messages = await _channel.presence.get();
-        messages.forEach(handlePresenceMessage);
-      };
-      getExistingMembers();
-
-      _channel.presence.enter();
-
-      return () => {};
-    }
-  }, [router, user, ably, channel, onlineUsers, handlePresenceMessage]);
+  const { channel, onlineUsers } = useAblyChannel();
 
   // Subscribe to Turn "currentPlayer" Change event
   useEffect(() => {
@@ -327,15 +262,15 @@ const Game: React.FC = () => {
   }, [totalActionPoints]);
 
   const refetchActionPoints = useCallback(async () => {
-      const response = await fetch("/api/db/turn", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      const data = await response.json();
-      console.log("total action points in DB: ", data.totalActionPoints)
-      setTotalActionPoints(data.totalActionPoints)
+    const response = await fetch("/api/db/turn", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+    console.log("total action points in DB: ", data.totalActionPoints);
+    setTotalActionPoints(data.totalActionPoints);
   }, [totalActionPoints]);
 
   useEffect(() => {
@@ -362,7 +297,14 @@ const Game: React.FC = () => {
       });
       setTotalActionPoints(totalActionPoints - 1); // move inside poke and set total in other clients.
     },
-    [channel, user, selectedBodyPart, selectedDamageType, totalActionPoints, setTotalActionPoints] // , action]
+    [
+      channel,
+      user,
+      selectedBodyPart,
+      selectedDamageType,
+      totalActionPoints,
+      setTotalActionPoints,
+    ] // , action]
   );
 
   useEffect(() => {
