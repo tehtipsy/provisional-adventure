@@ -23,9 +23,11 @@ export default function useCharacterState() {
   const totalFocus = sumAttributeTotal(focus ?? defaultAttribute); // fix this trash
 
   const weaponName = characterSheet?.equipment.hands.name;
+  const damageRating = characterSheet?.equipment.hands.damageRating;
+  const damageTypeArray = characterSheet?.equipment.hands.damageType;
 
   const characterEncumbrance = characterSheet?.characterEncumbrance;
-  
+
   const actionPoints = characterSheet?.actionPoints;
 
   return {
@@ -34,6 +36,8 @@ export default function useCharacterState() {
     totalFocus,
     totalProwess,
     weaponName,
+    damageRating,
+    damageTypeArray,
     actionPoints,
     characterEncumbrance,
   };
