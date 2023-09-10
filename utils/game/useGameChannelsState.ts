@@ -17,43 +17,23 @@ export default function useGameChannelsState() {
     setTotalActionPoints,
   } = useContext(TurnContext);
 
-  // Subscribe to Turn "currentPlayer" Change event
-  useEffect(() => {
-    channel?.subscribe("currentPlayer", (message) => {
-      setCurrentPlayer(message.data);
-    });
-  }, [channel, setCurrentPlayer]);
-
-  // Subscribe to Turn "newRound" Change event
+  // Subscribe to Turn Change event
   useEffect(() => {
     channel?.subscribe("newRound", (message) => {
-      if (message.data) {
-        const { newRoundCount } = message.data;
-        setRoundCount(newRoundCount);
-      }
+      const { roundCount, currentPlayer, totalActionPoints } = message.data;
+      setRoundCount(roundCount);
+      setCurrentPlayer(currentPlayer);
+      setTotalActionPoints(totalActionPoints);
     });
   }, [channel, setRoundCount]);
 
-  // Subscribe to Turn "newTotalActionPoints" Change event
+  // Publish to Turn Change event
   useEffect(() => {
-    channel?.subscribe("newTotalActionPoints", (message) => {
-      setTotalActionPoints(message.data);
+    channel?.publish("newRound", {
+      roundCount,
+      currentPlayer,
+      totalActionPoints,
     });
-  }, [channel, setCurrentPlayer]);
-
-  // Publish to Turn "currentPlayer" Change event
-  useEffect(() => {
-    channel?.publish("currentPlayer", { currentPlayer });
-  }, [channel, roundCount]);
-
-  // Publish to Turn "newRound" Change event
-  useEffect(() => {
-    channel?.publish("newRound", { roundCount });
-  }, [channel, roundCount]);
-
-  // Publish to Turn "newTotalActionPoints" Change event
-  useEffect(() => {
-    channel?.publish("newTotalActionPoints", { totalActionPoints });
   }, [channel, roundCount]);
 
   // Subscribe to "poke" event
