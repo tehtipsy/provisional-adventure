@@ -2,7 +2,6 @@ import {
   FormEvent,
   useContext,
 } from "react";
-import { GlobalContext } from "@/contexts/globalContext";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import { SelectSizeForm } from "@/components/ui/selectCharacterSize";
@@ -51,7 +50,6 @@ type CreateCharacterFormProps = {
 export const CreateCharacterForm = ({
   onFormSubmit,
 }: CreateCharacterFormProps) => {
-  const { user } = useContext(GlobalContext);
   const { sheet, setSheet } = useSheetState();
   const initialSelectedStatus = initializeSelectedStatus(items);
   const [selectedStatus, handleClickSelection] = useSelectedStatus(
@@ -91,7 +89,7 @@ export const CreateCharacterForm = ({
         onSubmit={handleSubmit}
         className="w-auto bg-gray-300 dark:bg-gray-900 flex flex-col m-6 p-6 space-y-6 rounded"
       >
-        <div className="text-center text-white text-xl leading-8 dark:text-gray-300">{`${user}'s New Character`}</div>
+        <div className="text-center text-white text-xl leading-8 dark:text-gray-300">{`${sheet.user}'s New Character`}</div>
         <div className="m-4 text-center">
           <div className="m-4 text-center">
             <Input

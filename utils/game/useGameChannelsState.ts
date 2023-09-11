@@ -1,13 +1,17 @@
 import { useContext, useEffect, useState } from "react";
 import { GlobalContext } from "@/contexts/globalContext";
 import { TurnContext } from "@/contexts/turnContext";
+import { ActionContext } from "@/contexts/actionContext";
 
 import { useAblyChannel } from "@/utils/ably/useAblyChannel";
 import { updateCharacterSheet } from "@/utils/game/characterSheets";
+import { CharacterContext } from "@/contexts/characterContext";
 
 export default function useGameChannelsState() {
-  const { user } = useContext(GlobalContext);
   const { channel } = useAblyChannel();
+  const { user } = useContext(GlobalContext);
+  const { reciver } = useContext(ActionContext);
+  const { character, setCharacter } = useContext(CharacterContext);
   const {
     roundCount,
     currentPlayer,
@@ -43,14 +47,14 @@ export default function useGameChannelsState() {
         const { sender } = message.data;
         if (sender === user) {
           const {
-            // updatedSenderCharacterData: { value: senderValue },
+            updatedSenderCharacterData: { value: senderValue },
             updatedCharacterData: { value: characterValue },
           } = await updateCharacterSheet(message.data); // Send a message to the receiver
-          // setCharacter({ characterSheet: senderValue });
+          setCharacter({ characterSheet: senderValue });
           channel.publish("update-complete", {
             updatedCharacterData: characterValue,
             sender: sender,
-            receiver: message.data.receiver,
+            reciver: reciver, 
           });
         }
       });
@@ -61,9 +65,9 @@ export default function useGameChannelsState() {
   useEffect(() => {
     if (channel && user) {
       channel.subscribe("update-complete", (message) => {
-        const { updatedCharacterData, sender, receiver } = message.data;
-        if (receiver === user) {
-          // setCharacter({ characterSheet: updatedCharacterData });
+        const { updatedCharacterData, sender, reciver } = message.data;
+        if (reciver === user) {
+          setCharacter({ characterSheet: updatedCharacterData });
           // // set poke sender to display poke alert
           // setPokeSender(sender);
           // // display message to the user in the DOM
