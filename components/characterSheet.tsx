@@ -1,12 +1,8 @@
+import { CharacterProps } from "@/utils/props/CharacterProps";
 import { useEffect, useState } from "react";
 
-type CharacterSheetProps = {
-  characterSheet: any;
-  character: any;
-};
-
 export const CharacterSheet: React.FC<{
-  character: CharacterSheetProps;
+  character: CharacterProps;
   isRefreshNeeded: boolean;
   setRefreshNeeded: (value: boolean) => void;
 }> = ({ character, isRefreshNeeded, setRefreshNeeded }): JSX.Element => {
@@ -34,7 +30,7 @@ export const CharacterSheet: React.FC<{
         <div className="text-center text-white text-xl leading-8 dark:text-gray-300">
           <h1>{"Character Sheet"}</h1>
         </div>
-        {character && character.characterSheet.name && (
+        {character && character.characterSheet.characterName && (
           <div>
             <h1>{`Action Points ${character.characterSheet.actionPoints}`}</h1>
             <br />
@@ -253,13 +249,7 @@ export const CharacterSheet: React.FC<{
                 character.characterSheet.equipment.selectedItems
               ).map((equipment) => (
                 <li key={equipment}>
-                  <p>
-                    {
-                      character.characterSheet.equipment.selectedItems[
-                        equipment
-                      ]
-                    }
-                  </p>
+                  <p>{equipment}</p>
                 </li>
               ))}
             </ul>
@@ -271,7 +261,7 @@ export const CharacterSheet: React.FC<{
               {Object.keys(character.characterSheet.statusEffects).map(
                 (effect) => (
                   <li key={effect}>
-                    {character.characterSheet.statusEffects[effect]}
+                    {character.characterSheet.statusEffects[effect].quantity}
                     {" * "}
                     {effect}
                   </li>

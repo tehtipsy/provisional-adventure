@@ -6,17 +6,14 @@ import { fetchCharacterSheet } from "@/utils/game/characterSheets";
 import { CreateCharacterForm } from "@/components/createCharacterForm";
 import BasePage from "@/components/base/basePage";
 import Loading from "@/components/ui/loading";
-
-type CharacterSheetProps = {
-  characterSheet: any;
-  character: any;
-};
+import { CharacterContext } from "@/contexts/characterContext";
+import { CharacterProps } from "@/utils/props/CharacterProps";
 
 const ManageCharacter: React.FC<{
   isDisplayedInGame: boolean;
   isRefreshNeeded: boolean;
   setRefreshNeeded: (value: boolean) => void;
-  setParentCharacter: (value: CharacterSheetProps | null) => void;
+  setParentCharacter: (value: CharacterProps | null) => void;
 }> = ({
   isDisplayedInGame,
   isRefreshNeeded,
@@ -29,7 +26,7 @@ const ManageCharacter: React.FC<{
 
   const [isLoading, setIsLoading] = useState(true);
 
-  const [character, setCharacter] = useState<CharacterSheetProps | null>(null);
+  const {character, setCharacter} = useContext(CharacterContext);
 
   const handleFormSubmit = (newSheet: any) => {
     console.log("new sheet to be saved in DB: ", newSheet);
@@ -43,7 +40,7 @@ const ManageCharacter: React.FC<{
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error("No Response From character DB Endpoint");
         }
         return response.json();
       })

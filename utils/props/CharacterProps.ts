@@ -12,6 +12,7 @@ export type AttributesProps = {
 };
 
 export type ItemProps = {
+  [index: string]: string | number | string[];
   name: string;
   quantity: number;
   damageRating: number;
@@ -23,6 +24,7 @@ export type EquipmentProps = {
 };
 
 export type StatusEffectProps = {
+  [index: string]: string | number;
   name: string;
   quantity: number;
 };

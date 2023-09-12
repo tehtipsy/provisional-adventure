@@ -374,8 +374,8 @@ const Game: React.FC = () => {
 
     if (choice !== "Manual Roll") {
       // get tier from dice roll
-      const tier = rollDice(numDice);
-      setSuccessfulRolls(tier);
+      const { count } = rollDice(numDice);
+      setSuccessfulRolls(count);
     }
   };
 

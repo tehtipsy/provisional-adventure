@@ -21,9 +21,9 @@ export default async function handler( // actionHandler
   if (!db) return;
 
   const data = req.body; // add validation
-  const { name, username, timestamp } = data;
+  const { action, username, timestamp } = data;
 
-  if (name === "endTurn") {
+  if (action === "endTurn") {
     // get current game state from database
     const game = (await db.collection("turn").findOne({})) as Turn | null;
 

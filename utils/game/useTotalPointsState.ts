@@ -7,7 +7,7 @@ import { incramentActionPointsInDatabase } from "@/utils/game/incramentActionPoi
 import { refetchActionPoints } from "@/utils/game/refetchActionPoints";
 import { startNewRound } from "@/utils/game/startNewRound";
 
-export default function useActionPointsState() {
+export default function useTotalPointsState() {
   const { user } = useContext(GlobalContext);
   const {
     roundCount,
