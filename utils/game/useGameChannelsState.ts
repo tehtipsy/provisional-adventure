@@ -49,12 +49,15 @@ export default function useGameChannelsState() {
           const {
             updatedSenderCharacterData: { value: senderValue },
             updatedCharacterData: { value: characterValue },
-          } = await updateCharacterSheet(message.data); // Send a message to the receiver
+          } = await updateCharacterSheet(message.data);
           if (setCharacter) setCharacter({ characterSheet: senderValue });
+          else
+            throw new Error("setCharacter is not provided by CharacterContext");
+          // Send a message to the receiver
           channel.publish("update-complete", {
             updatedCharacterData: characterValue,
             sender: sender,
-            reciver: reciver, 
+            reciver: reciver,
           });
         }
       });
