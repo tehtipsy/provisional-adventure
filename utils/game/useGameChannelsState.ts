@@ -50,7 +50,7 @@ export default function useGameChannelsState() {
             updatedSenderCharacterData: { value: senderValue },
             updatedCharacterData: { value: characterValue },
           } = await updateCharacterSheet(message.data); // Send a message to the receiver
-          setCharacter({ characterSheet: senderValue });
+          if (setCharacter) setCharacter({ characterSheet: senderValue });
           channel.publish("update-complete", {
             updatedCharacterData: characterValue,
             sender: sender,
@@ -67,8 +67,9 @@ export default function useGameChannelsState() {
       channel.subscribe("update-complete", (message) => {
         const { updatedCharacterData, sender, reciver } = message.data;
         if (reciver === user) {
-          setCharacter({ characterSheet: updatedCharacterData });
-          // // set poke sender to display poke alert
+          if (setCharacter)
+            setCharacter({ characterSheet: updatedCharacterData });
+          else throw new Error("setCharacter is not provided by CharacterContext");// // set poke sender to display poke alert
           // setPokeSender(sender);
           // // display message to the user in the DOM
           // setPokeNotification(
