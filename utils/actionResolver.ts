@@ -8,7 +8,7 @@ export async function actionResolver({
   sender,
   receiver,
   action,
-  weapon,
+  item,
   damageType,
   tier,
   bodyPart,
@@ -24,7 +24,7 @@ export async function actionResolver({
     tier
   );
   console.log("Action Points in actionResolver: ", actionPoints);
-  console.log("Weapon in actionResolver: ", weapon);
+  console.log("Weapon in actionResolver: ", item);
 
   const update: UpdatesProps = {
     receiverUpdate: {},
