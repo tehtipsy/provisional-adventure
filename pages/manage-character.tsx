@@ -60,7 +60,7 @@ const ManageCharacter: React.FC<{
       setCharacter(characterData);
     } else {
       throw new Error("setCharacter is not provided by CharacterContext");
-    } // // set poke sender to display poke alert
+    }
     if (isDisplayedInGame) {
       setParentCharacter(characterData);
     }

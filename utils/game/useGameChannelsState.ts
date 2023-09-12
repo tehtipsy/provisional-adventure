@@ -69,7 +69,8 @@ export default function useGameChannelsState() {
         if (reciver === user) {
           if (setCharacter)
             setCharacter({ characterSheet: updatedCharacterData });
-          else throw new Error("setCharacter is not provided by CharacterContext");// // set poke sender to display poke alert
+          else throw new Error("setCharacter is not provided by CharacterContext");
+          // // set poke sender to display poke alert
           // setPokeSender(sender);
           // // display message to the user in the DOM
           // setPokeNotification(
