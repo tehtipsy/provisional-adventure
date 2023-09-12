@@ -62,7 +62,7 @@ const ManageCharacter: React.FC<{
     }
     console.log(characterData);
     setIsLoading(false);
-  }, [user, isDisplayedInGame, setParentCharacter]);
+  }, [user, isDisplayedInGame, setParentCharacter, setCharacter]);
 
   useEffect(() => {
     if (!user) {

@@ -1,4 +1,4 @@
-type UpdateProps = {
+export type UpdateProps = {
   [key: string]: number;
 };
 
@@ -17,3 +17,10 @@ export type ActionResolverProps = {
   bodyPart: string;
   actionPoints: number;
 };
+
+export interface ActionMetaDataProps {
+  timestamp: string;
+  actionName?: string; // already in ActionResolverProps
+  username?: string; // already in ActionResolverProps
+  data?: ActionResolverProps;
+}

@@ -104,6 +104,7 @@ export default function useSheetState() {
       budget,
       origin,
       selectedItems,
+      totalWeight,
     },
     setSheet: {
       setName,
@@ -118,6 +119,7 @@ export default function useSheetState() {
       setBudget,
       setOrigin,
       setSelectedItems,
+      setTotalWeight,
     },
   };
 }

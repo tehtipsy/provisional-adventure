@@ -2,13 +2,10 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 import { connectToDatabase } from "@/utils/mongodb";
 import * as dotenv from "dotenv";
+import { setNextPlayer } from "@/utils/db/setNextPlayer";
+import { TurnProps } from "@/utils/props/GameProps";
 
 dotenv.config();
-
-interface Turn {
-  players: string[];
-  currentPlayer: string;
-}
 
 export default async function handler( // actionHandler
   req: NextApiRequest,
@@ -25,17 +22,11 @@ export default async function handler( // actionHandler
 
   if (action === "endTurn") {
     // get current game state from database
-    const game = (await db.collection("turn").findOne({})) as Turn | null;
+    const game = (await db.collection("turn").findOne({})) as TurnProps | null;
 
     if (game) {
       const { players, currentPlayer } = game;
-
-      // find index of current player
-      const currentPlayerIndex = players.indexOf(currentPlayer);
-
-      // determine next player
-      const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
-      const nextPlayer = players[nextPlayerIndex];
+      const nextPlayer = setNextPlayer(players, currentPlayer);
 
       await db
         .collection("turn")

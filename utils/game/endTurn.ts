@@ -1,18 +1,14 @@
+import { updateTurnActionsInDatabase } from "@/utils/game/updateTurnActionsInDatabase";
+import { ActionMetaDataProps } from "@/utils/props/ActionResolverProps";
+
 export const endTurn = async (user: string) => {
-  const data = {
-    name: "endTurn",
-    username: user,
+  const data: ActionMetaDataProps = {
     timestamp: new Date().toISOString(),
+    actionName: "endTurn",
+    username: user,
   };
 
-  const response = await fetch("/api/db/turn-action", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-
+  const response = await updateTurnActionsInDatabase(data);
   const result = await response.json();
   if (result.success) return result.currentPlayer;
 

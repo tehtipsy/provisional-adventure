@@ -63,15 +63,15 @@ export const CreateCharacterForm = ({
         ? prev.filter((item) => item !== buttonValue)
         : [...prev, buttonValue]
     );
-    handleTotal(
+    handleTotal({
       buttonValue,
       items,
       selectedStatus,
-      sheet.budget,
-      setSheet.setBudget,
-      sheet.encumbrance,
-      setSheet.setEncumbrance
-    );
+      budget: sheet.budget,
+      setBudget: setSheet.setBudget,
+      capacity: sheet.totalWeight,
+      setCapacity: setSheet.setTotalWeight,
+    });
   };
 
   const handleSubmit = (e: FormEvent) => {
