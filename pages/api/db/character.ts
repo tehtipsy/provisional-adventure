@@ -39,14 +39,14 @@ export default async function handler( // CharacterSheetHandler
       return res.status(200).json({ insertedId: result.insertedId });
     }
 
-    const {actionPoints, action, weapon, damageType, tier, bodyPart, sender, receiver } =
+    const {actionPoints, action, item, damageType, tier, bodyPart, sender, receiver } =
       data; // from poke event
 
     const update = await actionResolver({
       sender,
       receiver,
       action,
-      weapon,
+      item,
       damageType,
       tier,
       bodyPart,
