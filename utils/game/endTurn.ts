@@ -1,4 +1,4 @@
-const endTurn = async (user: string) => {
+export const endTurn = async (user: string) => {
   const data = {
     name: "endTurn",
     username: user,
