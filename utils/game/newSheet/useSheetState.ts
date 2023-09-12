@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { GlobalContext } from "@/contexts/globalContext";
 import calculateEncumbranceTier from "@/utils/game/calculateEncumbranceTier";
-import calculateWeightRating from "@/utils/game/calculateWeightRating";
+import calculateTotalWeight from "@/utils/game/calculateTotalWeight";
 
 const defaultBudget: number = 10; // set in config from db
 const defaultSize: number = 2; // set in config from db
@@ -61,7 +61,7 @@ export default function useSheetState() {
 
   // add origin useEffect here to apply origin bonuses
   useEffect(() => {
-    const weight = calculateWeightRating({ selectedItems, itemsWeightRatings });
+    const weight = calculateTotalWeight({ selectedItems, itemsWeightRatings });
     setTotalWeight(weight);
   }, [selectedItems, itemsWeightRatings]);
 

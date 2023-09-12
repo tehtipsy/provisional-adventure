@@ -1,14 +1,17 @@
 import { ItemsProps } from "@/utils/props/ItemsProps";
 
-interface WeightRatingProps {
+interface TotalWeightProps {
   selectedItems: string[];
   itemsWeightRatings: ItemsProps;
 };
 
-export default function calculateWeightRating(props: WeightRatingProps): number {
+export default function calculateTotalWeight({
+  selectedItems,
+  itemsWeightRatings,
+}: TotalWeightProps): number {
   let weight = 0;
-  props.selectedItems.forEach((itemName) => {
-    const item = Object.values(props.itemsWeightRatings)
+  selectedItems.forEach((itemName) => {
+    const item = Object.values(itemsWeightRatings)
       .flat()
       .find((item) => item.name === itemName);
     if (item && item.weight) {

@@ -6,6 +6,11 @@ export default function useActionState() {
   const [numDiceToRoll, setNumDiceToRoll] = useState<number | null>(null);
   const [successfulRolls, setSuccessfulRolls] = useState<number | null>(null);
 
+  const handleClearRolls = () => {
+    setSuccessfulRolls(null);
+    setNumDiceToRoll(null);
+  };
+
   return {
     selectedBodyPart,
     setSelectedBodyPart,
@@ -15,5 +20,6 @@ export default function useActionState() {
     setNumDiceToRoll,
     successfulRolls,
     setSuccessfulRolls,
+    handleClearRolls,
   };
 }

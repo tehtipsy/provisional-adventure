@@ -5,27 +5,28 @@ import { CharacterProps } from "@/utils/props/CharacterProps";
 interface CharacterContextProps {
   character: CharacterProps | null;
   setCharacter: (character: CharacterProps | null) => void;
+  totalFocus: number;
+  totalProwess: number;
+  weaponName: string;
+  damageRating: number;
+  damageTypeArray: string[] | [];
+  actionPoints: number;
+  characterEncumbrance: number;
 }
 
-export const CharacterContext = createContext<CharacterContextProps>({
-  character: null,
-  setCharacter: () => {},
-});
+export const CharacterContext = createContext<Partial<CharacterContextProps>>(
+  {}
+);
 
 interface CharacterContextProviderProps {
   children: ReactNode;
 }
 
 export const CharacterContextProvider = (props: CharacterContextProviderProps) => {
-  const { character, setCharacter } = useCharacterState();
-
-  const value = {
-    character,
-    setCharacter,
-  };
+  const characterState = useCharacterState();
 
   return (
-    <CharacterContext.Provider value={value}>
+    <CharacterContext.Provider value={characterState}>
       {props.children}
     </CharacterContext.Provider>
   );

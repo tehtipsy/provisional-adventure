@@ -7,11 +7,15 @@ interface pokeProps {
   resolverPayload: ActionResolverProps;
 }
 
-export const sendPoke = (props: pokeProps) => {
-  const data = props.resolverPayload;
-  props.channel.publish("poke", {
+export const sendPoke = ({
+  resolverPayload,
+  channel,
+  totalActionPoints,
+}: pokeProps) => {
+  const data = resolverPayload;
+  channel.publish("poke", {
     data,
   });
-  const newTotal = props.totalActionPoints - props.resolverPayload.actionPoints;
-  return newTotal
+  const newTotal = totalActionPoints - resolverPayload.actionPoints;
+  return newTotal;
 };

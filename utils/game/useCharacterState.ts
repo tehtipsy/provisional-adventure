@@ -18,7 +18,7 @@ export default function useCharacterState() {
 
   const weaponName = characterSheet?.equipment.hands.name;
   const damageRating = characterSheet?.equipment.hands.damageRating;
-  const damageTypeArray = characterSheet?.equipment.hands.damageType;
+  const damageTypeArray = characterSheet?.equipment.hands.damageType || [];
 
   const characterEncumbrance = characterSheet?.characterEncumbrance;
 
