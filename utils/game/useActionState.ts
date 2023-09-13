@@ -1,8 +1,10 @@
 import { useState } from "react";
 
 export default function useActionState() {
-  const [selectedBodyPart, setSelectedBodyPart] = useState("");
-  const [selectedDamageType, setSelectedDamageType] = useState("");
+  const [selectedBodyPart, setSelectedBodyPart] = useState<string | null>("");
+  const [selectedDamageType, setSelectedDamageType] = useState<string | null>(
+    ""
+  );
   const [numDiceToRoll, setNumDiceToRoll] = useState<number | null>(null);
   const [successfulRolls, setSuccessfulRolls] = useState<number | null>(null);
 
