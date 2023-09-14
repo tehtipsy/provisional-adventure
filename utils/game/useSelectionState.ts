@@ -15,7 +15,7 @@ export default function useSelectionState() {
 
   const {
     // reciver, // useEffect?
-    // setReciver,
+    setReciver,
     selectedBodyPart,
     setSelectedBodyPart,
     selectedDamageType,
@@ -26,6 +26,9 @@ export default function useSelectionState() {
   const handlePokeSelection = (reciver: string) => {
     setPokeReceiver(reciver);
     setShowPartSelection(true);
+    setReciver
+      ? setReciver(reciver)
+      : new Error("setReciver is Borked in ActionContext");
     handleClearRolls
       ? handleClearRolls()
       : new Error("handleClearRolls is Borked in ActionContext");
@@ -47,8 +50,13 @@ export default function useSelectionState() {
     setShowAutoRollSelection(true);
   }
 
-  const handleRollSelection = (damageRating: number, totalProwess: number) => {
-    handleDiceRolls({ damageRating: damageRating, prowess: totalProwess });
+  const handleRollSelection = (
+    choice: string,
+    damageRating: number,
+    totalProwess: number
+  ) => {
+    if (choice === "Auto Roll")
+      handleDiceRolls({ damageRating: damageRating, prowess: totalProwess });
     setShowAutoRollSelection(false);
   };
 
