@@ -4,7 +4,7 @@ import { CharacterContext } from "@/contexts/characterContext";
 import useSelectionState from "@/utils/game/useSelectionState";
 
 const PokeOnlineUser: React.FC<{}> = () => {
-  const { character, damageTypeArray, damageRating, totalProwess } =
+  const { damageTypeArray, damageRating, totalProwess } =
     useContext(CharacterContext);
   const {
     handlePartSelection,
@@ -27,7 +27,6 @@ const PokeOnlineUser: React.FC<{}> = () => {
           />
         </div>
       ) : showAttackSelection ? (
-        character &&
         damageTypeArray && (
           <div>
             <AttackOptions
