@@ -19,39 +19,40 @@ const RollSelections: React.FC = () => {
           <div key={`num-dice-inner-div`}>{`Roll ${numDiceToRoll} Dice`}</div>
         </div>
       )}
-      {numDiceToRoll && successfulRolls === null && (
-        <div key={`successful-rolls-input-div`}>
-          <p key={`successful-rolls-p`}>{"Successful Rolls "}</p>
-          <Input
-            key={`successful-rolls-input`}
-            placeholder="0"
-            type="number"
-            min={1}
-            max={numDiceToRoll}
-            onChange={handleDiceInput(setSuccessfulRolls)}
-          />
-        </div>
-      )}
-      <div>
-        {successfulRolls !== null && successfulRolls !== undefined && (
-          <div key={`successful-rolls-div`}>
-            <div
-              key={`successful-rolls-inner-div`}
-            >{`${successfulRolls} Successful Rolls (5 or above)`}</div>
+      {(numDiceToRoll && successfulRolls) ?? // test 0 result
+        (false && (
+          <div key={`successful-rolls-input-div`}>
+            <p key={`successful-rolls-p`}>{"Successful Rolls "}</p>
+            <Input
+              key={`successful-rolls-input`}
+              placeholder="0"
+              type="number"
+              min={1}
+              max={numDiceToRoll ?? undefined}
+              onChange={handleDiceInput(setSuccessfulRolls)}
+            />
           </div>
-        )}
+        ))}
+      <div>
+        {successfulRolls ?? // test 0 result
+          (false && (
+            <div key={`successful-rolls-div`}>
+              <div
+                key={`successful-rolls-inner-div`}
+              >{`${successfulRolls} Successful Rolls (5 or above)`}</div>
+            </div>
+          ))}
       </div>
-      {numDiceToRoll &&
-        successfulRolls !== null &&
-        successfulRolls !== undefined && (
-            <Button
-              key={`clear-rolls-button`}
-              className="bg-red-500 hover:bg-red-700"
-              onClick={handleClearRolls}
-            >
-              {"Clear Rolls"}
-            </Button>
-        )}
+      {(numDiceToRoll && successfulRolls) ?? // test 0 result
+        (false && (
+          <Button
+            key={`clear-rolls-button`}
+            className="bg-red-500 hover:bg-red-700"
+            onClick={handleClearRolls}
+          >
+            {"Clear Rolls"}
+          </Button>
+        ))}
     </div>
   );
 };

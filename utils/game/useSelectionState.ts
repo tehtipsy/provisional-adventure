@@ -37,7 +37,7 @@ export default function useSelectionState() {
   function handlePartSelection(selectedBodyPart: string) {
     setSelectedBodyPart
       ? setSelectedBodyPart(selectedBodyPart)
-      : new Error("setSelectedBodyPart is borked in ActionContext");
+      : new Error("setSelectedBodyPart is Borked in ActionContext");
     setShowPartSelection(false);
     setShowAttackSelection(true);
   }
@@ -45,7 +45,7 @@ export default function useSelectionState() {
   function handleAttackSelection(selectedDamageType: string) {
     setSelectedDamageType
       ? setSelectedDamageType(selectedDamageType)
-      : new Error("setSelectedDamageType is borked in ActionContext");
+      : new Error("setSelectedDamageType is Borked in ActionContext");
     setShowAttackSelection(false);
     setShowAutoRollSelection(true);
   }
@@ -57,7 +57,7 @@ export default function useSelectionState() {
   ) => {
     if (choice === "Auto Roll")
       handleDiceRolls({ damageRating: damageRating, prowess: totalProwess });
-    setShowAutoRollSelection(false);
+    setShowAutoRollSelection(false); // test with "Manual Roll"
   };
 
   return {

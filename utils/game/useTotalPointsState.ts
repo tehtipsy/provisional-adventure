@@ -16,49 +16,55 @@ export default function useTotalPointsState() {
     setTotalActionPoints,
     setCurrentPlayer,
   } = useContext(TurnContext);
-  const prevTotalActionPointsRef = useRef(totalActionPoints);
   const { character, totalFocus, actionPoints } = useCharacterState();
-  const prevActionPointsRef = useRef(actionPoints);
 
-  useEffect(() => {
-    initActionPoints(totalFocus, actionPoints ? actionPoints : 0, user);
-  }, [roundCount, user]);
+  if (character !== null && actionPoints !== undefined) { // clean this up
+    const prevActionPointsRef = useRef(actionPoints);
+    const prevTotalActionPointsRef = useRef(totalActionPoints);
 
-  useEffect(() => {
-    if (character !== null) {
+    useEffect(() => {
+      initActionPoints(totalFocus, actionPoints ? actionPoints : 0, user);
+    }, [roundCount, user]);
+
+    useEffect(() => {
       // sum everyone's action points at the start of each round in MongoDB Doc
       incramentActionPointsInDatabase({ totalActionPoints: totalFocus });
-    }
-  }, [roundCount]);
+    }, [roundCount]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const newTotal = await refetchActionPoints();
-      setTotalActionPoints(newTotal);
-    };
-    fetchData();
-  }, [roundCount]);
-
-  useEffect(() => {
-    if (prevTotalActionPointsRef.current > 0 && totalActionPoints === 0) {
-      const newRoundCount = roundCount + 1;
-      setRoundCount(newRoundCount);
-      const fetchTurnData = async () => {
-        const { currentPlayer, totalActionPoints } = await startNewRound(
-          newRoundCount
-        );
-        setCurrentPlayer(currentPlayer);
-        setTotalActionPoints(totalActionPoints);
+    useEffect(() => {
+      const fetchData = async () => {
+        const newTotal = await refetchActionPoints();
+        setTotalActionPoints(newTotal);
       };
-      fetchTurnData();
-    }
-  }, [roundCount, totalActionPoints]);
+      fetchData();
+    }, [roundCount]);
 
-  useEffect(() => {
-    prevActionPointsRef.current = actionPoints;
-    prevTotalActionPointsRef.current = totalActionPoints;
-  }, [roundCount]);
+    useEffect(() => {
+      if (prevTotalActionPointsRef.current > 0 && totalActionPoints === 0) {
+        const newRoundCount = roundCount + 1;
+        setRoundCount(newRoundCount);
+        const fetchTurnData = async () => {
+          const { currentPlayer, totalActionPoints } = await startNewRound(
+            newRoundCount
+          );
+          setCurrentPlayer(currentPlayer);
+          setTotalActionPoints(totalActionPoints);
+        };
+        fetchTurnData();
+      }
+    }, [roundCount, totalActionPoints]);
 
+    useEffect(() => {
+      if (prevActionPointsRef.current > 0 && actionPoints === 0)
+        prevTotalActionPointsRef.current = totalActionPoints;
+    }, [roundCount]);
+
+    useEffect(() => {
+      prevActionPointsRef.current = actionPoints;
+      prevTotalActionPointsRef.current = totalActionPoints;
+    }, [roundCount]);
+  }
+  
   // return something?
   // return {
   //   totalActionPoints,
