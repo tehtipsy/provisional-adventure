@@ -19,8 +19,7 @@ const RollSelections: React.FC = () => {
           <div key={`num-dice-inner-div`}>{`Roll ${numDiceToRoll} Dice`}</div>
         </div>
       )}
-      {(numDiceToRoll && successfulRolls) ?? // test 0 result
-        (false && (
+      {numDiceToRoll && successfulRolls === null && (
           <div key={`successful-rolls-input-div`}>
             <p key={`successful-rolls-p`}>{"Successful Rolls "}</p>
             <Input
@@ -28,23 +27,23 @@ const RollSelections: React.FC = () => {
               placeholder="0"
               type="number"
               min={1}
-              max={numDiceToRoll ?? undefined}
+              max={numDiceToRoll}
               onChange={handleDiceInput(setSuccessfulRolls)}
             />
           </div>
-        ))}
+        )}
       <div>
-        {successfulRolls ?? // test 0 result
-          (false && (
+        {successfulRolls !== null && successfulRolls !== undefined && (
             <div key={`successful-rolls-div`}>
               <div
                 key={`successful-rolls-inner-div`}
               >{`${successfulRolls} Successful Rolls (5 or above)`}</div>
             </div>
-          ))}
+          )}
       </div>
-      {(numDiceToRoll && successfulRolls) ?? // test 0 result
-        (false && (
+      {numDiceToRoll &&
+        successfulRolls !== null &&
+        successfulRolls !== undefined&& (
           <Button
             key={`clear-rolls-button`}
             className="bg-red-500 hover:bg-red-700"
@@ -52,7 +51,7 @@ const RollSelections: React.FC = () => {
           >
             {"Clear Rolls"}
           </Button>
-        ))}
+        )}
     </div>
   );
 };
