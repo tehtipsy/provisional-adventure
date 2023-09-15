@@ -13,16 +13,17 @@ const RollSelections: React.FC = () => {
   } = useActionState();
 
   return (
-    <div>
+    <div className="bg-gray-800 m-6 p-6 rounded justify-center flex-row space-x-8 mt-0">
       {numDiceToRoll && (
-        <div className="bg-gray-800 m-6 p-6 rounded">
-          <div>{`Roll ${numDiceToRoll} Dice`}</div>
+        <div key={`num-dice-div`}>
+          <div key={`num-dice-inner-div`}>{`Roll ${numDiceToRoll} Dice`}</div>
         </div>
       )}
       {numDiceToRoll && successfulRolls === null && (
-        <div className="bg-gray-800 m-6 p-6 rounded">
-          <p>{"Successful Rolls "}</p>
+        <div key={`successful-rolls-input-div`}>
+          <p key={`successful-rolls-p`}>{"Successful Rolls "}</p>
           <Input
+            key={`successful-rolls-input`}
             placeholder="0"
             type="number"
             min={1}
@@ -31,24 +32,25 @@ const RollSelections: React.FC = () => {
           />
         </div>
       )}
-      <div className="flex justify-center flex-col mt-4 md:flex-row md:space-x-8 md:mt-0">
+      <div>
         {successfulRolls !== null && successfulRolls !== undefined && (
-          <div className="bg-gray-800 m-6 p-6 rounded">
-            <div>{`${successfulRolls} Successful Rolls (5 or above)`}</div>
+          <div key={`successful-rolls-div`}>
+            <div
+              key={`successful-rolls-inner-div`}
+            >{`${successfulRolls} Successful Rolls (5 or above)`}</div>
           </div>
         )}
       </div>
       {numDiceToRoll &&
         successfulRolls !== null &&
         successfulRolls !== undefined && (
-          <div>
             <Button
+              key={`clear-rolls-button`}
               className="bg-red-500 hover:bg-red-700"
               onClick={handleClearRolls}
             >
               {"Clear Rolls"}
             </Button>
-          </div>
         )}
     </div>
   );

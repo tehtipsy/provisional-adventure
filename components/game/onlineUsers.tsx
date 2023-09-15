@@ -16,13 +16,14 @@ const OnlineUsers: React.FC = () => {
   const { pokeReceiver, handlePokeSelection } = useSelectionState();
 
   return (
-    <div>
-      <ul>
+    <div key={`online-users-component-div`}>
+      <ul key={`online-users-ul`}>
         {onlineUsers.map((username) => {
           return (
-            <React.Fragment key={username}>
-              <li>
+            <div key={`${username}-li-div`}>
+              <li key={`${username}-li`}>
                 <div
+                  key={`${username}-name`}
                   className={
                     username === currentPlayer
                       ? "animate-pulse flex justify-center items-center"
@@ -31,28 +32,32 @@ const OnlineUsers: React.FC = () => {
                 >
                   {username}
                   {username === user ? (
-                    <p className="px-6">{" (you)"}</p>
+                    <p key={`${username}-you-tag`} className="px-6">
+                      {" (you)"}
+                    </p>
                   ) : username === currentPlayer ? (
-                    <p className="px-6">{" (now playing)"}</p>
+                    <p key={`${username}-playing-tag`} className="px-6">
+                      {" (now playing)"}
+                    </p>
                   ) : user === currentPlayer ? (
                     pokeReceiver !== username && character ? (
-                      <p className="px-6">
                         <Button
+                          key={`${username}-poke-button`}
+                          className="px-6"
                           onClick={() => {
                             handlePokeSelection(username);
                           }}
                         >
                           {"Attack"}
                         </Button>
-                      </p>
                     ) : (
-                      <PokeOnlineUser />
+                      <PokeOnlineUser key={`${username}-poke-component`} />
                     )
                   ) : null}
                 </div>
               </li>
               <br />
-            </React.Fragment>
+            </div>
           );
         })}
       </ul>

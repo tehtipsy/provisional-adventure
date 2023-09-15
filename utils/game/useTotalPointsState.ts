@@ -54,6 +54,11 @@ export default function useTotalPointsState() {
     }
   }, [roundCount, totalActionPoints]);
 
+  useEffect(() => {
+    prevActionPointsRef.current = actionPoints;
+    prevTotalActionPointsRef.current = totalActionPoints;
+  }, [roundCount]);
+
   // return something?
   // return {
   //   totalActionPoints,

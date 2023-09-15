@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import AttackOptions from "../attackOptions";
+import AttackOptions from "@/components/attackOptions";
 import { CharacterContext } from "@/contexts/characterContext";
 import useSelectionState from "@/utils/game/useSelectionState";
 
@@ -18,9 +18,12 @@ const PokeOnlineUser: React.FC<{}> = () => {
   } = useSelectionState();
 
   return (
-    <div className="bg-gray-800 m-6 p-6 rounded">
+    <div
+      key={`poke-online-user-component-div`}
+      className="bg-gray-800 m-6 p-6 rounded"
+    >
       {showPartSelection ? (
-        <div>
+        <div key={`show-part-selection-div`}>
           <AttackOptions
             options={partSelectionArray}
             onOptionSelection={handlePartSelection}
@@ -28,7 +31,7 @@ const PokeOnlineUser: React.FC<{}> = () => {
         </div>
       ) : showAttackSelection ? (
         damageTypeArray && (
-          <div>
+          <div key={`show-damage-types-div`}>
             <AttackOptions
               options={damageTypeArray}
               onOptionSelection={handleAttackSelection}
@@ -36,7 +39,7 @@ const PokeOnlineUser: React.FC<{}> = () => {
           </div>
         )
       ) : showAutoRollSelection && damageRating && totalProwess ? (
-        <div>
+        <div key={`show-roll-selection-div`}>
           <AttackOptions
             options={rollSelectionArray}
             onOptionSelection={(option) =>
