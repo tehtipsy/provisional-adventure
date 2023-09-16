@@ -1,18 +1,8 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { CharacterContext } from "@/contexts/characterContext";
 import SheetAttributes from "@/components/sheetAttributes";
 
-interface CharacterSheetDisplayProps {
-  // character: CharacterProps;
-  // isRefreshNeeded: boolean;
-  // setRefreshNeeded: (value: boolean) => void;
-}
-
-export const CharacterSheet: React.FC<CharacterSheetDisplayProps> = ({
-  // character,
-  // isRefreshNeeded,
-  // setRefreshNeeded,
-}): JSX.Element => {
+export const CharacterSheet: React.FC = (): JSX.Element => {
   const {
     character,
     characterName,
@@ -22,12 +12,6 @@ export const CharacterSheet: React.FC<CharacterSheetDisplayProps> = ({
     weaponName, // move to equipment something
     weaponQuantity, // move to equipment something
   } = useContext(CharacterContext);
-
-  // useEffect(() => {
-  //   if (isRefreshNeeded) {
-  //     setRefreshNeeded(false);
-  //   }
-  // }, [isRefreshNeeded, setRefreshNeeded]);
 
   if (character) {
     return (
@@ -45,7 +29,7 @@ export const CharacterSheet: React.FC<CharacterSheetDisplayProps> = ({
             <br />
             <p>{"Attributes:"}</p>
             <br />
-            <SheetAttributes /> 
+            <SheetAttributes />
             <br />
             <p>{"Hands Slot:"}</p>
             <br />

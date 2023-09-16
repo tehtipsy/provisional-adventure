@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { CharacterContext } from "@/contexts/characterContext";
 
 const initialAttributeDisplayCols = [
-  "attribute",
+  "att.",
   "total",
   "base",
   "t1",
@@ -19,7 +19,7 @@ export const SheetAttributes: React.FC = (): JSX.Element => {
     return (
       <div className="flex-row justify-center">
         <ul>
-          <div className="px-4 grid grid-cols-7 gap-1">
+          <div className="px-4 grid grid-cols-8 gap-1">
             {Object.entries(attributeDisplayCols).map(([key, value]) => (
               <div key={`div-${key}-display-cols`}>{value}</div>
             ))}
@@ -27,9 +27,9 @@ export const SheetAttributes: React.FC = (): JSX.Element => {
           {Object.keys(attributes).map((attribute) => (
             <div key={`div-${attribute}`}>
               <li key={`li-${attribute}`}>
-                <div className="px-4 grid grid-cols-8 gap-1">
-                  <div className="px-4 grid grid-cols-2 gap-1">
-                    <h1>{attribute}</h1>
+                <div className="px-4 grid grid-cols-8 gap-1 border-t-2 border-r-2 border-l-2 border-gray-500">
+                  <div className="px-2">
+                    <h1>{attribute.slice(0, 3).toUpperCase()}</h1>
                   </div>
                   <div className="px-4 grid grid-cols-2 gap-1">
                     <div className="px-1">
@@ -137,6 +137,7 @@ export const SheetAttributes: React.FC = (): JSX.Element => {
               </li>
             </div>
           ))}
+          <div className="border-b-2 border-gray-500"></div>
         </ul>
       </div>
     );
