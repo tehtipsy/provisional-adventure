@@ -6,6 +6,7 @@ import { initActionPoints } from "@/utils/game/initActionPoints";
 import { incramentActionPointsInDatabase } from "@/utils/game/incramentActionPointsInDatabase";
 import { refetchActionPoints } from "@/utils/game/refetchActionPoints";
 import { startNewRound } from "@/utils/game/startNewRound";
+import { endTurn } from "@/utils/game/endTurn";
 
 export default function useTotalPointsState() {
   const { user } = useContext(GlobalContext);
@@ -23,7 +24,7 @@ export default function useTotalPointsState() {
     const prevTotalActionPointsRef = useRef(totalActionPoints);
 
     useEffect(() => {
-      initActionPoints(totalFocus, actionPoints ? actionPoints : 0, user);
+      initActionPoints(totalFocus, actionPoints, user);
     }, [roundCount, user]);
 
     useEffect(() => {
@@ -55,14 +56,19 @@ export default function useTotalPointsState() {
     }, [roundCount, totalActionPoints]);
 
     useEffect(() => {
-      if (prevActionPointsRef.current > 0 && actionPoints === 0)
-        prevTotalActionPointsRef.current = totalActionPoints;
-    }, [roundCount]);
+      if (prevActionPointsRef.current > 0 && actionPoints === 0) {
+        const fetchTurnData = async () => {
+          const currentPlayer = await endTurn(user);
+          setCurrentPlayer(currentPlayer);
+        };
+        fetchTurnData();
+      }
+    }, [actionPoints]);
 
     useEffect(() => {
       prevActionPointsRef.current = actionPoints;
       prevTotalActionPointsRef.current = totalActionPoints;
-    }, [roundCount]);
+    }, [roundCount, actionPoints, totalActionPoints]);
   }
   
   // return something?
