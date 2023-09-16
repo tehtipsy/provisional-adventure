@@ -1,6 +1,7 @@
 import {createContext, ReactNode } from "react";
 import useCharacterState from "@/utils/game/useCharacterState";
 import { AttributesProps, CharacterProps } from "@/utils/props/CharacterProps";
+import { ItemProps } from "@/utils/props/ItemsProps";
 
 interface AttributesTotalsProps {
   [key: string]: number;
@@ -23,6 +24,8 @@ interface CharacterContextProps {
   damageTypeArray: string[] | [];
   actionPoints: number;
   characterEncumbrance: number;
+  handsSlot: ItemProps;
+  characterName: string;
 }
 
 export const CharacterContext = createContext<Partial<CharacterContextProps>>(

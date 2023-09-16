@@ -1,9 +1,5 @@
-import { useEffect, useState } from "react";
-import {
-  AttributeProps,
-  AttributesProps,
-  CharacterProps,
-} from "@/utils/props/CharacterProps";
+import { useState } from "react";
+import { CharacterProps } from "@/utils/props/CharacterProps";
 import getAttributeTotal from "./getAttributeTotal";
 
 export default function useCharacterState() {
@@ -24,7 +20,9 @@ export default function useCharacterState() {
     } = getAttributeTotal(attributes);
     const attributesTotals = getAttributeTotal(attributes);
     
-    const handsSlot = characterSheet.equipment.hands;
+    const equipment = characterSheet.equipment;
+
+    const handsSlot = equipment.hands;
     const weaponName = handsSlot.name;
     const weaponQuantity = handsSlot.quantity;
     const damageRating = handsSlot.damageRating;
@@ -33,6 +31,7 @@ export default function useCharacterState() {
     const characterEncumbrance = characterSheet.characterEncumbrance;
 
     const actionPoints = characterSheet.actionPoints;
+    const characterName = characterSheet.characterName;
 
     return {
       character,
@@ -51,6 +50,8 @@ export default function useCharacterState() {
       damageTypeArray,
       actionPoints,
       characterEncumbrance,
+      handsSlot,
+      characterName,
     };
   } else
     return {

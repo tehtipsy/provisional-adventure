@@ -93,9 +93,9 @@ const ManageCharacter: React.FC<{
       </div>
     ) : character ? (
       <CharacterSheet
-        isRefreshNeeded={isRefreshNeeded}
-        setRefreshNeeded={setRefreshNeeded}
-        character={character}
+        // isRefreshNeeded={isRefreshNeeded}
+        // setRefreshNeeded={setRefreshNeeded}
+        // character={character}
       />
     ) : (
       <CreateCharacterForm
@@ -116,9 +116,9 @@ const ManageCharacter: React.FC<{
   ) : character ? (
     <BasePage>
       <CharacterSheet
-        isRefreshNeeded={isRefreshNeeded}
-        setRefreshNeeded={setRefreshNeeded}
-        character={character}
+        // isRefreshNeeded={isRefreshNeeded}
+        // setRefreshNeeded={setRefreshNeeded}
+        // character={character}
       />
     </BasePage>
   ) : (
