@@ -1,38 +1,60 @@
 import { useEffect, useState } from "react";
-import { AttributeProps, CharacterProps } from "@/utils/props/CharacterProps";
+import {
+  AttributeProps,
+  AttributesProps,
+  CharacterProps,
+} from "@/utils/props/CharacterProps";
+import getAttributeTotal from "./getAttributeTotal";
 
 export default function useCharacterState() {
   const [character, setCharacter] = useState<CharacterProps | null>(null);
-  
-  useEffect(() => {}, [character]);
 
-  const characterSheet = character?.characterSheet;
+  if (character) {
+    // useEffect(() => {}, [character]);
+    const characterSheet = character.characterSheet;
 
-  const totalProwess = Object.values(
-    characterSheet?.attributes.prowess ?? {}
-  ).reduce((a, b) => a + b, 0);
+    const attributes = characterSheet.attributes;
+    const {
+      prowess: totalProwess,
+      focus: totalFocus,
+      finesse: totalFiness,
+      constitution: totalConstitution,
+      willpower: totalWillpower,
+      motivation: totalMotivation,
+    } = getAttributeTotal(attributes);
+    const attributesTotals = getAttributeTotal(attributes);
+    
+    const handsSlot = characterSheet.equipment.hands;
+    const weaponName = handsSlot.name;
+    const weaponQuantity = handsSlot.quantity;
+    const damageRating = handsSlot.damageRating;
+    const damageTypeArray = handsSlot.damageType || [];
 
-  const totalFocus = Object.values(
-    characterSheet?.attributes.focus ?? {}
-  ).reduce((a, b) => a + b, 0);
+    const characterEncumbrance = characterSheet.characterEncumbrance;
 
-  const weaponName = characterSheet?.equipment.hands.name;
-  const damageRating = characterSheet?.equipment.hands.damageRating;
-  const damageTypeArray = characterSheet?.equipment.hands.damageType || [];
+    const actionPoints = characterSheet.actionPoints;
 
-  const characterEncumbrance = characterSheet?.characterEncumbrance;
-
-  const actionPoints = characterSheet?.actionPoints;
-
-  return {
-    character,
-    setCharacter,
-    totalFocus,
-    totalProwess,
-    weaponName,
-    damageRating,
-    damageTypeArray,
-    actionPoints,
-    characterEncumbrance,
-  };
+    return {
+      character,
+      setCharacter,
+      attributes,
+      attributesTotals,
+      totalFocus,
+      totalProwess,
+      totalFiness,
+      totalConstitution,
+      totalWillpower,
+      totalMotivation,
+      weaponName,
+      weaponQuantity,
+      damageRating,
+      damageTypeArray,
+      actionPoints,
+      characterEncumbrance,
+    };
+  } else
+    return {
+      character,
+      setCharacter,
+    };
 }

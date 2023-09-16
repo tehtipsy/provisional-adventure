@@ -1,13 +1,24 @@
 import {createContext, ReactNode } from "react";
 import useCharacterState from "@/utils/game/useCharacterState";
-import { CharacterProps } from "@/utils/props/CharacterProps";
+import { AttributesProps, CharacterProps } from "@/utils/props/CharacterProps";
+
+interface AttributesTotalsProps {
+  [key: string]: number;
+}
 
 interface CharacterContextProps {
   character: CharacterProps | null;
   setCharacter: (character: CharacterProps | null) => void;
+  attributes: AttributesProps;
+  attributesTotals: AttributesTotalsProps;
   totalFocus: number;
   totalProwess: number;
+  totalFiness: number;
+  totalConstitution: number;
+  totalWillpower: number;
+  totalMotivation: number;
   weaponName: string;
+  weaponQuantity: number;
   damageRating: number;
   damageTypeArray: string[] | [];
   actionPoints: number;
