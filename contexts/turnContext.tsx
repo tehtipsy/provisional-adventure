@@ -33,6 +33,7 @@ export const TurnContextProvider = (props: TurnContextProviderProps) => {
       setRoundCount(data.roundCount);
       setTotalActionPoints(data.totalActionPoints);
       console.log(data.currentPlayer);
+      console.log(data.totalActionPoints);
       console.log(data.roundCount);
     };
     fetchTurnData();
