@@ -8,7 +8,7 @@ import { updateCharacterSheet } from "@/utils/game/characterSheets";
 import { CharacterContext } from "@/contexts/characterContext";
 
 export default function useGameChannelsState() {
-  const { channel } = useAblyChannel();
+  const { channel, onlineUsers } = useAblyChannel();
   const { user } = useContext(GlobalContext);
   const { reciver } = useContext(ActionContext);
   const { character, setCharacter } = useContext(CharacterContext);
@@ -86,5 +86,6 @@ export default function useGameChannelsState() {
 
   return {
     channel,
+    onlineUsers,
   };
 }

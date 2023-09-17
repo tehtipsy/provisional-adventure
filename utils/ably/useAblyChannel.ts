@@ -4,6 +4,8 @@ import * as Ably from "ably/promises";
 import { GlobalContext } from "@/contexts/globalContext";
 import { useOnlineUsers } from "@/utils/ably//useOnlineUsers";
 
+const gameChannelName = "game"
+
 export const useAblyChannel = () => {
   const router = useRouter();
 
@@ -48,7 +50,7 @@ export const useAblyChannel = () => {
     // If not already subscribed to a channel, subscribe
     if (channel === null) {
       const _channel: Ably.Types.RealtimeChannelPromise =
-        ably.channels.get("game");
+        ably.channels.get(gameChannelName);
       setChannel(_channel);
 
       // Note: the 'present' event doesn't always seem to fire
