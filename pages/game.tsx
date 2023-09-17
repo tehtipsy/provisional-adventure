@@ -39,7 +39,7 @@ const Game: React.FC = () => {
           className="bg-red-500 hover:bg-red-700"
           onClick={handleStartNewRound}
         >
-          {"Start New Round (testing)"}
+          {`Start New Round round count is: ${roundCount}`}
         </Button>
       </div>
       <div className="flex justify-center text-center flex-col mt-4 md:flex-row md:space-x-8 md:mt-0">

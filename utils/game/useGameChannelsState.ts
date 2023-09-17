@@ -6,8 +6,10 @@ import { ActionContext } from "@/contexts/actionContext";
 import { useAblyChannel } from "@/utils/ably/useAblyChannel";
 import { updateCharacterSheet } from "@/utils/game/characterSheets";
 import { CharacterContext } from "@/contexts/characterContext";
+import useTotalPointsState from "@/utils/game/useTotalPointsState";
 
 export default function useGameChannelsState() {
+  useTotalPointsState(); // so borked lol
   const { channel, onlineUsers } = useAblyChannel();
   const { user } = useContext(GlobalContext);
   const { reciver } = useContext(ActionContext);
@@ -31,7 +33,11 @@ export default function useGameChannelsState() {
         setTotalActionPoints(totalActionPoints);
       });
     }
-  }, [channel, setRoundCount, setCurrentPlayer, setTotalActionPoints]);
+  }, [channel,
+    // setRoundCount, TEST
+    // setCurrentPlayer,
+    // setTotalActionPoints
+  ]);
 
   // Publish to Turn Change event
   useEffect(() => {
