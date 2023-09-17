@@ -1,32 +1,8 @@
 import {createContext, ReactNode } from "react";
 import useCharacterState from "@/utils/game/useCharacterState";
-import { AttributesProps, CharacterProps } from "@/utils/props/CharacterProps";
-import { ItemProps } from "@/utils/props/ItemsProps";
+import { CharacterState } from "@/utils/props/CharacterProps";
 
-interface AttributesTotalsProps {
-  [key: string]: number;
-}
-
-interface CharacterContextProps {
-  character: CharacterProps | null;
-  setCharacter: (character: CharacterProps | null) => void;
-  attributes: AttributesProps;
-  attributesTotals: AttributesTotalsProps;
-  totalFocus: number;
-  totalProwess: number;
-  totalFiness: number;
-  totalConstitution: number;
-  totalWillpower: number;
-  totalMotivation: number;
-  weaponName: string;
-  weaponQuantity: number;
-  damageRating: number;
-  damageTypeArray: string[] | [];
-  actionPoints: number;
-  characterEncumbrance: number;
-  handsSlot: ItemProps;
-  characterName: string;
-}
+interface CharacterContextProps extends CharacterState {}
 
 export const CharacterContext = createContext<Partial<CharacterContextProps>>(
   {}

@@ -1,6 +1,8 @@
 import { useContext } from "react";
 import { CharacterContext } from "@/contexts/characterContext";
 import SheetAttributes from "@/components/sheetAttributes";
+import SheetInventory from "@/components/sheetInventory";
+import SheetEffects from "@/components/sheetEffects";
 
 export const CharacterSheet: React.FC = (): JSX.Element => {
   const {
@@ -8,9 +10,6 @@ export const CharacterSheet: React.FC = (): JSX.Element => {
     characterName,
     characterEncumbrance,
     actionPoints, // move to action something
-    handsSlot, // move to equipment something
-    weaponName, // move to equipment something
-    weaponQuantity, // move to equipment something
   } = useContext(CharacterContext);
 
   if (character) {
@@ -22,53 +21,11 @@ export const CharacterSheet: React.FC = (): JSX.Element => {
           </div>
           <div>
             <h1>{`Action Points ${actionPoints}`}</h1>
-            <br />
             <p>{`Character Name: ${characterName}`}</p>
-            <br />
             <p>{`Character Encumbrance: ${characterEncumbrance}`}</p>
-            <br />
-            <p>{"Attributes:"}</p>
-            <br />
             <SheetAttributes />
-            <br />
-            <p>{"Hands Slot:"}</p>
-            <br />
-            {handsSlot ? (
-              <p>
-                {weaponQuantity}
-                {" * "}
-                {weaponName}
-              </p>
-            ) : (
-              <p>{"Nothing in Hands"}</p>
-            )}
-            <br />
-            <p>{"Selected Equipment:"}</p>
-            <br />
-            <ul>
-              {Object.keys(
-                character.characterSheet.equipment.selectedItems
-              ).map((equipment) => (
-                <li key={equipment}>
-                  <p>{equipment}</p>
-                </li>
-              ))}
-            </ul>
-            <br />
-            <br />
-            <p>{"Effects:"}</p>
-            <br />
-            <ul>
-              {Object.keys(character.characterSheet.statusEffects).map(
-                (effect) => (
-                  <li key={effect}>
-                    {character.characterSheet.statusEffects[effect].quantity}
-                    {" * "}
-                    {effect}
-                  </li>
-                )
-              )}
-            </ul>
+            <SheetInventory />
+            <SheetEffects />
           </div>
         </div>
       </div>

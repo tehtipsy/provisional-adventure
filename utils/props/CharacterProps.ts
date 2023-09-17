@@ -29,7 +29,7 @@ export type StatusEffectProps = {
   quantity: number;
 };
 
-export type StatusEffectsProps = {
+export type StatusEffectsProps = { // WRONG
   [key: string]: StatusEffectProps;
 };
 
@@ -41,9 +41,36 @@ export type CharacterSheetProps = {
   characterEncumbrance: number;
   attributes: AttributesProps;
   equipment: EquipmentProps;
-  statusEffects: StatusEffectsProps;
+  statusEffects: StatusEffectProps;
 };
 
 export type CharacterProps = {
   characterSheet: CharacterSheetProps;
+};
+
+export interface AttributesTotalsProps {
+  [key: string]: number;
+}
+
+export type CharacterState = {
+  character: CharacterProps | null;
+  setCharacter: (character: CharacterProps | null) => void;
+  attributes: AttributesProps;
+  attributesTotals: AttributesTotalsProps;
+  totalFocus: number;
+  totalProwess: number;
+  totalFiness: number;
+  totalConstitution: number;
+  totalWillpower: number;
+  totalMotivation: number;
+  weaponName: string;
+  weaponQuantity: number;
+  damageRating: number;
+  damageTypeArray: string[] | [];
+  actionPoints: number;
+  characterEncumbrance: number;
+  handsSlot: ItemProps;
+  characterName: string;
+  equipment: EquipmentProps;
+  statusEffects: StatusEffectProps;
 };

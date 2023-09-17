@@ -10,6 +10,7 @@ export default function useCharacterState() {
     const characterSheet = character.characterSheet;
 
     const attributes = characterSheet.attributes;
+    const attributesTotals = getAttributeTotal(attributes);
     const {
       prowess: totalProwess,
       focus: totalFocus,
@@ -17,10 +18,11 @@ export default function useCharacterState() {
       constitution: totalConstitution,
       willpower: totalWillpower,
       motivation: totalMotivation,
-    } = getAttributeTotal(attributes);
-    const attributesTotals = getAttributeTotal(attributes);
-    
+    } = attributesTotals;
+
     const equipment = characterSheet.equipment;
+
+    const statusEffects = characterSheet.statusEffects
 
     const handsSlot = equipment.hands;
     const weaponName = handsSlot.name;
@@ -52,6 +54,8 @@ export default function useCharacterState() {
       characterEncumbrance,
       handsSlot,
       characterName,
+      equipment,
+      statusEffects,
     };
   } else
     return {
