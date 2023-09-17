@@ -12,12 +12,10 @@ import { CharacterProps } from "@/utils/props/CharacterProps";
 const ManageCharacter: React.FC<{
   isDisplayedInGame: boolean;
   isRefreshNeeded: boolean;
-  setRefreshNeeded: (value: boolean) => void;
   setParentCharacter: (value: CharacterProps | null) => void;
 }> = ({
   isDisplayedInGame,
   isRefreshNeeded,
-  setRefreshNeeded,
   setParentCharacter,
 }): JSX.Element => {
   const router = useRouter();
@@ -93,9 +91,6 @@ const ManageCharacter: React.FC<{
       </div>
     ) : character ? (
       <CharacterSheet
-        // isRefreshNeeded={isRefreshNeeded}
-        // setRefreshNeeded={setRefreshNeeded}
-        // character={character}
       />
     ) : (
       <CreateCharacterForm
@@ -116,9 +111,6 @@ const ManageCharacter: React.FC<{
   ) : character ? (
     <BasePage>
       <CharacterSheet
-        // isRefreshNeeded={isRefreshNeeded}
-        // setRefreshNeeded={setRefreshNeeded}
-        // character={character}
       />
     </BasePage>
   ) : (

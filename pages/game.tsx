@@ -554,7 +554,6 @@ const Game: React.FC = () => {
 
       <ManageCharacter
         isRefreshNeeded={refreshNeeded}
-        setRefreshNeeded={setRefreshNeeded}
         isDisplayedInGame={true}
         setParentCharacter={setCharacter}
       />
