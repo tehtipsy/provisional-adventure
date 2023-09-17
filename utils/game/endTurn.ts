@@ -4,7 +4,7 @@ import { ActionMetaDataProps } from "@/utils/props/ActionResolverProps";
 export const endTurn = async (user: string) => {
   const data: ActionMetaDataProps = {
     timestamp: new Date().toISOString(),
-    actionName: "endTurn",
+    action: "endTurn",
     username: user,
   };
 

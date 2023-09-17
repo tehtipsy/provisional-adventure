@@ -20,7 +20,7 @@ export type ActionResolverProps = {
 
 export interface ActionMetaDataProps {
   timestamp: string;
-  actionName?: string; // already in ActionResolverProps
+  action?: string; // already in ActionResolverProps
   username?: string; // already in ActionResolverProps
   data?: ActionResolverProps;
 }

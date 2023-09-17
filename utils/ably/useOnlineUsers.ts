@@ -1,5 +1,6 @@
 import * as Ably from "ably/promises";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { updateTurnPlayersInDatabase } from "../game/updateTurnPlayersInDatabase";
 
 export const useOnlineUsers = () => {
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
@@ -33,6 +34,12 @@ export const useOnlineUsers = () => {
     },
     []
   );
+
+  useEffect(() => {
+    if (onlineUsers.length > 0) {
+      updateTurnPlayersInDatabase(onlineUsers);
+    }
+  }, [onlineUsers]);
 
   return { onlineUsers, handlePresenceMessage };
 };

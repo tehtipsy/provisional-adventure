@@ -11,12 +11,12 @@ import { CharacterProps } from "@/utils/props/CharacterProps";
 
 const ManageCharacter: React.FC<{
   isDisplayedInGame: boolean;
-  isRefreshNeeded: boolean;
-  setParentCharacter: (value: CharacterProps | null) => void;
+  // isRefreshNeeded: boolean;
+  // setParentCharacter: (value: CharacterProps | null) => void;
 }> = ({
   isDisplayedInGame,
-  isRefreshNeeded,
-  setParentCharacter,
+  // isRefreshNeeded,
+  // setParentCharacter,
 }): JSX.Element => {
   const router = useRouter();
 
@@ -59,12 +59,15 @@ const ManageCharacter: React.FC<{
     } else {
       throw new Error("setCharacter is not provided by CharacterContext");
     }
-    if (isDisplayedInGame) {
-      setParentCharacter(characterData);
-    }
+    // if (isDisplayedInGame) {
+    //   setParentCharacter(characterData);
+    // }
     console.log(characterData);
     setIsLoading(false);
-  }, [user, isDisplayedInGame, setParentCharacter, setCharacter]);
+  }, [user,
+    // isDisplayedInGame,
+    // setParentCharacter,
+    setCharacter]);
 
   useEffect(() => {
     if (!user) {
@@ -73,11 +76,11 @@ const ManageCharacter: React.FC<{
     fetchCharacterData();
   }, [router, user, fetchCharacterData]);
 
-  useEffect(() => {
-    if (isRefreshNeeded) {
-      fetchCharacterData();
-    }
-  }, [isRefreshNeeded, fetchCharacterData]);
+  // useEffect(() => {
+  //   if (isRefreshNeeded) {
+  //     fetchCharacterData();
+  //   }
+  // }, [isRefreshNeeded, fetchCharacterData]);
 
   return isDisplayedInGame ? (
     isLoading ? (

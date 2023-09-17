@@ -7,6 +7,8 @@ import { useAblyChannel } from "@/utils/ably/useAblyChannel";
 import useSelectionState from "@/utils/game/useSelectionState";
 import Button from "@/components//ui/button";
 import PokeOnlineUser from "@/components/game/pokeOnlineUser";
+import EndTurnButton from "../ui/endTurnButton";
+import { endTurn } from "@/utils/game/endTurn";
 
 const OnlineUsers: React.FC = () => {
   const { user } = useContext(GlobalContext);
@@ -41,15 +43,15 @@ const OnlineUsers: React.FC = () => {
                     </p>
                   ) : user === currentPlayer ? (
                     pokeReceiver !== username && character ? (
-                        <Button
-                          key={`${username}-poke-button`}
-                          className="px-6"
-                          onClick={() => {
-                            handlePokeSelection(username);
-                          }}
-                        >
-                          {"Attack"}
-                        </Button>
+                      <Button
+                        key={`${username}-poke-button`}
+                        className="px-6"
+                        onClick={() => {
+                          handlePokeSelection(username);
+                        }}
+                      >
+                        {"Attack"}
+                      </Button>
                     ) : (
                       <PokeOnlineUser key={`${username}-poke-component`} />
                     )
@@ -61,6 +63,13 @@ const OnlineUsers: React.FC = () => {
           );
         })}
       </ul>
+      <div>
+        {user === currentPlayer ? (
+          <EndTurnButton endTurn={endTurn} username={user} />
+        ) : (
+          ""
+        )}
+      </div>
     </div>
   );
 };
