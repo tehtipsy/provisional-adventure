@@ -1,5 +1,5 @@
-import { useRouter } from "next/router";
 import React, { useCallback, useContext, useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import { GlobalContext } from "@/contexts/globalContext";
 import { CharacterSheet } from "@/components/characterSheet";
 import { fetchCharacterSheet } from "@/utils/game/characterSheets";
@@ -7,24 +7,17 @@ import { CreateCharacterForm } from "@/components/createCharacterForm";
 import BasePage from "@/components/base/basePage";
 import Loading from "@/components/ui/loading";
 import { CharacterContext } from "@/contexts/characterContext";
-import { CharacterProps } from "@/utils/props/CharacterProps";
 
 const ManageCharacter: React.FC<{
   isDisplayedInGame: boolean;
-  // isRefreshNeeded: boolean;
-  // setParentCharacter: (value: CharacterProps | null) => void;
-}> = ({
-  isDisplayedInGame,
-  // isRefreshNeeded,
-  // setParentCharacter,
-}): JSX.Element => {
+}> = ({ isDisplayedInGame }): JSX.Element => {
   const router = useRouter();
 
   const { user } = useContext(GlobalContext);
 
   const [isLoading, setIsLoading] = useState(true);
 
-  const {character, setCharacter} = useContext(CharacterContext);
+  const { character, setCharacter } = useContext(CharacterContext);
 
   const handleFormSubmit = (newSheet: any) => {
     console.log("new sheet to be saved in DB: ", newSheet);
@@ -59,15 +52,12 @@ const ManageCharacter: React.FC<{
     } else {
       throw new Error("setCharacter is not provided by CharacterContext");
     }
-    // if (isDisplayedInGame) {
-    //   setParentCharacter(characterData);
-    // }
     console.log(characterData);
     setIsLoading(false);
-  }, [user,
-    // isDisplayedInGame,
-    // setParentCharacter,
-    setCharacter]);
+  }, [
+    user,
+    setCharacter,
+  ]);
 
   useEffect(() => {
     if (!user) {
@@ -75,12 +65,6 @@ const ManageCharacter: React.FC<{
     }
     fetchCharacterData();
   }, [router, user, fetchCharacterData]);
-
-  // useEffect(() => {
-  //   if (isRefreshNeeded) {
-  //     fetchCharacterData();
-  //   }
-  // }, [isRefreshNeeded, fetchCharacterData]);
 
   return isDisplayedInGame ? (
     isLoading ? (
@@ -93,12 +77,9 @@ const ManageCharacter: React.FC<{
         <Loading />
       </div>
     ) : character ? (
-      <CharacterSheet
-      />
+      <CharacterSheet />
     ) : (
-      <CreateCharacterForm
-        onFormSubmit={handleFormSubmit}
-      />
+      <CreateCharacterForm onFormSubmit={handleFormSubmit} />
     )
   ) : isLoading ? (
     <BasePage>
@@ -113,14 +94,11 @@ const ManageCharacter: React.FC<{
     </BasePage>
   ) : character ? (
     <BasePage>
-      <CharacterSheet
-      />
+      <CharacterSheet />
     </BasePage>
   ) : (
     <BasePage>
-      <CreateCharacterForm
-        onFormSubmit={handleFormSubmit}
-      />
+      <CreateCharacterForm onFormSubmit={handleFormSubmit} />
     </BasePage>
   );
 };

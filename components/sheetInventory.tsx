@@ -1,5 +1,5 @@
-import { CharacterContext } from "@/contexts/characterContext";
 import { useContext } from "react";
+import { CharacterContext } from "@/contexts/characterContext";
 
 export const SheetInventory: React.FC = (): JSX.Element => {
   const { handsSlot, weaponQuantity, weaponName, equipment } =

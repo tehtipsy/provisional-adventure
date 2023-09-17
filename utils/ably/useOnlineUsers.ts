@@ -1,6 +1,6 @@
-import * as Ably from "ably/promises";
 import { useState, useCallback, useEffect } from "react";
-import { updateTurnPlayersInDatabase } from "../game/updateTurnPlayersInDatabase";
+import * as Ably from "ably/promises";
+import { updateTurnPlayersInDatabase } from "@/utils/game/updateTurnPlayersInDatabase";
 
 export const useOnlineUsers = () => {
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);

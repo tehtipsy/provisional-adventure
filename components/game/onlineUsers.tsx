@@ -7,7 +7,7 @@ import { useAblyChannel } from "@/utils/ably/useAblyChannel";
 import useSelectionState from "@/utils/game/useSelectionState";
 import Button from "@/components//ui/button";
 import PokeOnlineUser from "@/components/game/pokeOnlineUser";
-import EndTurnButton from "../ui/endTurnButton";
+import EndTurnButton from "@/components/ui/endTurnButton";
 import { endTurn } from "@/utils/game/endTurn";
 
 const OnlineUsers: React.FC = () => {

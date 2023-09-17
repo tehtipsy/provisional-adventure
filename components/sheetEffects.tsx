@@ -1,5 +1,5 @@
-import { CharacterContext } from "@/contexts/characterContext";
 import { useContext } from "react";
+import { CharacterContext } from "@/contexts/characterContext";
 
 export const SheetEffects: React.FC = (): JSX.Element => {
   const { statusEffects } = useContext(CharacterContext);

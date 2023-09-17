@@ -1,5 +1,5 @@
+import { useState, createContext, ReactNode} from "react";
 import useActionState from "@/utils/game/useActionState";
-import { useState, createContext, ReactNode, useEffect } from "react";
 
 interface actionContextProps { // fix useStateHook component to get rid of this
   reciver: string | null;

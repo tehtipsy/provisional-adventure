@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { TurnContext } from "@/contexts/turnContext";
 import { GlobalContext } from "@/contexts/globalContext";
 import useCharacterState from "@/utils/game/useCharacterState";
@@ -19,7 +19,8 @@ export default function useTotalPointsState() {
   } = useContext(TurnContext);
   const { character, totalFocus, actionPoints } = useCharacterState();
 
-  if (character !== null && actionPoints !== undefined) { // clean this up
+  if (character !== null && actionPoints !== undefined) {
+    // clean this up
     const prevActionPointsRef = useRef(actionPoints);
     const prevTotalActionPointsRef = useRef(totalActionPoints);
 
@@ -70,7 +71,7 @@ export default function useTotalPointsState() {
       prevTotalActionPointsRef.current = totalActionPoints;
     }, [roundCount, actionPoints, totalActionPoints]);
   }
-  
+
   // return something?
   // return {
   //   totalActionPoints,

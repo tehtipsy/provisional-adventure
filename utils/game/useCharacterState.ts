@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CharacterProps } from "@/utils/props/CharacterProps";
-import getAttributeTotal from "./getAttributeTotal";
+import getAttributeTotal from "@/utils/game/getAttributeTotal";
 
 export default function useCharacterState() {
   const [character, setCharacter] = useState<CharacterProps | null>(null);
