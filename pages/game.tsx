@@ -17,7 +17,7 @@ const Game: React.FC = () => {
   // round count manual override
   const { roundCount } = useContext(TurnContext);
   const handleStartNewRound = () => {
-    startNewRound(roundCount + 1);
+    if (roundCount) startNewRound(roundCount + 1);
   };
   //
 

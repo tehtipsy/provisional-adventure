@@ -1,8 +1,6 @@
 import {createContext, ReactNode } from "react";
 import useCharacterState from "@/utils/game/useCharacterState";
-import { CharacterState } from "@/utils/props/CharacterProps";
-
-interface CharacterContextProps extends CharacterState {}
+import { CharacterContextProps } from "@/utils/props/CharacterProps";
 
 export const CharacterContext = createContext<Partial<CharacterContextProps>>(
   {}

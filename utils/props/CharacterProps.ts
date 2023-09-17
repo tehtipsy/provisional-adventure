@@ -1,3 +1,5 @@
+import useCharacterState from "@/utils/game/useCharacterState";
+
 export type AttributeProps = {
   unmodifiedValue: number;
   t1: number;
@@ -52,25 +54,6 @@ export interface AttributesTotalsProps {
   [key: string]: number;
 }
 
-export type CharacterState = {
-  character: CharacterProps | null;
-  setCharacter: (character: CharacterProps | null) => void;
-  attributes: AttributesProps;
-  attributesTotals: AttributesTotalsProps;
-  totalFocus: number;
-  totalProwess: number;
-  totalFiness: number;
-  totalConstitution: number;
-  totalWillpower: number;
-  totalMotivation: number;
-  weaponName: string;
-  weaponQuantity: number;
-  damageRating: number;
-  damageTypeArray: string[] | [];
-  actionPoints: number;
-  characterEncumbrance: number;
-  handsSlot: ItemProps;
-  characterName: string;
-  equipment: EquipmentProps;
-  statusEffects: StatusEffectProps;
-};
+export type CharacterState = ReturnType<typeof useCharacterState>;
+
+export type CharacterContextProps = CharacterState;

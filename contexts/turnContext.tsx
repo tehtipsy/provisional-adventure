@@ -9,21 +9,16 @@ interface TurnContextProps {
   setTotalActionPoints: (totalActionPoints: number) => void;
 }
 
-export const TurnContext = createContext<TurnContextProps>({
-  currentPlayer: "",
-  setCurrentPlayer: () => {},
-  roundCount: 0,
-  setRoundCount: () => {},
-  totalActionPoints: 0,
-  setTotalActionPoints: () => {},
-});
+export const TurnContext = createContext<Partial<TurnContextProps>>({
+})
 
 interface TurnContextProviderProps {
   children: ReactNode;
 }
 
 export const TurnContextProvider = (props: TurnContextProviderProps) => {
-  console.log("Loading TurnContextProvider");
+  console.log("Loading TurnContextProvider"); 
+  // move everything to useStateHook
   const [currentPlayer, setCurrentPlayer] = useState("");
   const [roundCount, setRoundCount] = useState(0);
   const [totalActionPoints, setTotalActionPoints] = useState(0);

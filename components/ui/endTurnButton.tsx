@@ -17,7 +17,7 @@ export default function EndTurnButton({
   const handleClick = async() => {
     setIsClicked(true);
     const newPlayer = await endTurn(username);
-    setCurrentPlayer(newPlayer);
+    if (setCurrentPlayer) setCurrentPlayer(newPlayer);
   };
 
   return (

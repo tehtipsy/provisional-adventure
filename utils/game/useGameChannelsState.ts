@@ -25,9 +25,9 @@ export default function useGameChannelsState() {
   useEffect(() => {
     channel?.subscribe("newRound", (message) => {
       const { roundCount, currentPlayer, totalActionPoints } = message.data;
-      setRoundCount(roundCount);
-      setCurrentPlayer(currentPlayer);
-      setTotalActionPoints(totalActionPoints);
+      if (setRoundCount) setRoundCount(roundCount);
+      if (setCurrentPlayer) setCurrentPlayer(currentPlayer);
+      if (setTotalActionPoints) setTotalActionPoints(totalActionPoints);
     });
   }, [channel, setRoundCount]);
 

@@ -19,8 +19,16 @@ export default function useTotalPointsState() {
   } = useContext(TurnContext);
   const { character, totalFocus, actionPoints } = useCharacterState();
 
-  if (character !== null && actionPoints !== undefined) {
-    // clean this up
+  if (
+    character !== null &&
+    actionPoints !== undefined &&
+    roundCount !== undefined && // clean this up
+    totalActionPoints !== undefined &&
+    setRoundCount &&
+    setCurrentPlayer &&
+    setTotalActionPoints &&
+    actionPoints
+  ) {
     const prevActionPointsRef = useRef(actionPoints);
     const prevTotalActionPointsRef = useRef(totalActionPoints);
 
@@ -36,7 +44,7 @@ export default function useTotalPointsState() {
     useEffect(() => {
       const fetchData = async () => {
         const newTotal = await refetchActionPoints();
-        setTotalActionPoints(newTotal);
+        if (setTotalActionPoints) setTotalActionPoints(newTotal);
       };
       fetchData();
     }, [roundCount]);
@@ -59,8 +67,8 @@ export default function useTotalPointsState() {
     useEffect(() => {
       if (prevActionPointsRef.current > 0 && actionPoints === 0) {
         const fetchTurnData = async () => {
-          const currentPlayer = await endTurn(user);
-          setCurrentPlayer(currentPlayer);
+          const nextPlayer = await endTurn(user);
+          setCurrentPlayer(nextPlayer);
         };
         fetchTurnData();
       }
