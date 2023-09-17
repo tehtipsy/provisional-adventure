@@ -73,8 +73,4 @@ export default function useTotalPointsState() {
   }
 
   // return something?
-  // return {
-  //   totalActionPoints,
-  //   roundCount,
-  // };
 }

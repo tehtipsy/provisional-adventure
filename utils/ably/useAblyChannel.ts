@@ -4,7 +4,7 @@ import * as Ably from "ably/promises";
 import { GlobalContext } from "@/contexts/globalContext";
 import { useOnlineUsers } from "@/utils/ably//useOnlineUsers";
 
-const gameChannelName = "game"
+const gameChannelName = "game";
 
 export const useAblyChannel = () => {
   const router = useRouter();
