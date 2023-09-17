@@ -66,9 +66,7 @@ const OnlineUsers: React.FC = () => {
       <div>
         {user === currentPlayer ? (
           <EndTurnButton endTurn={endTurn} username={user} />
-        ) : (
-          ""
-        )}
+        ) : null}
       </div>
     </div>
   );

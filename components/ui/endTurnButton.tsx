@@ -1,17 +1,23 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Button from "@/components/ui/button";
+import { TurnContext } from "@/contexts/turnContext";
 
 type EndTurnButtonProps = {
-  endTurn: (username: string) => void;
+  endTurn: (username: string) => Promise<string>;
   username: string;
 };
 
-export default function EndTurnButton({ endTurn, username }: EndTurnButtonProps) {
+export default function EndTurnButton({
+  endTurn,
+  username,
+}: EndTurnButtonProps) {
   const [isClicked, setIsClicked] = useState(false);
+  const { setCurrentPlayer } = useContext(TurnContext); // move to GameChannlsState?
 
-  const handleClick = () => {
-    endTurn(username);
+  const handleClick = async() => {
     setIsClicked(true);
+    const newPlayer = await endTurn(username);
+    setCurrentPlayer(newPlayer);
   };
 
   return (

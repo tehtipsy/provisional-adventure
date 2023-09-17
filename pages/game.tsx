@@ -1,21 +1,23 @@
-import React, { useContext } from "react";
-import { TurnContext } from "@/contexts/turnContext";
-import ManageCharacter from "@/pages/manage-character";
+import React from "react";
 import BasePage from "@/components/base/basePage";
-import Button from "@/components/ui/button";
-import Loading from "@/components/ui/loading";
+import ManageCharacter from "@/pages/manage-character";
 import OnlineUsers from "@/components/game/onlineUsers";
 import RollSelections from "@/components/game/rollSelections";
 import useGameChannelsState from "@/utils/game/useGameChannelsState";
 import { startNewRound } from "@/utils/game/startNewRound";
+// garbaje
+import { useContext } from "react";
+import { TurnContext } from "@/contexts/turnContext";
+import Button from "@/components/ui/button";
+import Loading from "@/components/ui/loading";
 
 const Game: React.FC = () => {
   const { onlineUsers } = useGameChannelsState();
 
   // round count manual override
-  const {roundCount} = useContext(TurnContext)
+  const { roundCount } = useContext(TurnContext);
   const handleStartNewRound = () => {
-    startNewRound(roundCount);
+    startNewRound(roundCount + 1);
   };
   //
 
